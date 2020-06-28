@@ -1,0 +1,17 @@
+{
+  "name": "sauce-cypress-runner",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./src/cypress-runner.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cypress": "^4.9.0",
+    "saucelabs": "^3.1.1-alpha.7",
+    "webdriverio": "^6.1.22"
+  }
+}
