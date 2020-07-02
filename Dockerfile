@@ -18,7 +18,6 @@ COPY package-lock.json .
 RUN npm i
 
 COPY --chown=seluser:seluser . .
-
 RUN mkdir -p /home/seluser/cypress/integration/tests
 
 CMD ["./entry.sh"]
