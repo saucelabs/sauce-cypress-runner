@@ -18,6 +18,14 @@ COPY package-lock.json .
 RUN npm i
 
 COPY --chown=seluser:seluser . .
+
+# Prepare cypress folders
+RUN mkdir -p /home/seluser/cypress
 RUN mkdir -p /home/seluser/cypress/integration/tests
+RUN mkdir -p /home/seluser/cypress/fixtures
+RUN mkdir -p /home/seluser/cypress/plugins
+RUN mkdir -p /home/seluser/cypress/reporters
+RUN mkdir -p /home/seluser/cypress/results
+RUN mkdir -p /home/seluser/cypress/support
 
 CMD ["./entry.sh"]
