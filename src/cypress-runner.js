@@ -3,8 +3,7 @@ const fs = require('fs');
 
 const cypress = require('cypress');
 const DEFAULT_BROWSER = 'chrome';
-process.env.SAUCE_BUILD_NAME = process.env.SAUCE_BUILD_NAME || `stt-cypress-build-${(new Date()).getTime()}`;
-
+const buildName = process.env.SAUCE_BUILD_NAME || `stt-cypress-build-${(new Date()).getTime()}`;
 const supportedBrowsers = {
   'chrome': 'chrome'
 }
@@ -15,21 +14,22 @@ if (!browserName) {
   process.exit(1);
 }
 
-const report = async (run) => {
-  fs.renameSync(
-    run.video,
-    '/tmp/video.mp4'
-  )
-  await sauceReporter(browserName,  buildName, [
-    '/tmp/video.mp4'
-  ], run);
-  fs.unlinkSync('/tmp/video.mp4');
+const report = async (results) => {
+  const status = results.failures || results.totalFailed;
+  if (!(process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY)) {
+    console.log('Skipping asset uploads! Remeber to setup your SAUCE_USERNAME/SAUCE_ACCESS_KEY');
+    return status;
+  }
+  const runs = results.runs || [];
+  for(let spec of runs) {
+    await sauceReporter(buildName, browserName, spec);
+  };
+  return status;
 }
 
-(async () => {
+const cypressRunner = async function () {
   try {
-    let failures = 0;
-    let results = await cypress.run({
+    const results = await cypress.run({
       browser: browserName,
       config: {
         video: true,
@@ -37,40 +37,20 @@ const report = async (run) => {
         videoCompression: false,
         videoUploadOnPasses: false,
         screenshotsFolder: "cypress/results",
-        testFiles: "tests/*.js",
-        reporter: "src/sauce-reporter.js",
+        integrationFolder: "cypress/integration/tests",
+        testFiles: "**/*.js",
+        reporter: "src/custom-reporter.js",
         reporterOptions: {
           mochaFile: "cypress/results/[suite].xml"
         }
       }
     });
-    for (let run of results.runs) {
-      failures += run.stats.failures;
-    }
-    process.exit(failures);
+    const status = await report(results);
+    process.exit(status);
   }catch (err) {
     console.log(err);
     process.exit(1);
   }
-})();
+}
 
-/*
-
-
-(async() => {
-  try {
-    let results = await runCypress();
-    if (process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY) {
-      
-      await sauceReporter('chrome', [
-        '/home/seluser/cypress/videos/tests/video.mp4'
-      ], results);
-    } else {
-      console.log('Skipping asset uploads! Remeber to setup your SAUCE_USERNAME/SAUCE_ACCESS_KEY')
-    }
-    process.exit(results);
-  } catch(e) {
-    console.log(e);
-  }
-})();
-*/
+exports.cypressRunner = cypressRunner
