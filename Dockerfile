@@ -35,7 +35,7 @@ RUN curl -L -o ${SAUCECTL_BINARY} \
   -H "Accept: application/octet-stream" \
   https://github.com/saucelabs/saucectl/releases/download/v${SAUCECTL_VERSION}/${SAUCECTL_BINARY} \
   && tar -xvzf ${SAUCECTL_BINARY} \
-  && mkdir /home/seluser/bin/ \
+  && mkdir -p /home/seluser/bin/ \
   && mv ./saucectl /home/seluser/bin/saucectl \
   && rm ${SAUCECTL_BINARY}
 
