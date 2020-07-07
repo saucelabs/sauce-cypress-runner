@@ -1,5 +1,6 @@
 rootDir: /home/seluser/
 targetDir: /home/seluser/cypress/integration/tests
+reportsDir: /home/seluser/cypress/results
 execCommand:
   - npm
   - test
