@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+var { cypressRunner } = require('../src/cypress-runner.js');
+(async() => {
+  await cypressRunner();
+})();
