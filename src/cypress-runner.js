@@ -5,12 +5,13 @@ const cypress = require('cypress');
 const DEFAULT_BROWSER = 'chrome';
 const buildName = process.env.SAUCE_BUILD_NAME || `stt-cypress-build-${(new Date()).getTime()}`;
 const supportedBrowsers = {
-  'chrome': 'chrome'
+  'chrome': 'chrome',
+  'firefox': 'firefox'
 }
 let browserName = process.env.BROWSER_NAME || DEFAULT_BROWSER;
 browserName = supportedBrowsers[browserName.toLowerCase()];
 if (!browserName) {
-  console.error(`Unsupported browser: ${browserName}. Sorry.`);
+  console.error(`Unsupported browser: ${process.env.BROWSER_NAME}. Sorry.`);
   process.exit(1);
 }
 
@@ -27,21 +28,24 @@ const report = async (results) => {
   return status;
 }
 
+const yaml = require('js-yaml');
+const config = yaml.safeLoad(fs.readFileSync('config.yaml', 'utf8'))
+
 const cypressRunner = async function () {
   try {
     const results = await cypress.run({
       browser: browserName,
       config: {
         video: true,
-        videosFolder: "cypress/results",
+        videosFolder: config.reportsDir,
         videoCompression: false,
         videoUploadOnPasses: false,
-        screenshotsFolder: "cypress/results",
-        integrationFolder: "cypress/integration/tests",
-        testFiles: "**/*.js",
+        screenshotsFolder: config.reportsDir,
+        integrationFolder: config.targetDir,
+        testFiles: `${config.targetDir}/**/*.js`,
         reporter: "src/custom-reporter.js",
         reporterOptions: {
-          mochaFile: "cypress/results/[suite].xml"
+          mochaFile: `${config.reportsDir}/[suite].xml`
         }
       }
     });
