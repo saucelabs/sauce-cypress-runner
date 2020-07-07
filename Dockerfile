@@ -28,4 +28,15 @@ RUN mkdir -p /home/seluser/cypress/reporters
 RUN mkdir -p /home/seluser/cypress/results
 RUN mkdir -p /home/seluser/cypress/support
 
+ARG SAUCECTL_VERSION=0.9.2
+ENV SAUCECTL_BINARY=saucectl_${SAUCECTL_VERSION}_linux_64-bit.tar.gz
+
+RUN curl -L -o ${SAUCECTL_BINARY} \
+  -H "Accept: application/octet-stream" \
+  https://github.com/saucelabs/saucectl/releases/download/v${SAUCECTL_VERSION}/${SAUCECTL_BINARY} \
+  && tar -xvzf ${SAUCECTL_BINARY} \
+  && mkdir /home/seluser/bin/ \
+  && mv ./saucectl /home/seluser/bin/saucectl \
+  && rm ${SAUCECTL_BINARY}
+
 CMD ["./entry.sh"]
