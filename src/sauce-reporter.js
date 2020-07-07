@@ -45,7 +45,10 @@ prepareAssets = async (specFile, resultsFolder) => {
 exports.sauceReporter = async (buildName, browserName, spec) => {
   let specFile = spec.spec.name;
   let testName  = `devx cypress - ${specFile}`;
-  
+  let tags = process.env.SAUCE_TAGS
+  if (tags) {
+    tags = tags.split(",")
+  }
   try {
     let browser = await remote({
       user: process.env.SAUCE_USERNAME,
@@ -61,7 +64,8 @@ exports.sauceReporter = async (buildName, browserName, spec) => {
               devX: true,
               name: testName,
               framework: 'cypress',
-              build: buildName
+              build: buildName,
+              tags: tags
           }
       }
     }).catch((err) => err)
