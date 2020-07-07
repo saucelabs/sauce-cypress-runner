@@ -105,3 +105,6 @@ dist
 
 # Cypress specific files
 cypress
+
+# saucectl configuration folder
+.sauce
