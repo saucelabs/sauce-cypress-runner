@@ -42,7 +42,7 @@ const cypressRunner = async function () {
         videoUploadOnPasses: false,
         screenshotsFolder: config.reportsDir,
         integrationFolder: config.targetDir,
-        testFiles: `${config.targetDir}/**/*.js`,
+        testFiles: `${config.targetDir}/**/?(*.)+(spec|test).[jt]s?(x)`,
         reporter: "src/custom-reporter.js",
         reporterOptions: {
           mochaFile: `${config.reportsDir}/[suite].xml`
