@@ -289,7 +289,10 @@ MochaJUnitReporter.prototype.getSauceTestcaseData = function (testcase) {
     between_commands: testcase.duration,
     result: {
       status: testcase.state,
-      failure_reason: null
+      failure_reason: JSON.stringify({
+        'message': testcase.err && testcase.err.message,
+        'stack': testcase.err && testcase.err.stack
+      })
     },
     request: {
       body: testcase.body
