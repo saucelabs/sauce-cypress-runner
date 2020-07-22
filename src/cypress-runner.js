@@ -57,7 +57,6 @@ const cypressRunner = async function () {
         env = JSON.parse(await promisify(fs.readFile)(cypressEnvPath));
       } catch (e) {
         console.error(`Could not parse contents of '${cypressEnvPath}'. Will use empty object for environment variables.`);
-        env = {};
       }
     }
 
