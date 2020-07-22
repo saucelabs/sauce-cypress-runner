@@ -4,6 +4,7 @@ const fs = require('fs');
 const { promisify } = require('util');
 const yaml = require('js-yaml');
 const cypress = require('cypress');
+const { getAbsolutePath } = require('./utils');
 
 const DEFAULT_BROWSER = 'chrome';
 const buildName = process.env.SAUCE_BUILD_NAME || `stt-cypress-build-${(new Date()).getTime()}`;
@@ -21,7 +22,7 @@ if (!browserName) {
 const report = async (results) => {
   const status = results.failures || results.totalFailed;
   if (!(process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY)) {
-    console.log('Skipping asset uploads! Remeber to setup your SAUCE_USERNAME/SAUCE_ACCESS_KEY');
+    console.log('Skipping asset uploads! Remember to setup your SAUCE_USERNAME/SAUCE_ACCESS_KEY');
     return status;
   }
   const runs = results.runs || [];
@@ -29,13 +30,6 @@ const report = async (results) => {
     await sauceReporter(buildName, browserName, spec);
   };
   return status;
-}
-
-function getAbsolutePath(pathToDir) {
-  if (path.isAbsolute(pathToDir)) {
-    return pathToDir;
-  }
-  return path.join(process.cwd(), pathToDir);
 }
 
 const cypressRunner = async function () {
@@ -53,12 +47,24 @@ const cypressRunner = async function () {
       configFile = path.relative(process.cwd(), cypressJsonPath); // CypressRunner doesn't seem to accept absolute paths
     }
 
+    let env = {};
+    const cypressEnvPath = path.join(targetDir, 'cypress.env.json')
+    if (await promisify(fs.exists)(cypressEnvPath)) {
+      try {
+        env = JSON.parse(await promisify(fs.readFile)(cypressEnvPath));
+      } catch (e) {
+        console.error(`Could not parse contents of '${cypressEnvPath}'. Will use empty object for environment variables.`);
+        env = {};
+      }
+    }
+
     // TODO: Get the cypress.env.json file
 
     const results = await cypress.run({
       browser: browserName,
       configFile,
       config: {
+        env,
         video: true,
         videosFolder: reportsDir,
         videoCompression: false,
