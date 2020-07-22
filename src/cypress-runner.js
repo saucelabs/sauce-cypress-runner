@@ -37,6 +37,8 @@ const cypressRunner = async function () {
     // Get the configuration info from config.yaml
     const configYamlPath = process.env.CONFIG_FILE || 'config.yaml';
     const config = yaml.safeLoad(await promisify(fs.readFile)(configYamlPath, 'utf8'));
+
+    // If relative paths were provided in YAML, convert them to absolute
     const targetDir = getAbsolutePath(config.targetDir);
     const reportsDir = getAbsolutePath(config.reportsDir);
 
@@ -44,9 +46,10 @@ const cypressRunner = async function () {
     let configFile = 'cypress.json';
     let cypressJsonPath = path.join(targetDir, 'cypress.json');
     if (await promisify(fs.exists)(cypressJsonPath)) {
-      configFile = path.relative(process.cwd(), cypressJsonPath); // CypressRunner doesn't seem to accept absolute paths
+      configFile = path.relative(process.cwd(), cypressJsonPath);
     }
 
+    // Get the cypress env variables from 'cypress.env.json' (if present)
     let env = {};
     const cypressEnvPath = path.join(targetDir, 'cypress.env.json')
     if (await promisify(fs.exists)(cypressEnvPath)) {
@@ -57,8 +60,6 @@ const cypressRunner = async function () {
         env = {};
       }
     }
-
-    // TODO: Get the cypress.env.json file
 
     const results = await cypress.run({
       browser: browserName,
@@ -86,7 +87,7 @@ const cypressRunner = async function () {
   }
 }
 
-// For dev purposes this allows us to run cypress from command line
+// For dev and test purposes, this allows us to run our Cypress Runner from command line
 if (require.main === module) {
   cypressRunner();
 }
