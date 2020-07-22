@@ -1,7 +1,10 @@
 const { sauceReporter }   = require('./sauce-reporter');
+const path = require('path');
 const fs = require('fs');
-
+const { promisify } = require('util');
+const yaml = require('js-yaml');
 const cypress = require('cypress');
+
 const DEFAULT_BROWSER = 'chrome';
 const buildName = process.env.SAUCE_BUILD_NAME || `stt-cypress-build-${(new Date()).getTime()}`;
 const supportedBrowsers = {
@@ -28,24 +31,44 @@ const report = async (results) => {
   return status;
 }
 
-const yaml = require('js-yaml');
-const config = yaml.safeLoad(fs.readFileSync('config.yaml', 'utf8'))
+function getAbsolutePath(pathToDir) {
+  if (path.isAbsolute(pathToDir)) {
+    return pathToDir;
+  }
+  return path.join(process.cwd(), pathToDir);
+}
 
 const cypressRunner = async function () {
   try {
+    // Get the configuration info from config.yaml
+    const configYamlPath = process.env.CONFIG_FILE || 'config.yaml';
+    const config = yaml.safeLoad(await promisify(fs.readFile)(configYamlPath, 'utf8'));
+    const targetDir = getAbsolutePath(config.targetDir);
+    const reportsDir = getAbsolutePath(config.reportsDir);
+
+    // Get the cypress.json config file (https://docs.cypress.io/guides/references/configuration.html#Options)
+    let configFile = 'cypress.json';
+    let cypressJsonPath = path.join(targetDir, 'cypress.json');
+    if (await promisify(fs.exists)(cypressJsonPath)) {
+      configFile = path.relative(process.cwd(), cypressJsonPath); // CypressRunner doesn't seem to accept absolute paths
+    }
+
+    // TODO: Get the cypress.env.json file
+
     const results = await cypress.run({
       browser: browserName,
+      configFile,
       config: {
         video: true,
-        videosFolder: config.reportsDir,
+        videosFolder: reportsDir,
         videoCompression: false,
         videoUploadOnPasses: false,
-        screenshotsFolder: config.reportsDir,
-        integrationFolder: config.targetDir,
-        testFiles: `${config.targetDir}/**/?(*.)+(spec|test).[jt]s?(x)`,
+        screenshotsFolder: reportsDir,
+        integrationFolder: targetDir,
+        testFiles: `${targetDir}/**/?(*.)+(spec|test).[jt]s?(x)`,
         reporter: "src/custom-reporter.js",
         reporterOptions: {
-          mochaFile: `${config.reportsDir}/[suite].xml`
+          mochaFile: `${reportsDir}/[suite].xml`
         }
       }
     });
@@ -55,6 +78,11 @@ const cypressRunner = async function () {
     console.log(err);
     process.exit(1);
   }
+}
+
+// For dev purposes this allows us to run cypress from command line
+if (require.main === module) {
+  cypressRunner();
 }
 
 exports.cypressRunner = cypressRunner

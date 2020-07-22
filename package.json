@@ -5,10 +5,11 @@
   "main": "./src/cypress-runner.js",
   "bin": "./bin/cypress",
   "scripts": {
-    "test": "./bin/cypress"
+    "test": "./bin/cypress",
+    "test-integration": "bash tests/integration/integration-tests.sh"
   },
   "keywords": [],
-  "author": "devx <dev@saucelas.com>",
+  "author": "devx <dev@saucelabs.com>",
   "license": "ISC",
   "dependencies": {
     "cypress": "4.9.0",

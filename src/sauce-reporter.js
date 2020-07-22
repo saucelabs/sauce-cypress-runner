@@ -89,7 +89,7 @@ exports.sauceReporter = async (buildName, browserName, spec) => {
     'cypress/results'
   );
   
-  // updaload assets
+  // upload assets
   await Promise.all([
     api.uploadJobAssets(
       sessionId,
