@@ -5,3 +5,6 @@ Sauce Labs test runner image to run Cypress tests on Sauce.
 
 ### Build Docker Image
 `make docker`
+
+## Contributing
+[See contributing doc](/CONTRIBUTING.md)

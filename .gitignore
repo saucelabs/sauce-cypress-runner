@@ -108,3 +108,5 @@ cypress
 
 # saucectl configuration folder
 .sauce
+
+results/
