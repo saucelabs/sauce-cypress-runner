@@ -260,8 +260,7 @@ function MochaJUnitReporter(runner, options) {
 }
 
 MochaJUnitReporter.prototype.report = function(testsuites, sauceJson) {
-  const specFile = path.basename(this._runner.suite.file)
-  this.flush(testsuites, specFile, sauceJson);
+  this.flush(testsuites, this._runner.suite.file, sauceJson);
 }
 
 MochaJUnitReporter.prototype.getSauceTestsuiteData = function (suite) {
@@ -536,6 +535,7 @@ MochaJUnitReporter.prototype.writeSauceJsonToDisk = function(sauceJson, filePath
  * @param {string} filePath - path to output file
  */
 MochaJUnitReporter.prototype.writeXmlToDisk = function(xml, filePath, fileName){
+  console.log("vruno", filePath)
   if (filePath) {
     if (filePath.indexOf('[hash]') !== -1) {
       filePath = filePath.replace('[hash]', md5(xml));

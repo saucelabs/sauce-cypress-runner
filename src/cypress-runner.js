@@ -42,6 +42,9 @@ const cypressRunner = async function () {
     const targetDir = getAbsolutePath(config.targetDir);
     const reportsDir = getAbsolutePath(config.reportsDir);
 
+    const specsYamlPath = path.join(process.cwd(), 'specs.yaml')
+    const specsConfig = yaml.safeLoad(await promisify(fs.readFile)(specsYamlPath, 'utf-8'));
+    console.log(specsConfig)
     // Get the cypress.json config file (https://docs.cypress.io/guides/references/configuration.html#Options)
     let configFile = 'cypress.json';
     let cypressJsonPath = path.join(targetDir, 'cypress.json');
@@ -71,7 +74,7 @@ const cypressRunner = async function () {
         videoUploadOnPasses: false,
         screenshotsFolder: reportsDir,
         integrationFolder: targetDir,
-        testFiles: `${targetDir}/**/?(*.)+(spec|test).[jt]s?(x)`,
+        testFiles: specsConfig.specs,
         reporter: "src/custom-reporter.js",
         reporterOptions: {
           mochaFile: `${reportsDir}/[suite].xml`

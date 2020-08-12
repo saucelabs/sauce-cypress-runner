@@ -29,6 +29,7 @@ const prepareAsset = (specFile, resultsFolder, tmpFolder, ext, name) => {
 
 prepareAssets = async (specFile, resultsFolder) => {
   const tmpFolder = fs.mkdtempSync(path.join(os.tmpdir(), md5(specFile)));
+  console.log("tamp", tmpFolder)
   const sauceAssets = [
     { name: 'video.mp4', ext: 'mp4' },
     { name: 'log.json', ext: 'json' },
@@ -86,7 +87,7 @@ exports.sauceReporter = async (buildName, browserName, spec) => {
   console.log(`Preparing assets for ${specFile}`);
   let assets = await prepareAssets(
     specFile,
-    'cypress/results'
+    'cypress/reports'
   );
   
   // upload assets
