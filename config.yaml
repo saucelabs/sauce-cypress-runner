@@ -1,6 +1,6 @@
-rootDir: /home/seluser/
-targetDir: /home/seluser/cypress/integration/tests
-reportsDir: /home/seluser/cypress/results
+rootDir: /Users/brunoalassia/Sauce/sauce-cypress-runner
+targetDir: /Users/brunoalassia/Sauce/sauce-cypress-runner
+reportsDir: /Users/brunoalassia/Sauce/sauce-cypress-runner/cypress/reports
 execCommand:
   - npm
   - test
