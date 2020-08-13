@@ -52,7 +52,7 @@ const cypressRunner = async function () {
     // If a typescript config is found in the targetsDir, then compile with it
     const tsconfigPath = path.join(targetDir, 'tsconfig.json');
 
-    const pathsToTypescriptFiles = await glob(path.join(tsconfigPath, '**/*.ts'));
+    const pathsToTypescriptFiles = await glob(path.join(targetDir, '**/*.ts'));
     const hasTypescriptFiles = pathsToTypescriptFiles.length > 0;
 
     if (await exists(tsconfigPath)) {
