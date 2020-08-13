@@ -96,14 +96,14 @@ exports.sauceReporter = async (buildName, browserName, spec) => {
       sessionId,
       assets
     ).then(
-      () => {},
+      (d) => { console.log("success"); console.log(d); },
       (e) => console.log('upload failed:', e.stack)
     ),
     api.updateJob(process.env.SAUCE_USERNAME, sessionId, {
       name: testName,
       passed: spec.stats.failures === 0 ? true : false
     }).then(
-      () => {},
+      () => { },
       (e) => console.log('Failed to update job status', e)
     )
   ])
