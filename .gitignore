@@ -110,3 +110,5 @@ cypress
 .sauce
 
 results/
+
+tests/fixtures/cypress-tests/typescript-*/**/*.js

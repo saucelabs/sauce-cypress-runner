@@ -4,7 +4,14 @@ const fs = require('fs');
 const { promisify } = require('util');
 const yaml = require('js-yaml');
 const cypress = require('cypress');
+let glob = require('glob');
+let { exec } = require('child_process');
 const { getAbsolutePath } = require('./utils');
+
+// Promisify the callback functions
+const exists = promisify(fs.exists);
+exec = promisify(exec);
+glob = promisify(glob);
 
 const DEFAULT_BROWSER = 'chrome';
 const buildName = process.env.SAUCE_BUILD_NAME || `stt-cypress-build-${(new Date()).getTime()}`;
@@ -42,17 +49,30 @@ const cypressRunner = async function () {
     const targetDir = getAbsolutePath(config.targetDir);
     const reportsDir = getAbsolutePath(config.reportsDir);
 
+    // If a typescript config is found in the targetsDir, then compile with it
+    const tsconfigPath = path.join(targetDir, 'tsconfig.json');
+
+    const pathsToTypescriptFiles = await glob(path.join(tsconfigPath, '**/*.ts'));
+    const hasTypescriptFiles = pathsToTypescriptFiles.length > 0;
+
+    if (await exists(tsconfigPath)) {
+      await exec(`npx tsc -p "${tsconfigPath}"`);
+    } else if (hasTypescriptFiles) {
+      await exec(`npx tsc "${pathsToTypescriptFiles}"`);
+    }
+
+
     // Get the cypress.json config file (https://docs.cypress.io/guides/references/configuration.html#Options)
     let configFile = 'cypress.json';
     let cypressJsonPath = path.join(targetDir, 'cypress.json');
-    if (await promisify(fs.exists)(cypressJsonPath)) {
+    if (await exists(cypressJsonPath)) {
       configFile = path.relative(process.cwd(), cypressJsonPath);
     }
 
     // Get the cypress env variables from 'cypress.env.json' (if present)
     let env = {};
     const cypressEnvPath = path.join(targetDir, 'cypress.env.json')
-    if (await promisify(fs.exists)(cypressEnvPath)) {
+    if (await exists(cypressEnvPath)) {
       try {
         env = JSON.parse(await promisify(fs.readFile)(cypressEnvPath));
       } catch (e) {
@@ -71,7 +91,7 @@ const cypressRunner = async function () {
         videoUploadOnPasses: false,
         screenshotsFolder: reportsDir,
         integrationFolder: targetDir,
-        testFiles: `${targetDir}/**/?(*.)+(spec|test).[jt]s?(x)`,
+        testFiles: `${targetDir}/**/?(*.)+(spec|test).js?(x)`,
         reporter: "src/custom-reporter.js",
         reporterOptions: {
           mochaFile: `${reportsDir}/[suite].xml`
