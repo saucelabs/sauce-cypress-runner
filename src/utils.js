@@ -1,6 +1,6 @@
 const path = require('path');
 
-function getAbsolutePath(pathToDir) {
+function getAbsolutePath (pathToDir) {
   if (path.isAbsolute(pathToDir)) {
     return pathToDir;
   }

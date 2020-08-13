@@ -1,0 +1,7 @@
+{
+  "extends": "appium",
+  "rules": {
+      "no-console": "off",
+      "promise/no-native": "off"
+  }
+}

@@ -1,4 +1,4 @@
-const { sauceReporter }   = require('./sauce-reporter');
+const { sauceReporter } = require('./sauce-reporter');
 const path = require('path');
 const fs = require('fs');
 const { promisify } = require('util');
@@ -11,7 +11,7 @@ const buildName = process.env.SAUCE_BUILD_NAME || `stt-cypress-build-${(new Date
 const supportedBrowsers = {
   'chrome': 'chrome',
   'firefox': 'firefox'
-}
+};
 let browserName = process.env.BROWSER_NAME || DEFAULT_BROWSER;
 browserName = supportedBrowsers[browserName.toLowerCase()];
 if (!browserName) {
@@ -26,11 +26,11 @@ const report = async (results) => {
     return status;
   }
   const runs = results.runs || [];
-  for(let spec of runs) {
+  for (let spec of runs) {
     await sauceReporter(buildName, browserName, spec);
-  };
+  }
   return status;
-}
+};
 
 const cypressRunner = async function () {
   try {
@@ -51,7 +51,7 @@ const cypressRunner = async function () {
 
     // Get the cypress env variables from 'cypress.env.json' (if present)
     let env = {};
-    const cypressEnvPath = path.join(targetDir, 'cypress.env.json')
+    const cypressEnvPath = path.join(targetDir, 'cypress.env.json');
     if (await promisify(fs.exists)(cypressEnvPath)) {
       try {
         env = JSON.parse(await promisify(fs.readFile)(cypressEnvPath));
@@ -72,7 +72,7 @@ const cypressRunner = async function () {
         screenshotsFolder: reportsDir,
         integrationFolder: targetDir,
         testFiles: `${targetDir}/**/?(*.)+(spec|test).[jt]s?(x)`,
-        reporter: "src/custom-reporter.js",
+        reporter: 'src/custom-reporter.js',
         reporterOptions: {
           mochaFile: `${reportsDir}/[suite].xml`
         }
@@ -80,15 +80,15 @@ const cypressRunner = async function () {
     });
     const status = await report(results);
     process.exit(status);
-  }catch (err) {
+  } catch (err) {
     console.log(err);
     process.exit(1);
   }
-}
+};
 
 // For dev and test purposes, this allows us to run our Cypress Runner from command line
 if (require.main === module) {
   cypressRunner();
 }
 
-exports.cypressRunner = cypressRunner
+exports.cypressRunner = cypressRunner;

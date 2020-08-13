@@ -5,6 +5,8 @@
   "main": "./src/cypress-runner.js",
   "bin": "./bin/cypress",
   "scripts": {
+    "lint": "eslint src/",
+    "lint-fix": "eslint src/ --fix",
     "test": "./bin/cypress",
     "test-integration": "bash tests/integration/integration-tests.sh"
   },
@@ -17,5 +19,14 @@
     "mocha-junit-reporter": "^2.0.0",
     "saucelabs": "orchestrator-experiment",
     "webdriverio": "6.1.22"
+  },
+  "devDependencies": {
+    "eslint": "^7.6.0",
+    "eslint-config-appium": "^4.5.0",
+    "husky": "^4.2.5"
+  },
+  "husky": {
+    "pre-commit": "npm run lint",
+    "pre-push": "npm run lint"
   }
 }
