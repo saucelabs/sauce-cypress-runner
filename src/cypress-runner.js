@@ -56,8 +56,10 @@ const cypressRunner = async function () {
     const hasTypescriptFiles = pathsToTypescriptFiles.length > 0;
 
     if (await exists(tsconfigPath)) {
+      console.log(`Compiling Typescript files from tsconfig '${tsconfigPath}'`);
       await exec(`npx tsc -p "${tsconfigPath}"`);
     } else if (hasTypescriptFiles) {
+      console.log(`Compiling typescript files found in '${targetDir}'`)
       await exec(`npx tsc "${pathsToTypescriptFiles}"`);
     }
 
