@@ -13,9 +13,11 @@
   "license": "ISC",
   "dependencies": {
     "cypress": "4.9.0",
+    "glob": "^7.1.6",
     "js-yaml": "3.14.0",
     "mocha-junit-reporter": "^2.0.0",
     "saucelabs": "orchestrator-experiment",
+    "typescript": "^3.9.7",
     "webdriverio": "6.1.22"
   }
 }
