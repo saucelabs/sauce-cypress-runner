@@ -2,7 +2,7 @@ FROM saucelabs/testrunner-image:v0.1.0
 
 WORKDIR /home/seluser
 
-USER seluser
+USER root
 
 ENV NODE_VERSION=12.16.2
 ENV NVM_VERSION=0.35.3
