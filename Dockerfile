@@ -18,6 +18,10 @@ COPY package-lock.json .
 RUN npm i
 
 COPY --chown=seluser:seluser . .
+# Cypress caches its binary by default in ~/.cache/Cypress
+# However, running the container in CI may result in a different active user and therefore home folder.
+# That's why we let Cypress know where the location actually is.
+ENV CYPRESS_CACHE_FOLDER=/home/seluser/.cache/Cypress
 
 # Prepare cypress folders
 RUN mkdir -p /home/seluser/cypress
