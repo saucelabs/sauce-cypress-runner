@@ -2,7 +2,7 @@ FROM saucelabs/testrunner-image:v0.1.0
 
 WORKDIR /home/seluser
 
-USER root
+USER seluser
 
 ENV NODE_VERSION=12.16.2
 ENV NVM_VERSION=0.35.3
@@ -42,5 +42,8 @@ RUN curl -L -o ${SAUCECTL_BINARY} \
   && mkdir -p /home/seluser/bin/ \
   && mv ./saucectl /home/seluser/bin/saucectl \
   && rm ${SAUCECTL_BINARY}
+
+# Workaround for permissions in CI if run with a different user
+RUN chmod 777 -R /home/seluser/
 
 CMD ["./entry.sh"]
