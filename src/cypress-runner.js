@@ -42,7 +42,7 @@ const report = async (results) => {
 const cypressRunner = async function () {
   try {
     // Get the configuration info from config.yaml
-    const configYamlPath = process.env.CONFIG_FILE || 'config.yaml';
+    const configYamlPath = process.env.CONFIG_FILE || 'config.yml';
     const config = yaml.safeLoad(await promisify(fs.readFile)(configYamlPath, 'utf8'));
 
     // If relative paths were provided in YAML, convert them to absolute
