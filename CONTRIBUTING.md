@@ -1,6 +1,6 @@
 # Contributing to `sauce-cypress-runner`
 
-**Thank you for your interest in `sauce-puppeteer-runner`. Your contributions are highly welcome.**
+**Thank you for your interest in `sauce-cypress-runner`. Your contributions are highly welcome.**
 
 There are multiple ways of getting involved:
 
