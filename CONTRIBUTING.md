@@ -1,4 +1,4 @@
-# Contributing to `sauce-puppeteer-runner`
+# Contributing to `sauce-cypress-runner`
 
 **Thank you for your interest in `sauce-puppeteer-runner`. Your contributions are highly welcome.**
 
@@ -56,4 +56,3 @@ git commit -s -m "adding X to change Y"
 ```
 
 **Have fun, and happy hacking!**
-
