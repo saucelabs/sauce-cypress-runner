@@ -6,7 +6,7 @@ on:
       - 'v*.*.*'
 
 jobs:  
-  release_latest:
+  release:
     runs-on: ubuntu-latest
     steps:
       -
