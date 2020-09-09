@@ -26,4 +26,4 @@ jobs:
           file: ./Dockerfile
           tags: |
             saucelabs/sauce-cypress-runner:latest
-            saucelabs/sauce-cyperss-rinner:${GITHUB_REF#refs/tags}
+            saucelabs/sauce-cypress-runner:${{GITHUB_REF#refs/tags}}
