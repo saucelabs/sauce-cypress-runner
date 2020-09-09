@@ -13,6 +13,12 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2
       -
+        name: Prepare
+        id: prep
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo ::set-output name=version::${VERSION}
+      -
         name: Login to DockerHub
         uses: docker/login-action@v1
         with:
@@ -26,4 +32,4 @@ jobs:
           file: ./Dockerfile
           tags: |
             saucelabs/sauce-cypress-runner:latest
-            saucelabs/sauce-cypress-runner:${{GITHUB_REF#refs/tags}}
+            saucelabs/sauce-cypress-runner:${{ steps.prep.output.version }}
