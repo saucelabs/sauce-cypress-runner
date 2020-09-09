@@ -32,4 +32,4 @@ jobs:
           file: ./Dockerfile
           tags: |
             saucelabs/sauce-cypress-runner:latest
-            saucelabs/sauce-cypress-runner:${{ steps.prep.output.version }}
+            saucelabs/sauce-cypress-runner:${{ steps.prep.outputs.version }}
