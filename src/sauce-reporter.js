@@ -96,9 +96,11 @@ exports.sauceReporter = async (buildName, browserName, spec) => {
       assets
     ).then(
       (resp) => {
-	      if (resp.errors) {
-		      resp.errors.map((err) => console.warn(err))
-	      }
+	if (resp.errors) {
+	  for(let err of resp.errors) {
+	    console.warn(err))
+	  }
+        }
       },
       (e) => console.log('upload failed:', e.stack)
     ),
