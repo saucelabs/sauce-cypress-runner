@@ -97,8 +97,8 @@ exports.sauceReporter = async (buildName, browserName, spec) => {
     ).then(
       (resp) => {
         if (resp.errors) {
-	  for(let err of resp.errors) { console.warn(err)) }
-	}
+          for(let err of resp.errors) { console.warn(err)) }
+        }
       },
       (e) => console.log('upload failed:', e.stack)
     ),
