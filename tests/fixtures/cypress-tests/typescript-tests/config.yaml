@@ -1,6 +1,0 @@
-rootDir: ./tests/fixtures/cypress-tests/
-targetDir: ./tests/fixtures/cypress-tests/typescript-tests/
-reportsDir: ./results
-execCommand:
-  - npm
-  - test

@@ -104,7 +104,7 @@ dist
 .tern-port
 
 # Cypress specific files
-cypress
+/cypress/
 
 # saucectl configuration folder
 .sauce
