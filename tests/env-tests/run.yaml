@@ -1,0 +1,2 @@
+projectPath: ./tests/env-tests/
+match: ["cypress/integration/env.spec.js"]

@@ -13,6 +13,17 @@ RUN wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM_VERSION}/insta
 
 ENV PATH="/home/seluser/bin:/home/seluser/.nvm/versions/node/v${NODE_VERSION}/bin:${PATH}"
 
+ARG SAUCECTL_VERSION=0.11.1
+ENV SAUCECTL_BINARY=saucectl_${SAUCECTL_VERSION}_linux_64-bit.tar.gz
+
+RUN curl -L -o ${SAUCECTL_BINARY} \
+  -H "Accept: application/octet-stream" \
+  https://github.com/saucelabs/saucectl/releases/download/v${SAUCECTL_VERSION}/${SAUCECTL_BINARY} \
+  && tar -xvzf ${SAUCECTL_BINARY} \
+  && mkdir -p /home/seluser/bin/ \
+  && mv ./saucectl /home/seluser/bin/saucectl \
+  && rm ${SAUCECTL_BINARY}
+
 COPY package.json .
 COPY package-lock.json .
 RUN npm i
@@ -24,24 +35,13 @@ COPY --chown=seluser:seluser . .
 ENV CYPRESS_CACHE_FOLDER=/home/seluser/.cache/Cypress
 
 # Prepare cypress folders
-RUN mkdir -p /home/seluser/cypress
-RUN mkdir -p /home/seluser/cypress/integration/tests
-RUN mkdir -p /home/seluser/cypress/fixtures
-RUN mkdir -p /home/seluser/cypress/plugins
-RUN mkdir -p /home/seluser/cypress/reporters
-RUN mkdir -p /home/seluser/cypress/results
-RUN mkdir -p /home/seluser/cypress/support
-
-ARG SAUCECTL_VERSION=0.9.2
-ENV SAUCECTL_BINARY=saucectl_${SAUCECTL_VERSION}_linux_64-bit.tar.gz
-
-RUN curl -L -o ${SAUCECTL_BINARY} \
-  -H "Accept: application/octet-stream" \
-  https://github.com/saucelabs/saucectl/releases/download/v${SAUCECTL_VERSION}/${SAUCECTL_BINARY} \
-  && tar -xvzf ${SAUCECTL_BINARY} \
-  && mkdir -p /home/seluser/bin/ \
-  && mv ./saucectl /home/seluser/bin/saucectl \
-  && rm ${SAUCECTL_BINARY}
+RUN mkdir -p /home/seluser/cypress \
+ && mkdir -p /home/seluser/cypress/integration/tests \
+ && mkdir -p /home/seluser/cypress/fixtures \
+ && mkdir -p /home/seluser/cypress/plugins \
+ && mkdir -p /home/seluser/cypress/reporters \
+ && mkdir -p /home/seluser/cypress/results \
+ && mkdir -p /home/seluser/cypress/support
 
 # Workaround for permissions in CI if run with a different user
 RUN chmod 777 -R /home/seluser/
