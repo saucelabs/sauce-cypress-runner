@@ -20,5 +20,8 @@
     "saucelabs": "orchestrator-experiment",
     "typescript": "^3.9.7",
     "webdriverio": "6.1.22"
+  },
+  "devDependencies": {
+    "saucectl": "^0.11.1"
   }
 }

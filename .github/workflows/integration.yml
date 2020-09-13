@@ -1,3 +1,4 @@
+# Tests that the docker container builds and runs on Windows and macOS
 name: Integration Tests
 
 on:
@@ -7,18 +8,20 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [12.x, 14.x]
+        os: ["windows-latest", "macos-latest"]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js v${{ matrix.node-version }}
+      - name: Use Node.js 14.x
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 14.x
       - name: Install dependencies
         run: npm ci --production
-      - name: Run integration tests
-        run: bash tests/integration/integration-tests.sh
+      - name: Build Container
+        run: make docker
+      - name: Saucectl Run
+        run: bash ./tests/integration/integration.sh
 
