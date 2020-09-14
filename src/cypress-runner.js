@@ -73,15 +73,9 @@ const cypressRunner = async function () {
     // If a typescript config is found in the project path, then compile with it
     const tsconfigPath = path.join(runCfg.projectPath, 'tsconfig.json');
 
-    const pathsToTypescriptFiles = await glob(path.join(runCfg.projectPath, '**/*.ts'));
-    const hasTypescriptFiles = pathsToTypescriptFiles.length > 0;
-
     if (await fileExists(tsconfigPath)) {
       console.log(`Compiling Typescript files from tsconfig '${tsconfigPath}'`);
       await exec(`npx tsc -p "${tsconfigPath}"`);
-    } else if (hasTypescriptFiles) {
-      console.log(`Compiling typescript files found in '${runCfg.projectPath}'`)
-      await exec(`npx tsc "${pathsToTypescriptFiles}"`);
     }
 
     // Get the cypress.json config file (https://docs.cypress.io/guides/references/configuration.html#Options)
