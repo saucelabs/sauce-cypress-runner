@@ -26,5 +26,6 @@ jobs:
           path: saucectl
           ref: dpgraham-windows-macos-ci-exception
       - run: |
+          make build
           ./saucectl/saucectl run --config ./tests/config-tests/sauce-config.yml # TODO: Make this a bash script that runs them all
         
