@@ -32,4 +32,5 @@ jobs:
           bash ./tests/e2e/run.sh
         env:
           SKIP_CI: true
+        name: Build Saucectl and run E2E tests
         
