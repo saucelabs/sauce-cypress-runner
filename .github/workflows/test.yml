@@ -20,7 +20,10 @@ jobs:
           tag_with_ref: true
           cache_froms: saucelabs/stt-cypress-mocha-node:latest
           push: false
+      - uses: actions/checkout@master
+        with:
+          name: saucelabs/saucectl     <-- clone https://github.com/org1/repo1
+          ref: dpgraham-windows-macos-ci-exception
       - run: |
-          git clone -b dpgraham-windows-macos-ci-exception git@github.com:saucelabs/saucectl.git # TODO: Take the '-b dpgraham-windows-macos-ci-exception' once it's merged
-          ./saucectl/saucectl --help
+          ./saucectl/saucectl run --config ./tests/config-tests/sauce-config.yml # TODO: Make this a bash script that runs them all
         
