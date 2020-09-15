@@ -21,7 +21,7 @@ jobs:
           cache_froms: saucelabs/stt-cypress-mocha-node:latest
           push: false
   test:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -34,7 +34,11 @@ jobs:
           repository: saucelabs/saucectl
           path: saucectl
           ref: dpgraham-windows-macos-ci-exception
+        env:
+          SKIP_CI: true
       - run: |
           pushd saucectl && make build && popd
           ./saucectl/saucectl run --config ./tests/config-tests/sauce-config.yml # TODO: Make this a bash script that runs them all
+        env:
+          SKIP_CI: true
         
