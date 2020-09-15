@@ -29,7 +29,7 @@ jobs:
           SKIP_CI: true
       - run: |
           pushd saucectl && make build && popd
-          ./saucectl/saucectl run --config ./tests/config-tests/sauce-config.yml # TODO: Make this a bash script that runs them all
+          ./saucectl/saucectl run --config ./tests/e2e/typescript-sauce-config.yml # TODO: Make this a bash script that runs them all
         env:
           SKIP_CI: true
         
