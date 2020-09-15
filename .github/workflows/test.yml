@@ -21,6 +21,6 @@ jobs:
           cache_froms: saucelabs/stt-cypress-mocha-node:latest
           push: false
       - run: |
-          git clone -b git@github.com:saucelabs/saucectl.git # TODO: Take the '-b dpgraham-windows-macos-ci-exception' once it's merged
+          git clone -b dpgraham-windows-macos-ci-exception git@github.com:saucelabs/saucectl.git # TODO: Take the '-b dpgraham-windows-macos-ci-exception' once it's merged
           ./saucectl/saucectl --help
         
