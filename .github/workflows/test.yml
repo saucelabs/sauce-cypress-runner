@@ -12,8 +12,7 @@ jobs:
       -
         name: Checkout
         uses: actions/checkout@v2
-      -
-        uses: docker/build-push-action@v1
+      - uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
@@ -21,3 +20,7 @@ jobs:
           tag_with_ref: true
           cache_froms: saucelabs/stt-cypress-mocha-node:latest
           push: false
+      - run: |
+          git clone -b git@github.com:saucelabs/saucectl.git # TODO: Take the '-b dpgraham-windows-macos-ci-exception' once it's merged
+          ./saucectl/saucectl --help
+        
