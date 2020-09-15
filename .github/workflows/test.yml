@@ -20,15 +20,6 @@ jobs:
           tag_with_ref: true
           cache_froms: saucelabs/stt-cypress-mocha-node:latest
           push: false
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - run: docker pull --platform linux node
-        name: Pull Docker linux
-      - run: make docker
-        name: Build Container
       - uses: actions/checkout@v2
         with:
           repository: saucelabs/saucectl
