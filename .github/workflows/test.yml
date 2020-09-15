@@ -20,9 +20,10 @@ jobs:
           tag_with_ref: true
           cache_froms: saucelabs/stt-cypress-mocha-node:latest
           push: false
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
         with:
-          name: saucelabs/saucectl
+          repository: saucelabs/saucectl
+          path: saucectl
           ref: dpgraham-windows-macos-ci-exception
       - run: |
           ./saucectl/saucectl run --config ./tests/config-tests/sauce-config.yml # TODO: Make this a bash script that runs them all
