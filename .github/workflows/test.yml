@@ -24,7 +24,7 @@ jobs:
         with:
           repository: saucelabs/saucectl
           path: saucectl
-          ref: dpgraham-windows-macos-ci-exception
+          ref: dpgraham-windows-macos-ci-exception # TODO: Remove this once branch is committed
         env:
           SKIP_CI: true
       - run: |

@@ -1,2 +1,2 @@
-projectPath: ./tests/typescript-tests/
+projectPath: ./tests/fixtures/typescript-tests/
 match: ["cypress/integration/actions.spec.ts"]
