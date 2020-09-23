@@ -1,3 +1,4 @@
+set -e
 npx tsc -p ./tests/fixtures/typescript/tsconfig.json
 for file in ./tests/e2e/*.yml
 do
