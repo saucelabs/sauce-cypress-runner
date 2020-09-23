@@ -1,3 +1,4 @@
+set -e
 rm -rf ./bundle/
 mkdir ./bundle/
 export CYPRESS_CACHE_FOLDER=$PWD/bundle/Cache/
@@ -12,6 +13,6 @@ cp cypress.json bundle/cypress.json
 cp $(which node) bundle/node
 
 pushd bundle/
-./node.exe ./node_modules/cypress/bin/cypress verify
+./node ./node_modules/cypress/bin/cypress verify
 # TODO: Add "saucectl" tests here
 popd
