@@ -9,7 +9,7 @@
   "bin": "./bin/cypress",
   "scripts": {
     "test": "./bin/cypress",
-    "test-integration": "bash tests/integration/integration-tests.sh" 
+    "test-integration": "bash tests/integration/integration-tests.sh"
   },
   "keywords": [],
   "dependencies": {

@@ -7,10 +7,11 @@ metadata:
     - other tag
   build: Release $CI_COMMIT_SHORT_SHA
 files:
-  - tests/fixtures/env/
+  - ./
 suites:
   - name: "env test"
     match: ".*.(spec|test).js$"
+    project: "tests/fixtures/env"
 image:
   base: saucelabs/stt-cypress-mocha-node
   version: latest
