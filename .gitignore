@@ -112,3 +112,5 @@ dist
 results/
 
 tests/fixtures/typescript/**/*.js
+
+bundle/

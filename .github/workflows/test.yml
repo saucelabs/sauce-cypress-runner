@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  build-and-test:
+  build-docker-and-test:
     runs-on: ubuntu-latest
     steps:
       -
@@ -38,3 +38,15 @@ jobs:
           SKIP_CI: true
           SAUCE_CTL_BINARY: ./saucectl/saucectl
         name: Build Saucectl and run E2E tests
+  build-bundle-and-test:
+    runs-on: windows-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      - 
+        name: Bundle Directory
+        run: bash ./scripts/bundle.sh
+      - 
+        name: List bundle contents
+        run: ls -R bundle/

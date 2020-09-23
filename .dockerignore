@@ -7,3 +7,4 @@ Dockerfile
 .gitignore
 .sauce
 cypress
+scripts
