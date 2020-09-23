@@ -11,7 +11,7 @@ cp package.json bundle/package.json
 cp config.yaml bundle/config.yaml
 cp cypress.json bundle/cypress.json
 echo $(which node)
-cp $(which node) bundle/
+cp $(which node) bundle/*
 
 pushd bundle/
 ./node ./node_modules/cypress/bin/cypress verify
