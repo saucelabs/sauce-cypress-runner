@@ -13,6 +13,6 @@ cp cypress.json bundle/cypress.json
 cp "$(which node)" bundle/
 
 pushd bundle/
-./node.exe ./node_modules/cypress/bin/cypress verify
+./node ./node_modules/cypress/bin/cypress verify
 # TODO: Add "saucectl" tests here
 popd
