@@ -33,11 +33,11 @@ jobs:
         name: Build Saucectl and run E2E tests
 
       # Run e2e tests
-      #- run: bash ./tests/e2e/run.sh
-        #env:
-          #SKIP_CI: true
-          #SAUCE_CTL_BINARY: ./saucectl/saucectl
-        #name: Build Saucectl and run E2E tests
+      - run: bash ./tests/e2e/run.sh
+        env:
+          SKIP_CI: true
+          SAUCE_CTL_BINARY: ./saucectl/saucectl
+        name: Build Saucectl and run E2E tests
   build-ubuntu-bundle-and-test:
     runs-on: ubuntu-latest
     steps:
