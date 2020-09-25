@@ -1,6 +1,5 @@
 set -e
 npx tsc -p ./tests/fixtures/typescript/tsconfig.json
-#for file in ./tests/fixtures/*/.sauce/config.yml
 for folder in ./tests/fixtures/*/
 do
     pushd $folder
