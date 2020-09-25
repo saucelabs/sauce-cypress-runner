@@ -4,10 +4,10 @@
       "baseUrl": "../node_modules",
       "target": "es2020",
       "lib": ["es2020", "dom"],
-      "types": ["mocha", "jest"],
+      "types": ["cypress"],
       "skipLibCheck": true
     },
     "include": [
-      "**/*.ts"
+      "cypress/**/*.ts"
     ]
   }

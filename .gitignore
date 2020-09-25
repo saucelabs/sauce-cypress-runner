@@ -107,7 +107,7 @@ dist
 /cypress/
 
 # saucectl configuration folder
-.sauce
+/.sauce
 
 results/
 

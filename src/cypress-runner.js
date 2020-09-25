@@ -79,7 +79,7 @@ const cypressRunner = async function () {
 
     // Get the cypress env variables from 'cypress.env.json' (if present)
     let env = {};
-    const cypressEnvPath = path.join(runCfg.projectPath, 'cypress.env.json')
+    const cypressEnvPath = path.join(runCfg.projectPath, 'cypress.env.json');
     if (await fileExists(cypressEnvPath)) {
       try {
         env = JSON.parse(await readFile(cypressEnvPath));
