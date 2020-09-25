@@ -108,9 +108,10 @@ const cypressRunner = async function () {
         screenshotsFolder: reportsDir,
         integrationFolder: runCfg.projectPath,
         testFiles: runCfg.match,
-        reporter: "src/custom-reporter.js",
+        reporter: "cypress-multi-reporters",
         reporterOptions: {
-          mochaFile: `${reportsDir}/[suite].xml`
+          mochaFile: `${reportsDir}/[suite].xml`,
+          configFile: 'src/reporter-config.json'
         }
       }
     });
