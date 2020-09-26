@@ -1,0 +1,20 @@
+apiVersion: v1alpha
+metadata:
+  name: Feature XYZ
+  tags:
+    - e2e
+    - release team
+    - other tag
+  build: Release $CI_COMMIT_SHORT_SHA
+files:
+  - cypress
+  - cypress.json
+  - cypress.env.json
+suites:
+  - name: "saucy test"
+    match: ".*.(spec|test).js$"
+image:
+  base: saucelabs/stt-cypress-mocha-node
+  version: latest
+sauce:
+  region: us-west-1

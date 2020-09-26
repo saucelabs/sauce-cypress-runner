@@ -70,14 +70,6 @@ const cypressRunner = async function () {
     const runCfgPath = path.join(config.rootDir, 'run.yaml')
     const runCfg = await loadRunConfig(runCfgPath)
 
-    // If a typescript config is found in the project path, then compile with it
-    const tsconfigPath = path.join(runCfg.projectPath, 'tsconfig.json');
-
-    if (await fileExists(tsconfigPath)) {
-      console.log(`Compiling Typescript files from tsconfig '${tsconfigPath}'`);
-      await exec(`npx tsc -p "${tsconfigPath}"`);
-    }
-
     // Get the cypress.json config file (https://docs.cypress.io/guides/references/configuration.html#Options)
     let configFile = 'cypress.json';
     let cypressJsonPath = path.join(runCfg.projectPath, 'cypress.json');
@@ -87,7 +79,7 @@ const cypressRunner = async function () {
 
     // Get the cypress env variables from 'cypress.env.json' (if present)
     let env = {};
-    const cypressEnvPath = path.join(runCfg.projectPath, 'cypress.env.json')
+    const cypressEnvPath = path.join(runCfg.projectPath, 'cypress.env.json');
     if (await fileExists(cypressEnvPath)) {
       try {
         env = JSON.parse(await readFile(cypressEnvPath));
@@ -95,8 +87,7 @@ const cypressRunner = async function () {
         console.error(`Could not parse contents of '${cypressEnvPath}'. Will use empty object for environment variables.`);
       }
     }
-
-    const results = await cypress.run({
+    const cypressRunConfig = {
       browser: browserName,
       configFile,
       config: {
@@ -114,7 +105,8 @@ const cypressRunner = async function () {
           configFile: 'src/reporter-config.json'
         }
       }
-    });
+    };
+    const results = await cypress.run(cypressRunConfig);
 
     const status = await report(results);
     process.exit(status);
