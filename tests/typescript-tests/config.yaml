@@ -1,5 +1,0 @@
-rootDir: ./tests/typescript-tests
-reportsDir: ./results
-execCommand:
-  - npm
-  - test
