@@ -3,25 +3,25 @@
  * This is an extension of MochaJunitReporter
  */
 
-var xml = require('xml');
-var Base = require('mocha').reporters.Base;
-var fs = require('fs');
-var path = require('path');
-var debug = require('debug')('mocha-junit-reporter');
-var mkdirp = require('mkdirp');
-var md5 = require('md5');
-var stripAnsi = require('strip-ansi');
+let xml = require('xml');
+let Base = require('mocha').reporters.Base;
+let fs = require('fs');
+let path = require('path');
+let debug = require('debug')('mocha-junit-reporter');
+let mkdirp = require('mkdirp');
+let md5 = require('md5');
+let stripAnsi = require('strip-ansi');
 
-var createStatsCollector;
-var mocha6plus;
+let createStatsCollector;
+let mocha6plus;
 
 try {
-  var json = JSON.parse(
-    fs.readFileSync(path.dirname(require.resolve('mocha')) + "/package.json", "utf8")
+  let json = JSON.parse(
+    fs.readFileSync(path.dirname(require.resolve('mocha')) + '/package.json', 'utf8')
   );
-  var version = json.version;
-  if (version >= "6") {
-    createStatsCollector = require("mocha/lib/stats-collector");
+  let version = json.version;
+  if (version >= '6') {
+    createStatsCollector = require('mocha/lib/stats-collector');
     mocha6plus = true;
   } else {
     mocha6plus = false;
@@ -34,9 +34,9 @@ module.exports = MochaJUnitReporter;
 
 // A subset of invalid characters as defined in http://www.w3.org/TR/xml/#charsets that can occur in e.g. stacktraces
 // regex lifted from https://github.com/MylesBorins/xml-sanitizer/ (licensed MIT)
-var INVALID_CHARACTERS_REGEX = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007f-\u0084\u0086-\u009f\uD800-\uDFFF\uFDD0-\uFDFF\uFFFF\uC008]/g; //eslint-disable-line no-control-regex
+let INVALID_CHARACTERS_REGEX = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007f-\u0084\u0086-\u009f\uD800-\uDFFF\uFDD0-\uFDFF\uFFFF\uC008]/g; //eslint-disable-line no-control-regex
 
-function findReporterOptions(options) {
+function findReporterOptions (options) {
   debug('Checking for options in', options);
   if (!options) {
     debug('No options provided');
@@ -52,15 +52,15 @@ function findReporterOptions(options) {
   }
   // this is require to handle .mocharc.js files
   debug('Looking for .mocharc.js options');
-  return Object.keys(options).filter(function(key) { return key.indexOf('reporterOptions.') === 0; })
-    .reduce(function(reporterOptions, key) {
+  return Object.keys(options).filter(function (key) { return key.indexOf('reporterOptions.') === 0; })
+    .reduce(function (reporterOptions, key) {
       reporterOptions[key.substring('reporterOptions.'.length)] = options[key];
       return reporterOptions;
     }, {});
 }
 
-function configureDefaults(options) {
-  var config = findReporterOptions(options);
+function configureDefaults (options) {
+  let config = findReporterOptions(options);
   debug('options', config);
   config.mochaFile = getSetting(config.mochaFile, 'MOCHA_FILE', 'test-results.xml');
   config.attachments = getSetting(config.attachments, 'ATTACHMENTS', false);
@@ -84,7 +84,7 @@ function configureDefaults(options) {
   return config;
 }
 
-function updateOptionsForAntMode(options) {
+function updateOptionsForAntMode (options) {
   options.antHostname = getSetting(options.antHostname, 'ANT_HOSTNAME', process.env.HOSTNAME);
 
   if (!options.properties) {
@@ -92,7 +92,7 @@ function updateOptionsForAntMode(options) {
   }
 }
 
-function updateOptionsForJenkinsMode(options) {
+function updateOptionsForJenkinsMode (options) {
   if (options.useFullSuiteTitle === undefined) {
     options.useFullSuiteTitle = true;
   }
@@ -116,9 +116,9 @@ function updateOptionsForJenkinsMode(options) {
  * @param {Object} defaultVal - the fallback value
  * @param {function} transform - a transformation function to be used when loading values from the environment
  */
-function getSetting(value, key, defaultVal, transform) {
+function getSetting (value, key, defaultVal, transform) {
   if (process.env[key] !== undefined) {
-    var envVal = process.env[key];
+    let envVal = process.env[key];
     return (typeof transform === 'function') ? transform(envVal) : envVal;
   }
   if (value !== undefined) {
@@ -127,16 +127,16 @@ function getSetting(value, key, defaultVal, transform) {
   return defaultVal;
 }
 
-function defaultSuiteTitle(suite) {
+function defaultSuiteTitle (suite) {
   if (suite.root && suite.title === '') {
-      return stripAnsi(this._options.rootSuiteTitle);
+    return stripAnsi(this._options.rootSuiteTitle);
   }
   return stripAnsi(suite.title);
 }
 
-function fullSuiteTitle(suite) {
-  var parent = suite.parent;
-  var title = [ suite.title ];
+function fullSuiteTitle (suite) {
+  let parent = suite.parent;
+  let title = [suite.title];
 
   while (parent) {
     if (parent.root && parent.title === '') {
@@ -150,15 +150,15 @@ function fullSuiteTitle(suite) {
   return stripAnsi(title.join(this._options.suiteTitleSeparatedBy));
 }
 
-function isInvalidSuite(suite) {
+function isInvalidSuite (suite) {
   return (!suite.root && suite.title === '') || (suite.tests.length === 0 && suite.suites.length === 0);
 }
 
-function parsePropertiesFromEnv(envValue) {
+function parsePropertiesFromEnv (envValue) {
   if (envValue) {
     debug('Parsing from env', envValue);
-    return envValue.split(',').reduce(function(properties, prop) {
-      var property = prop.split(':');
+    return envValue.split(',').reduce(function (properties, prop) {
+      let property = prop.split(':');
       properties[property[0]] = property[1];
       return properties;
     }, []);
@@ -167,22 +167,22 @@ function parsePropertiesFromEnv(envValue) {
   return null;
 }
 
-function generateProperties(options) {
-  var props = options.properties;
+function generateProperties (options) {
+  let props = options.properties;
   if (!props) {
     return [];
   }
-  return Object.keys(props).reduce(function(properties, name) {
-    var value = props[name];
-    properties.push({ property: { _attr: { name: name, value: value } } });
+  return Object.keys(props).reduce(function (properties, name) {
+    let value = props[name];
+    properties.push({ property: { _attr: { name, value } } });
     return properties;
   }, []);
 }
 
 function getJenkinsClassname (test, options) {
   debug('Building jenkins classname for', test);
-  var parent = test.parent;
-  var titles = [];
+  let parent = test.parent;
+  let titles = [];
   while (parent) {
     parent.title && titles.unshift(parent.title);
     parent = parent.parent;
@@ -196,7 +196,7 @@ function getJenkinsClassname (test, options) {
  * @param {EventEmitter} runner - the test runner
  * @param {Object} options - mocha options
  */
-function MochaJUnitReporter(runner, options) {
+function MochaJUnitReporter (runner, options) {
   if (mocha6plus) {
     createStatsCollector(runner);
   }
@@ -204,12 +204,12 @@ function MochaJUnitReporter(runner, options) {
   this._runner = runner;
   this._generateSuiteTitle = this._options.useFullSuiteTitle ? fullSuiteTitle : defaultSuiteTitle;
   this._antId = 0;
-  var testsuites = [];
+  let testsuites = [];
   this._testsuites = testsuites;
-  var sauceJson = [];
+  let sauceJson = [];
   this._sauceJson = sauceJson;
 
-  function lastSuite() {
+  function lastSuite () {
     return testsuites[testsuites.length - 1].testsuite;
   }
 
@@ -217,35 +217,35 @@ function MochaJUnitReporter(runner, options) {
   Base.call(this, runner);
 
   // remove old results
-  this._runner.on('start', function(d) {
+  this._runner.on('start', function (/*d*/) {
     if (fs.existsSync(this._options.mochaFile)) {
       debug('removing report file', this._options.mochaFile);
       fs.unlinkSync(this._options.mochaFile);
     }
   }.bind(this));
 
-  this._runner.on('suite', function(suite) {
+  this._runner.on('suite', function (suite) {
     if (!isInvalidSuite(suite)) {
-      if(suite.tests.length > 0) {
+      if (suite.tests.length > 0) {
         sauceJson.push(this.getSauceTestsuiteData(suite));
       }
       testsuites.push(this.getTestsuiteData(suite));
     }
   }.bind(this));
 
-  this._runner.on('pass', function(test) {
+  this._runner.on('pass', function (test) {
     sauceJson.push(this.getSauceTestcaseData(test));
     lastSuite().push(this.getTestcaseData(test));
   }.bind(this));
 
-  this._runner.on('fail', function(test, err) {
+  this._runner.on('fail', function (test, err) {
     sauceJson.push(this.getSauceTestcaseData(test));
     lastSuite().push(this.getTestcaseData(test, err));
   }.bind(this));
 
   if (this._options.includePending) {
-    this._runner.on('pending', function(test) {
-      var testcase = this.getTestcaseData(test);
+    this._runner.on('pending', function (test) {
+      let testcase = this.getTestcaseData(test);
 
       testcase.testcase.push({ skipped: null });
       lastSuite().push(testcase);
@@ -253,29 +253,29 @@ function MochaJUnitReporter(runner, options) {
   }
 
   let self = this;
-  this._runner.on('end', function (){
+  this._runner.on('end', function () {
     self.report(testsuites, sauceJson);
   });
 
 }
 
-MochaJUnitReporter.prototype.report = function(testsuites, sauceJson) {
-  const specFile = path.basename(this._runner.suite.file)
+MochaJUnitReporter.prototype.report = function (testsuites, sauceJson) {
+  const specFile = path.basename(this._runner.suite.file);
   this.flush(testsuites, specFile, sauceJson);
-}
+};
 
 MochaJUnitReporter.prototype.getSauceTestsuiteData = function (suite) {
-  var _attr =  {
+  let _attr = {
     name: this._generateSuiteTitle(suite),
-    timestamp: new Date().toISOString().slice(0,-5),
+    timestamp: new Date().toISOString().slice(0, -5),
     tests: suite.tests.length
   };
   return {
-    status: "info", 
+    status: 'info',
     message: _attr.name,
     screenshot: null
-  }
-}
+  };
+};
 
 MochaJUnitReporter.prototype.getSauceTestcaseData = function (testcase) {
   // console.log(testcase);
@@ -298,32 +298,32 @@ MochaJUnitReporter.prototype.getSauceTestcaseData = function (testcase) {
       body: testcase.body
     },
     in_video_timeline: 0
-  }
-}
+  };
+};
 /**
  * Produces an xml node for a test suite
  * @param  {Object} suite - a test suite
  * @return {Object}       - an object representing the xml node
  */
-MochaJUnitReporter.prototype.getTestsuiteData = function(suite) {
-  var antMode = this._options.antMode;
+MochaJUnitReporter.prototype.getTestsuiteData = function (suite) {
+  let antMode = this._options.antMode;
 
-  var _attr =  {
+  let _attr = {
     name: this._generateSuiteTitle(suite),
-    timestamp: new Date().toISOString().slice(0,-5),
+    timestamp: new Date().toISOString().slice(0, -5),
     tests: suite.tests.length
   };
-  var testSuite = { testsuite: [ { _attr: _attr } ] };
+  let testSuite = { testsuite: [{ _attr }] };
 
 
-  if(suite.file) {
-    testSuite.testsuite[0]._attr.file =  suite.file;
+  if (suite.file) {
+    testSuite.testsuite[0]._attr.file = suite.file;
   }
 
-  var properties = generateProperties(this._options);
+  let properties = generateProperties(this._options);
   if (properties.length || antMode) {
     testSuite.testsuite.push({
-      properties: properties
+      properties
     });
   }
 
@@ -344,12 +344,12 @@ MochaJUnitReporter.prototype.getTestsuiteData = function(suite) {
  * @param {object} err - if test failed, the failure object
  * @returns {object}
  */
-MochaJUnitReporter.prototype.getTestcaseData = function(test, err) {
-  var jenkinsMode = this._options.jenkinsMode;
-  var flipClassAndName = this._options.testCaseSwitchClassnameAndName;
-  var name = stripAnsi(jenkinsMode ? getJenkinsClassname(test, this._options) : test.fullTitle());
-  var classname = stripAnsi(test.title);
-  var testcase = {
+MochaJUnitReporter.prototype.getTestcaseData = function (test, err) {
+  let jenkinsMode = this._options.jenkinsMode;
+  let flipClassAndName = this._options.testCaseSwitchClassnameAndName;
+  let name = stripAnsi(jenkinsMode ? getJenkinsClassname(test, this._options) : test.fullTitle());
+  let classname = stripAnsi(test.title);
+  let testcase = {
     testcase: [{
       _attr: {
         name: flipClassAndName ? classname : name,
@@ -361,7 +361,7 @@ MochaJUnitReporter.prototype.getTestcaseData = function(test, err) {
 
   // We need to merge console.logs and attachments into one <system-out> -
   //  see JUnit schema (only accepts 1 <system-out> per test).
-  var systemOutLines = [];
+  let systemOutLines = [];
   if (this._options.outputs && (test.consoleOutputs && test.consoleOutputs.length > 0)) {
     systemOutLines = systemOutLines.concat(test.consoleOutputs);
   }
@@ -381,7 +381,7 @@ MochaJUnitReporter.prototype.getTestcaseData = function(test, err) {
   }
 
   if (err) {
-    var message;
+    let message;
     if (err.message && typeof err.message.toString === 'function') {
       message = err.message + '';
     } else if (typeof err.inspect === 'function') {
@@ -389,8 +389,8 @@ MochaJUnitReporter.prototype.getTestcaseData = function(test, err) {
     } else {
       message = '';
     }
-    var failureMessage = err.stack || message;
-    var failureElement = {
+    let failureMessage = err.stack || message;
+    let failureElement = {
       _attr: {
         message: this.removeInvalidCharacters(message) || '',
         type: err.name || ''
@@ -407,7 +407,7 @@ MochaJUnitReporter.prototype.getTestcaseData = function(test, err) {
  * @param {string} input
  * @returns {string} without invalid characters
  */
-MochaJUnitReporter.prototype.removeInvalidCharacters = function(input){
+MochaJUnitReporter.prototype.removeInvalidCharacters = function (input) {
   if (!input) {
     return input;
   }
@@ -418,7 +418,7 @@ MochaJUnitReporter.prototype.removeInvalidCharacters = function(input){
  * Writes xml to disk and ouputs content if "toConsole" is set to true.
  * @param {Array.<Object>} testsuites - a list of xml configs
  */
-MochaJUnitReporter.prototype.flush = function(testsuites, specFile, sauceJson){
+MochaJUnitReporter.prototype.flush = function (testsuites, specFile, sauceJson) {
   this._xml = this.getXml(testsuites);
 
   this.writeXmlToDisk(this._xml, this._options.mochaFile, specFile);
@@ -435,28 +435,28 @@ MochaJUnitReporter.prototype.flush = function(testsuites, specFile, sauceJson){
  * @param {Array.<Object>} testsuites - a list of xml configs
  * @returns {string}
  */
-MochaJUnitReporter.prototype.getXml = function(testsuites) {
-  var totalSuitesTime = 0;
-  var totalTests = 0;
-  var stats = this._runner.stats;
-  var antMode = this._options.antMode;
-  var hasProperties = (!!this._options.properties) || antMode;
+MochaJUnitReporter.prototype.getXml = function (testsuites) {
+  let totalSuitesTime = 0;
+  let totalTests = 0;
+  let stats = this._runner.stats;
+  let antMode = this._options.antMode;
+  let hasProperties = (!!this._options.properties) || antMode;
 
-  testsuites.forEach(function(suite) {
-    var _suiteAttr = suite.testsuite[0]._attr;
+  testsuites.forEach(function (suite) {
+    let _suiteAttr = suite.testsuite[0]._attr;
     // testsuite is an array: [attrs, properties?, testcase, testcase, …]
     // we want to make sure that we are grabbing test cases at the correct index
-    var _casesIndex = hasProperties ? 2 : 1;
-    var _cases = suite.testsuite.slice(_casesIndex);
-    var missingProps;
+    let _casesIndex = hasProperties ? 2 : 1;
+    let _cases = suite.testsuite.slice(_casesIndex);
+    let missingProps;
 
     _suiteAttr.time = 0;
     _suiteAttr.failures = 0;
     _suiteAttr.skipped = 0;
 
-    var suiteTime = 0;
-    _cases.forEach(function(testcase) {
-      var lastNode = testcase.testcase[testcase.testcase.length - 1];
+    let suiteTime = 0;
+    _cases.forEach(function (testcase) {
+      let lastNode = testcase.testcase[testcase.testcase.length - 1];
 
       _suiteAttr.skipped += Number('skipped' in lastNode);
       _suiteAttr.failures += Number('failure' in lastNode);
@@ -467,13 +467,13 @@ MochaJUnitReporter.prototype.getXml = function(testsuites) {
 
     if (antMode) {
       missingProps = ['system-out', 'system-err'];
-      suite.testsuite.forEach(function(item) {
-        missingProps = missingProps.filter(function(prop) {
+      suite.testsuite.forEach(function (item) {
+        missingProps = missingProps.filter(function (prop) {
           return !item[prop];
         });
       });
-      missingProps.forEach(function(prop) {
-        var obj = {};
+      missingProps.forEach(function (prop) {
+        let obj = {};
         obj[prop] = [];
         suite.testsuite.push(obj);
       });
@@ -489,7 +489,7 @@ MochaJUnitReporter.prototype.getXml = function(testsuites) {
 
 
   if (!antMode) {
-    var rootSuite = {
+    let rootSuite = {
       _attr: {
         name: this._options.testsuitesTitle,
         time: totalSuitesTime.toFixed(4),
@@ -500,10 +500,10 @@ MochaJUnitReporter.prototype.getXml = function(testsuites) {
     if (stats.pending) {
       rootSuite._attr.skipped = stats.pending;
     }
-    testsuites = [ rootSuite ].concat(testsuites);
+    testsuites = [rootSuite].concat(testsuites);
   }
 
-  return xml({ testsuites: testsuites }, { declaration: true, indent: '  ' });
+  return xml({ testsuites }, { declaration: true, indent: '  ' });
 };
 
 /**
@@ -511,45 +511,45 @@ MochaJUnitReporter.prototype.getXml = function(testsuites) {
  * @param {string} sauceJson - json object
  * @param {string} filePath - path to output file
  */
-MochaJUnitReporter.prototype.writeSauceJsonToDisk = function(sauceJson, filePath, fileName) {
+MochaJUnitReporter.prototype.writeSauceJsonToDisk = function (sauceJson, filePath, fileName) {
   if (filePath) {
     filePath = filePath.replace(/\.xml/, '.json');
-    if(filePath.indexOf('[suite]' !== -1)) {
-      filePath = filePath.replace('[suite]', fileName)
+    if (filePath.indexOf('[suite]' !== -1)) {
+      filePath = filePath.replace('[suite]', fileName);
     }
     debug('writing file to', filePath);
-      mkdirp.sync(path.dirname(filePath));
-      try {
-          fs.writeFileSync(filePath, JSON.stringify(sauceJson, ' ', 2), 'utf-8');
-      } catch (exc) {
-        console.error(exc);
-          debug('problem writing results: ' + exc);
-      }
-      debug('results written successfully');
+    mkdirp.sync(path.dirname(filePath));
+    try {
+      fs.writeFileSync(filePath, JSON.stringify(sauceJson, ' ', 2), 'utf-8');
+    } catch (exc) {
+      console.error(exc);
+      debug('problem writing results: ' + exc);
     }
+    debug('results written successfully');
+  }
   return filePath;
-}
+};
 
 /**
  * Writes a JUnit test report XML document.
  * @param {string} xml - xml string
  * @param {string} filePath - path to output file
  */
-MochaJUnitReporter.prototype.writeXmlToDisk = function(xml, filePath, fileName){
+MochaJUnitReporter.prototype.writeXmlToDisk = function (xml, filePath, fileName) {
   if (filePath) {
     if (filePath.indexOf('[hash]') !== -1) {
       filePath = filePath.replace('[hash]', md5(xml));
-    } else if(filePath.indexOf('[suite]' !== -1)) {
-      filePath = filePath.replace('[suite]', fileName)
+    } else if (filePath.indexOf('[suite]' !== -1)) {
+      filePath = filePath.replace('[suite]', fileName);
     }
 
     debug('writing file to', filePath);
     mkdirp.sync(path.dirname(filePath));
 
     try {
-        fs.writeFileSync(filePath, xml, 'utf-8');
+      fs.writeFileSync(filePath, xml, 'utf-8');
     } catch (exc) {
-        debug('problem writing results: ' + exc);
+      debug('problem writing results: ' + exc);
     }
     debug('results written successfully');
   }

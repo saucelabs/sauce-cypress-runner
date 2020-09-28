@@ -111,6 +111,6 @@ dist
 
 results/
 
-tests/fixtures/typescript/**/*.js
+tests/fixtures/cypress-tests/typescript-*/**/*.js
 
 bundle/

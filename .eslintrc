@@ -1,0 +1,10 @@
+{
+    "extends": [
+        "eslint-config-appium",
+        "plugin:cypress/recommended"
+    ],
+    "rules": {
+        "no-console": "off",
+        "promise/no-native": "off"
+    }
+}
