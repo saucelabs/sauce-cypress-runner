@@ -60,7 +60,6 @@ jobs:
           inlineScript: |
             Compress-Archive bundle/ sauce-cypress-win.zip
           azPSVersion: '3.1.0'
-      - run: npm install bluebird
       - name: Install GitHub Releases
         run: go get -u github.com/github-release/github-release
       - name: Upload to GitHub Releases
