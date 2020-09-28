@@ -4,13 +4,11 @@ const fs = require('fs');
 const { promisify } = require('util');
 const yaml = require('js-yaml');
 const cypress = require('cypress');
-let { exec } = require('child_process');
 const { getAbsolutePath } = require('./utils');
 
 // Promisify the callback functions
 const fileExists = promisify(fs.exists);
 const readFile = promisify(fs.readFile);
-exec = promisify(exec);
 
 // the default test matching behavior for versions <= v0.1.8
 const DefaultRunCfg = {
@@ -97,7 +95,7 @@ const cypressRunner = async function () {
         screenshotsFolder: reportsDir,
         integrationFolder: runCfg.projectPath,
         testFiles: runCfg.match,
-        reporter: "cypress-multi-reporters",
+        reporter: 'cypress-multi-reporters',
         reporterOptions: {
           mochaFile: `${reportsDir}/[suite].xml`,
           configFile: 'src/reporter-config.json'
