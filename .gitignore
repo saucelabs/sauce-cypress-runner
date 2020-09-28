@@ -114,3 +114,4 @@ results/
 tests/fixtures/cypress-tests/typescript-*/**/*.js
 
 bundle/
+bundle.zip
