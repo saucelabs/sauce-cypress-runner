@@ -1,4 +1,4 @@
-name: Build and Test
+name: Docker Build
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  build-docker-and-test:
+  build:
     runs-on: ubuntu-latest
     steps:
       -

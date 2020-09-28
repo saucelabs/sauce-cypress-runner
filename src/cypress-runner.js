@@ -4,11 +4,13 @@ const fs = require('fs');
 const { promisify } = require('util');
 const yaml = require('js-yaml');
 const cypress = require('cypress');
+let { exec } = require('child_process');
 const { getAbsolutePath } = require('./utils');
 
 // Promisify the callback functions
 const fileExists = promisify(fs.exists);
 const readFile = promisify(fs.readFile);
+exec = promisify(exec);
 
 // the default test matching behavior for versions <= v0.1.8
 const DefaultRunCfg = {
@@ -66,6 +68,14 @@ const cypressRunner = async function () {
     const runCfgPath = path.join(config.rootDir, 'run.yaml');
     const runCfg = await loadRunConfig(runCfgPath);
 
+    // If a typescript config is found in the project path, then compile with it
+    const tsconfigPath = path.join(runCfg.projectPath, 'tsconfig.json');
+
+    if (await fileExists(tsconfigPath)) {
+      console.log(`Compiling Typescript files from tsconfig '${tsconfigPath}'`);
+      await exec(`npx tsc -p "${tsconfigPath}"`);
+    }
+
     // Get the cypress.json config file (https://docs.cypress.io/guides/references/configuration.html#Options)
     let configFile = 'cypress.json';
     let cypressJsonPath = path.join(runCfg.projectPath, 'cypress.json');
@@ -83,7 +93,8 @@ const cypressRunner = async function () {
         console.error(`Could not parse contents of '${cypressEnvPath}'. Will use empty object for environment variables.`);
       }
     }
-    const cypressRunConfig = {
+
+    const results = await cypress.run({
       browser: browserName,
       configFile,
       config: {
@@ -101,8 +112,7 @@ const cypressRunner = async function () {
           configFile: 'src/reporter-config.json'
         }
       }
-    };
-    const results = await cypress.run(cypressRunConfig);
+    });
 
     const status = await report(results);
     process.exit(status);
