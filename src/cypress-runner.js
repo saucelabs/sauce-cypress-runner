@@ -1,10 +1,9 @@
-const { sauceReporter }   = require('./sauce-reporter');
+const { sauceReporter } = require('./sauce-reporter');
 const path = require('path');
 const fs = require('fs');
 const { promisify } = require('util');
 const yaml = require('js-yaml');
 const cypress = require('cypress');
-let glob = require('glob');
 let { exec } = require('child_process');
 const { getAbsolutePath } = require('./utils');
 
@@ -12,7 +11,6 @@ const { getAbsolutePath } = require('./utils');
 const fileExists = promisify(fs.exists);
 const readFile = promisify(fs.readFile);
 exec = promisify(exec);
-glob = promisify(glob);
 
 // the default test matching behavior for versions <= v0.1.8
 const DefaultRunCfg = {
@@ -20,14 +18,14 @@ const DefaultRunCfg = {
   match: [
     `**/?(*.)+(spec|test).[jt]s?(x)`
   ]
-}
+};
 
 const DEFAULT_BROWSER = 'chrome';
 const buildName = process.env.SAUCE_BUILD_NAME || `stt-cypress-build-${(new Date()).getTime()}`;
 const supportedBrowsers = {
   'chrome': 'chrome',
   'firefox': 'firefox'
-}
+};
 let browserName = process.env.BROWSER_NAME || DEFAULT_BROWSER;
 browserName = supportedBrowsers[browserName.toLowerCase()];
 if (!browserName) {
@@ -35,14 +33,14 @@ if (!browserName) {
   process.exit(1);
 }
 
-async function loadRunConfig(cfgPath) {
+async function loadRunConfig (cfgPath) {
   if (await fileExists(cfgPath)) {
     return yaml.safeLoad(await readFile(cfgPath, 'utf8'));
   }
-  console.log(`Run config (${cfgPath}) unavailable. Loading defaults.`)
+  console.log(`Run config (${cfgPath}) unavailable. Loading defaults.`);
 
   // the default test matching behavior for versions <= v0.1.8
-  return DefaultRunCfg
+  return DefaultRunCfg;
 }
 
 const report = async (results) => {
@@ -52,11 +50,11 @@ const report = async (results) => {
     return status;
   }
   const runs = results.runs || [];
-  for(let spec of runs) {
+  for (let spec of runs) {
     await sauceReporter(buildName, browserName, spec);
-  };
+  }
   return status;
-}
+};
 
 const cypressRunner = async function () {
   try {
@@ -67,8 +65,8 @@ const cypressRunner = async function () {
     // If relative paths were provided in YAML, convert them to absolute
     const reportsDir = getAbsolutePath(config.reportsDir);
 
-    const runCfgPath = path.join(config.rootDir, 'run.yaml')
-    const runCfg = await loadRunConfig(runCfgPath)
+    const runCfgPath = path.join(config.rootDir, 'run.yaml');
+    const runCfg = await loadRunConfig(runCfgPath);
 
     // Get the cypress.json config file (https://docs.cypress.io/guides/references/configuration.html#Options)
     let configFile = 'cypress.json';
@@ -110,15 +108,15 @@ const cypressRunner = async function () {
 
     const status = await report(results);
     process.exit(status);
-  }catch (err) {
+  } catch (err) {
     console.log(err);
     process.exit(1);
   }
-}
+};
 
 // For dev and test purposes, this allows us to run our Cypress Runner from command line
 if (require.main === module) {
   cypressRunner();
 }
 
-exports.cypressRunner = cypressRunner
+exports.cypressRunner = cypressRunner;
