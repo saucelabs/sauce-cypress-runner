@@ -107,10 +107,10 @@ dist
 /cypress/
 
 # saucectl configuration folder
-/.sauce
+.sauce
 
 results/
 
-tests/fixtures/typescript/**/*.js
+tests/fixtures/cypress-tests/typescript-*/**/*.js
 
 bundle/

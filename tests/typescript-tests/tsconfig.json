@@ -2,12 +2,12 @@
     "compilerOptions": {
       "strict": true,
       "baseUrl": "../node_modules",
-      "target": "es2020",
-      "lib": ["es2020", "dom"],
+      "target": "es6",
+      "lib": ["es6", "dom"],
       "types": ["cypress"],
       "skipLibCheck": true
     },
     "include": [
-      "cypress/**/*.ts"
+      "**/*.ts"
     ]
   }
