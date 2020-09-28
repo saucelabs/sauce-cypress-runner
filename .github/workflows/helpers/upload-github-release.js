@@ -14,7 +14,10 @@ async function uploadGithubRelease (tag, file) {
 
 if (require.main === module) {
   let [,, tag, file] = process.argv;
-  tag = tag || 'v0.1.9'; // Hardcoding for testing purposes
+  if (!file) {
+      file = tag;
+      tag = 'v0.1.9'; // If no tag provided, hardcode v0.1.9 (for testing purposes only)
+  }
   uploadGithubRelease(tag, file)
     .then(() => process.exit(0))
     .catch(() => process.exit(1));
