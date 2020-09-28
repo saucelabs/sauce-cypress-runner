@@ -1,12 +1,17 @@
+
+
 name: Docker Release
 
 on:
   push:
     tags:
       - 'v*.*.*'
-
+  # TODO: Delete this after PR is done
+  pull_request:
+    branches:
+      - master
 jobs:  
-  release:
+  release-docker:
     runs-on: ubuntu-latest
     steps:
       -
@@ -19,7 +24,7 @@ jobs:
         name: Prepare
         id: prep
         run: |
-          VERSION=${GITHUB_REF#refs/tags/}
+          VERSION=${GITHUB_REFrefs/tags/}
           echo ::set-output name=version::${VERSION}
       -
         name: Login to DockerHub
@@ -37,3 +42,31 @@ jobs:
           tags: |
             saucelabs/stt-cypress-mocha-node:latest
             saucelabs/stt-cypress-mocha-node:${{ steps.prep.outputs.version }}
+  bundle-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Bundle Directory
+        run: bash ./scripts/bundle.sh
+      - name: List bundle contents
+        run: ls -R bundle/
+      - name: Set output
+        id: vars
+        run: echo ::set-output name=tag::${GITHUB_REFrefs/*/}
+      - name: Archive bundle
+        uses: azure/powershell@v1
+        with:
+          inlineScript: |
+            Compress-Archive bundle/ cypress-win-${{ steps.vars.outputs.tag }}.zip
+          azPSVersion: '3.1.0'
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: https://uploads.github.com/repos/saucelabs/sauce-cypress-runner/releases/1/assets?name=cypress-win-${{ steps.vars.outputs.tag }}.zip
+          asset_path: ./cypress-win-${{ steps.vars.outputs.tag }}.zip
+          asset_name: cypress-win-${{ steps.vars.outputs.tag }}.zip
+          asset_content_type: application/zip
