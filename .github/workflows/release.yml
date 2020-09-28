@@ -58,9 +58,9 @@ jobs:
         uses: azure/powershell@v1
         with:
           inlineScript: |
-            Compress-Archive bundle/ cypress-win.zip
+            Compress-Archive bundle/ sauce-cypress-win.zip
           azPSVersion: '3.1.0'
       - name: Install GitHub Releases
         run: go get -u github.com/github-release/github-release
       - name: Upload to GitHub Releases
-        run: $GOPATH\\bin\\github-release upload --user saucelabs --repo sauce-cypress-runner --tag ${{ steps.vars.outputs.tag }} --name cypress-win.zip --file cypress-win.zip
+        run: node ./.github/workflows/helpers/upload-github-release.js  ${{ steps.vars.outputs.tag }} sauce-cypress-win.zip
