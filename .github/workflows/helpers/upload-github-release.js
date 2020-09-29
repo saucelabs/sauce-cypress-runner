@@ -13,6 +13,7 @@ async function uploadGithubRelease (tag, file) {
 };
 
 if (require.main === module) {
+  console.log(`Go path is ${process.env.GOPATH}`);
   let tag = process.env.GH_TAG || 'v0.1.9';
   let file = process.env.GH_FILE;
   uploadGithubRelease(tag, file)
