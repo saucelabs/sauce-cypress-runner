@@ -24,7 +24,7 @@ jobs:
         name: Prepare
         id: prep
         run: |
-          VERSION=${GITHUB_REFrefs/tags/}
+          VERSION=${GITHUB_REF#refs/tags/}
           echo ::set-output name=version::${VERSION}
       -
         name: Login to DockerHub
@@ -51,17 +51,19 @@ jobs:
         run: bash ./scripts/bundle.sh
       - name: List bundle contents
         run: ls -R bundle/
-      - name: Set output
-        id: vars
-        run: echo ::set-output name=tag::${GITHUB_REFrefs/*/}
+      - name: Prepare
+        id: prep
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo ::set-output name=version::${VERSION}
       - name: Archive bundle
         uses: azure/powershell@v1
         with:
           inlineScript: |
             Compress-Archive bundle/ sauce-cypress-win.zip
           azPSVersion: '3.1.0'
-      - run: npm install 
+      - run: npm install bluebird
       - name: Install GitHub Releases
         run: go get -u github.com/github-release/github-release
       - name: Upload to GitHub Releases
-        run: node ./.github/workflows/helpers/upload-github-release.js  ${{ steps.vars.outputs.tag }} sauce-cypress-win.zip
+        run: node.exe ./.github/workflows/helpers/upload-github-release.js  ${{ steps.prep.outputs.version }} sauce-cypress-win.zip
