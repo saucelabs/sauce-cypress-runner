@@ -42,7 +42,7 @@ jobs:
           tags: |
             saucelabs/stt-cypress-mocha-node:latest
             saucelabs/stt-cypress-mocha-node:${{ steps.prep.outputs.version }}
-  bundle-windows:
+  release-windows-bundle:
     runs-on: windows-latest
     steps:
       - name: Checkout

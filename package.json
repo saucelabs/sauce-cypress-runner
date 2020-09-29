@@ -6,7 +6,6 @@
   "license": "MIT",
   "private": true,
   "main": "./src/cypress-runner.js",
-  "bin": "./bin/cypress",
   "scripts": {
     "test": "echo 'testing'",
     "test-integration": "bash tests/integration/integration-tests.sh",
