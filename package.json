@@ -5,15 +5,17 @@
   "author": "devx <dev@saucelabs.com>",
   "license": "MIT",
   "private": true,
+  "bin": "./bin/cypress",
   "main": "./src/cypress-runner.js",
   "scripts": {
-    "test": "echo 'testing'",
+    "test": "./bin/cypress",
     "test-integration": "bash tests/integration/integration-tests.sh",
     "lint": "eslint tests/ src/",
     "unit-test": "jest --env node"
   },
   "keywords": [],
   "dependencies": {
+    "cypress": "^4.9.0",
     "cypress-multi-reporters": "^1.4.0",
     "glob": "^7.1.6",
     "js-yaml": "3.14.0",
