@@ -33,6 +33,7 @@ jobs:
         name: Build Saucectl and run E2E tests
 
       # Run e2e tests
+      # TODO: Re-enable these when 
       #- run: bash ./tests/e2e/run.sh
         #env:
           #SKIP_CI: true

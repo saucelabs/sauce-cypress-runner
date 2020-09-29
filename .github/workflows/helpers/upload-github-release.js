@@ -1,29 +1,23 @@
 let { exec } = require('child_process');
 const path = require('path');
+let { get, request } = require('https');
 const { promisify } = require('bluebird');
+const axios = require('axios');
 
-exec = promisify(exec);
+const u = process.env.GITHUB_USERNAME;
+const t = process.env.GITHUB_TOKEN;
+const auth = `${u}:${t}`;
 
 async function uploadGithubRelease (tag, file) {
-    const githubRelease = path.join(process.env.GOPATH, 'bin', 'github-release');
-    console.log(`Uploading to GitHub releases: tag=${tag} file=${file}`);
-    try {
-        await exec(`${githubRelease} upload --user saucelabs --repo sauce-cypress-runner ` +
-            `--tag ${tag} --name ${file} --file ${file}`);
-    } catch (e) {
-        console.error(`An error was thrown: ${e}`);
-        throw e;
-    }
-    console.log('Done releasing to GitHub');
+    const url = `https://${auth}@api.github.com/repos/saucelabs/sauce-cypress-runner/releases/tags/${tag}`;
+    const res = await axios.get(url);
+    console.log(res.data.id);
 };
 
 if (require.main === module) {
-  console.log(`Go path is '${process.env.GOPATH}'`);
   let tag = process.env.GH_TAG || 'v0.1.9';
-  console.log(`Making release for tag: ${tag}`);
   let file = process.env.GH_FILE;
-  console.log(`Releasing file: ${file}`);
-  uploadGithubRelease(tag, file)
-    .then(() => process.exit(0))
-    .catch(() => process.exit(1));
+  uploadGithubRelease(tag, file);
+    /*.then(() => process.exit(0))
+    .catch(() => process.exit(1));*/
 }

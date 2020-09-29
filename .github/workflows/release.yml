@@ -47,8 +47,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Print Go Path
-        run: go env GOPATH
+      - name: Get release ID
+        run: node ./.github/workflows/helpers/upload-github-release.js
+      - name: Get release ID
+        id: release_id
+        run: echo ::set-output name=releaseId::$(node ./.github/workflows/helpers/upload-github-release.js)
+      - name: Echo release id
+        run: echo ${{ steps.release_id.outputs.releaseId }}
       - name: Use Node.js v14.x
         uses: actions/setup-node@v1
         with:
@@ -57,9 +62,6 @@ jobs:
         run: bash ./scripts/bundle.sh
       - name: List bundle contents
         run: ls -R bundle/
-      - name: Set output
-        id: vars
-        run: echo ::set-output name=tag::${GITHUB_REFrefs/*/}
       - name: Archive bundle
         uses: azure/powershell@v1
         with:
@@ -71,10 +73,14 @@ jobs:
       - run: npm install bluebird
       - name: Install GitHub Releases
         run: go get -u github.com/github-release/github-release
-      - name: Upload to GitHub Releases
-        #run: npm run upload-github-release
-        run: node .github/workflows/helpers/upload-github-release.js
+      
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
         env:
-          GH_TAG: ${{ steps.prep.outputs.version }}
-          GH_FILE: sauce-cypress-win.zip
-          GOPATH: C:\Users\runneradmin\go
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./my-artifact.zip
+          asset_name: my-artifact.zip
+          asset_content_type: application/zip
