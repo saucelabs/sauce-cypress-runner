@@ -51,7 +51,7 @@ jobs:
       - name: Get release ID
         id: get_release_id
         run: |
-          echo "::set-output name=release_id::$(node ./.github/workflows/helpers/get-release-id.js)"
+          echo "::set-output name=release_id::$(node ./.github/workflows/helpers/print-release-id.js)"
         env:
           GH_REF: ${{ github.ref }}
       - name: Print release id
