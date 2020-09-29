@@ -69,9 +69,6 @@ jobs:
       - name: List files
         run: ls .
       - run: npm install bluebird
-      - uses: actions/setup-go@v2
-        with:
-          go-version: '^1.13.1' # The Go version to download (if necessary) and use.
       - name: Install GitHub Releases
         run: go get -u github.com/github-release/github-release
       - name: Upload to GitHub Releases

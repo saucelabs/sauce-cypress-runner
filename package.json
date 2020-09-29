@@ -10,8 +10,7 @@
     "test": "echo 'testing'",
     "test-integration": "bash tests/integration/integration-tests.sh",
     "lint": "eslint tests/ src/",
-    "unit-test": "jest --env node",
-    "upload-github-release": "node ./.github/workflows/helpers/upload-github-release.js"
+    "unit-test": "jest --env node"
   },
   "keywords": [],
   "dependencies": {
