@@ -6,10 +6,6 @@ on:
   push:
     tags:
       - 'v*.*.*'
-  # TODO: Delete this after PR is done
-  pull_request:
-    branches:
-      - master
 jobs:  
   release-docker:
     runs-on: ubuntu-latest
