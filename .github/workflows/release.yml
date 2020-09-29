@@ -64,4 +64,4 @@ jobs:
       - name: Install GitHub Releases
         run: go get -u github.com/github-release/github-release
       - name: Upload to GitHub Releases
-        run: npm run upload-github-release  ${{ steps.prep.outputs.version }} sauce-cypress-win.zip
+        run: npm run upload-github-release ${{ steps.prep.outputs.version }} "sauce-cypress-win.zip"
