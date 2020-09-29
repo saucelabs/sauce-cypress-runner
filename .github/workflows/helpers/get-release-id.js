@@ -20,7 +20,7 @@ if (require.main === module) {
   if (type != 'tag') {
     value = 'v0.1.9'; // <-- for testing purposes
   }
-  console.log(`Getting release id for tag '${tag}'`);
+  console.log(`Getting release id for tag '${value}'`);
   getReleaseId(value)
     .then(() => process.exit(0))
     .catch(() => process.exit(1));
