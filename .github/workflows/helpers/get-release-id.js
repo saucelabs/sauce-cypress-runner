@@ -17,11 +17,11 @@ async function getReleaseId (tag) {
 if (require.main === module) {
   let ref = process.env.GH_REF;
   let [,type,value] = ref.split('/');
-  console.log(type, value);
   if (type != 'tag') {
     value = 'v0.1.9'; // <-- for testing purposes
   }
-  getReleaseId(value);
-    /*.then(() => process.exit(0))
-    .catch(() => process.exit(1));*/
+  console.log(`Getting release id for tag '${tag}'`);
+  getReleaseId(value)
+    .then(() => process.exit(0))
+    .catch(() => process.exit(1));
 }

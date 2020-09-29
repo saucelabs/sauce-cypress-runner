@@ -52,12 +52,11 @@ jobs:
         with:
           node-version: 14.x
       - run: npm install
-      - run: echo ${{ github.ref }}
       - name: Get release ID
         id: release_id
         run: echo ::set-output name=releaseId::$(node ./.github/workflows/helpers/get-release-id.js)
         env:
-          GH_TAG: ${{ github.ref }}
+          GH_REF: ${{ github.ref }}
       - name: Echo release id
         run: echo ${{ steps.release_id.outputs.releaseId }}
       - name: Bundle Directory
