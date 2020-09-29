@@ -7,8 +7,8 @@ exec = promisify(exec);
 async function uploadGithubRelease (tag, file) {
     const githubRelease = path.join(process.env.GOPATH, 'bin', 'github-release');
     console.log(`Uploading to GitHub releases: tag=${tag} file=${file}`);
-    /*await exec(`${githubRelease} upload --user saucelabs --repo sauce-cypress-runner ` +
-      `--tag ${tag} --name ${file} --file ${file}`);*/
+    await exec(`${githubRelease} upload --user saucelabs --repo sauce-cypress-runner ` +
+      `--tag ${tag} --name ${file} --file ${file}`);
     console.log('Done releasing to GitHub');
 };
 
