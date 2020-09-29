@@ -47,6 +47,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Use Node.js v14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - run: npm install
       - name: Prepare
         id: prep
         run: |
@@ -59,10 +64,6 @@ jobs:
           GH_TAG: ${{ steps.prep.outputs.version }}
       - name: Echo release id
         run: echo ${{ steps.release_id.outputs.releaseId }}
-      - name: Use Node.js v14.x
-        uses: actions/setup-node@v1
-        with:
-          node-version: 14.x
       - name: Bundle Directory
         run: bash ./scripts/bundle.sh
       - name: List bundle contents
@@ -75,7 +76,6 @@ jobs:
           azPSVersion: '3.1.0'
       - name: List files
         run: ls .
-      - run: npm install bluebird
       - name: Install GitHub Releases
         run: go get -u github.com/github-release/github-release
       
