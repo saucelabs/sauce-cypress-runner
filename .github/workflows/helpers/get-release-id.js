@@ -8,16 +8,20 @@ const u = process.env.GITHUB_USERNAME;
 const t = process.env.GITHUB_TOKEN;
 const auth = `${u}:${t}`;
 
-async function uploadGithubRelease (tag, file) {
+async function getReleaseId (tag) {
     const url = `https://${auth}@api.github.com/repos/saucelabs/sauce-cypress-runner/releases/tags/${tag}`;
     const res = await axios.get(url);
     console.log(res.data.id);
 };
 
 if (require.main === module) {
-  let tag = process.env.GH_TAG || 'v0.1.9';
-  let file = process.env.GH_FILE;
-  uploadGithubRelease(tag, file);
+  let ref = process.env.GH_REF;
+  let [,type,value] = ref.split('/');
+  console.log(type, value);
+  if (type != 'tag') {
+    value = 'v0.1.9'; // <-- for testing purposes
+  }
+  getReleaseId(value);
     /*.then(() => process.exit(0))
     .catch(() => process.exit(1));*/
 }
