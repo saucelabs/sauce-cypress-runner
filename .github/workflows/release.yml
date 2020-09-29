@@ -71,7 +71,7 @@ jobs:
         run: go get -u github.com/github-release/github-release
       - name: Upload to GitHub Releases
         #run: npm run upload-github-release
-        run: node ./.github/workflows/helpers/upload-github-release.js
+        run: node .github/workflows/helpers/upload-github-release.js
         env:
           GH_TAG: ${{ steps.prep.outputs.version }}
           GH_FILE: sauce-cypress-win.zip
