@@ -54,7 +54,7 @@ jobs:
       - run: npm install
       - name: Get release ID
         id: release_id
-        run: echo ::set-output name=releaseId::$(node ./.github/workflows/helpers/get-release-id.js)
+        run: echo ::set-output name=releaseId::${node ./.github/workflows/helpers/get-release-id.js}
         env:
           GH_REF: ${{ github.ref }}
       - name: Print release id
