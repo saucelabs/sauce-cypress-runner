@@ -15,7 +15,9 @@ async function uploadGithubRelease (tag, file) {
 if (require.main === module) {
   console.log(`Go path is '${process.env.GOPATH}'`);
   let tag = process.env.GH_TAG || 'v0.1.9';
+  console.log(`Making release for tag: ${tag}`);
   let file = process.env.GH_FILE;
+  console.log(`Releasing file: ${file}`);
   uploadGithubRelease(tag, file)
     .then(() => process.exit(0))
     .catch(() => process.exit(1));
