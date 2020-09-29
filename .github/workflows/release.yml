@@ -51,11 +51,9 @@ jobs:
         run: bash ./scripts/bundle.sh
       - name: List bundle contents
         run: ls -R bundle/
-      - name: Prepare
-        id: prep
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          echo ::set-output name=version::${VERSION}
+      - name: Set output
+        id: vars
+        run: echo ::set-output name=tag::${GITHUB_REFrefs/*/}
       - name: Archive bundle
         uses: azure/powershell@v1
         with:
