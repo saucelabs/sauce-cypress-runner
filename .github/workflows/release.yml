@@ -47,6 +47,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Use Node.js v14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
       - name: Bundle Directory
         run: bash ./scripts/bundle.sh
       - name: List bundle contents
@@ -64,7 +68,8 @@ jobs:
       - name: Install GitHub Releases
         run: go get -u github.com/github-release/github-release
       - name: Upload to GitHub Releases
-        run: npm run upload-github-release
+        #run: npm run upload-github-release
+        run: node ./.github/workflows/helpers/upload-github-release.js
         env:
           GH_TAG: ${{ steps.prep.outputs.version }}
           GH_FILE: sauce-cypress-win.zip
