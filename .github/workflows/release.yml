@@ -80,3 +80,4 @@ jobs:
         env:
           GH_TAG: ${{ steps.prep.outputs.version }}
           GH_FILE: sauce-cypress-win.zip
+          GOPATH: C:\Users\runneradmin\go
