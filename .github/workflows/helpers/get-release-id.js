@@ -1,15 +1,8 @@
-let { exec } = require('child_process');
-const path = require('path');
-let { get, request } = require('https');
-const { promisify } = require('bluebird');
 const axios = require('axios');
 
-const u = process.env.GITHUB_USERNAME;
-const t = process.env.GITHUB_TOKEN;
-const auth = `${u}:${t}`;
-
 async function getReleaseId (tag) {
-    const url = `https://${auth}@api.github.com/repos/saucelabs/sauce-cypress-runner/releases/tags/${tag}`;
+    const url = `https://api.github.com/repos/saucelabs/sauce-cypress-runner/releases/tags/${tag}`;
+    console.log(`Release URL ${url}`);
     const res = await axios.get(url);
     console.log(res.data.id);
 };
