@@ -63,6 +63,7 @@ function configureDefaults (options) {
   let config = findReporterOptions(options);
   debug('options', config);
   config.mochaFile = getSetting(config.mochaFile, 'MOCHA_FILE', 'test-results.xml');
+  config.specFolder = getSetting(config.specFolder, 'SPEC_FOLDER', 'test-results.xml');
   config.attachments = getSetting(config.attachments, 'ATTACHMENTS', false);
   config.antMode = getSetting(config.antMode, 'ANT_MODE', false);
   config.jenkinsMode = getSetting(config.jenkinsMode, 'JENKINS_MODE', false);
@@ -260,7 +261,12 @@ function MochaJUnitReporter (runner, options) {
 }
 
 MochaJUnitReporter.prototype.report = function (testsuites, sauceJson) {
-  const specFile = path.basename(this._runner.suite.file);
+  const cwd = process.cwd();
+  const absoluteSpecFile = path.join(cwd, this._runner.suite.file);
+  let specFile = absoluteSpecFile.replace(this._options.specFolder, '');
+  if (specFile.startsWith('/')) {
+    specFile = specFile.substr(1);
+  }
   this.flush(testsuites, specFile, sauceJson);
 };
 
@@ -514,7 +520,7 @@ MochaJUnitReporter.prototype.getXml = function (testsuites) {
 MochaJUnitReporter.prototype.writeSauceJsonToDisk = function (sauceJson, filePath, fileName) {
   if (filePath) {
     filePath = filePath.replace(/\.xml/, '.json');
-    if (filePath.indexOf('[suite]' !== -1)) {
+    if (filePath.includes('[suite]')) {
       filePath = filePath.replace('[suite]', fileName);
     }
     debug('writing file to', filePath);
@@ -536,22 +542,24 @@ MochaJUnitReporter.prototype.writeSauceJsonToDisk = function (sauceJson, filePat
  * @param {string} filePath - path to output file
  */
 MochaJUnitReporter.prototype.writeXmlToDisk = function (xml, filePath, fileName) {
+  let xmlOutFilePath;
   if (filePath) {
-    if (filePath.indexOf('[hash]') !== -1) {
-      filePath = filePath.replace('[hash]', md5(xml));
-    } else if (filePath.indexOf('[suite]' !== -1)) {
-      filePath = filePath.replace('[suite]', fileName);
+    if (filePath.includes('[hash]')) {
+      xmlOutFilePath = filePath.replace('[hash]', md5(xml));
+    } else if (filePath.includes('[suite]')) {
+      xmlOutFilePath = filePath.replace('[suite]', fileName);
     }
 
-    debug('writing file to', filePath);
-    mkdirp.sync(path.dirname(filePath));
+    debug('writing file to', xmlOutFilePath);
+    mkdirp.sync(path.dirname(xmlOutFilePath));
 
     try {
-      fs.writeFileSync(filePath, xml, 'utf-8');
+      fs.writeFileSync(xmlOutFilePath, xml, 'utf-8');
     } catch (exc) {
       debug('problem writing results: ' + exc);
     }
     debug('results written successfully');
+    return xmlOutFilePath;
   }
   return filePath;
 };

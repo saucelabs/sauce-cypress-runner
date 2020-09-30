@@ -12,9 +12,14 @@ const fileExists = promisify(fs.exists);
 const readFile = promisify(fs.readFile);
 exec = promisify(exec);
 
+let home = '/home/seluser';
+if (process.env.SAUCE_RUNNER_LOCAL) {
+  home = path.join(__dirname, '..');
+}
+
 // the default test matching behavior for versions <= v0.1.8
 const DefaultRunCfg = {
-  projectPath: `/home/seluser/cypress/integration`,
+  projectPath: path.join(home, 'cypress', 'integration'),
   match: [
     `**/?(*.)+(spec|test).[jt]s?(x)`
   ]
@@ -59,7 +64,8 @@ const report = async (results) => {
 const cypressRunner = async function () {
   try {
     // Get the configuration info from config.yaml
-    const configYamlPath = process.env.CONFIG_FILE || 'config.yaml';
+    const configYamlDefault = process.env.SAUCE_RUNNER_LOCAL ? 'config-local.yaml' : 'config.yaml';
+    const configYamlPath = process.env.CONFIG_FILE || configYamlDefault;
     const config = yaml.safeLoad(await readFile(configYamlPath, 'utf8'));
 
     // If relative paths were provided in YAML, convert them to absolute
@@ -106,14 +112,13 @@ const cypressRunner = async function () {
         screenshotsFolder: reportsDir,
         integrationFolder: runCfg.projectPath,
         testFiles: runCfg.match,
-        reporter: 'cypress-multi-reporters',
+        reporter: 'src/custom-reporter.js',
         reporterOptions: {
           mochaFile: `${reportsDir}/[suite].xml`,
-          configFile: 'src/reporter-config.json'
-        }
+          specFolder: runCfg.projectPath,
+        },
       }
     });
-
     const status = await report(results);
     process.exit(status);
   } catch (err) {
