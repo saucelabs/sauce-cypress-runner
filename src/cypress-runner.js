@@ -117,11 +117,6 @@ const cypressRunner = async function () {
           mochaFile: `${reportsDir}/[suite].xml`,
           specFolder: runCfg.projectPath,
         },
-        //reporter: 'cypress-multi-reporters',
-        /*reporterOptions: {
-          mochaFile: `${reportsDir}/[suite].xml`,
-          configFile: 'src/reporter-config.json'
-        },*/
       }
     });
     const status = await report(results);
