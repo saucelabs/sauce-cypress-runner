@@ -3,8 +3,12 @@
         "eslint-config-appium",
         "plugin:cypress/recommended"
     ],
+    "plugins": ["jest"],
     "rules": {
         "no-console": "off",
         "promise/no-native": "off"
+    },
+    "env": {
+        "jest/globals": true
     }
 }

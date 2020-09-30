@@ -1,0 +1,6 @@
+rootDir: ./
+targetDir: ./cypress/integration
+reportsDir: ./cypress/results
+execCommand:
+  - npm
+  - test
