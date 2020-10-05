@@ -26,7 +26,7 @@ RUN curl -L -o ${SAUCECTL_BINARY} \
 
 COPY package.json .
 COPY package-lock.json .
-RUN npm i
+RUN npm ci --production
 
 COPY --chown=seluser:seluser . .
 # Cypress caches its binary by default in ~/.cache/Cypress
