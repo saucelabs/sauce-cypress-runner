@@ -36,8 +36,6 @@
     "eslint-config-appium": "^4.5.0",
     "eslint-plugin-cypress": "^2.11.1",
     "eslint-plugin-jest": "^24.0.2",
-    "glob": "^7.1.6",
-    "glob-fs": "^0.1.7",
     "husky": "^4.3.0",
     "jest": "^26.4.2",
     "mocha": "^8.1.3"
