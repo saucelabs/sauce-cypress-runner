@@ -5,8 +5,8 @@
   "author": "devx <dev@saucelabs.com>",
   "license": "MIT",
   "private": true,
-  "main": "./src/cypress-runner.js",
   "bin": "./bin/cypress",
+  "main": "./src/cypress-runner.js",
   "scripts": {
     "test": "./bin/cypress",
     "test-integration": "bash tests/integration/integration-tests.sh",
@@ -30,6 +30,8 @@
     "@types/jquery": "^3.5.1",
     "@types/mocha": "^8.0.3",
     "@types/node": "^14.10.1",
+    "axios": "^0.20.0",
+    "bluebird": "^3.7.2",
     "eslint": "^7.9.0",
     "eslint-config-appium": "^4.5.0",
     "eslint-plugin-cypress": "^2.11.1",
