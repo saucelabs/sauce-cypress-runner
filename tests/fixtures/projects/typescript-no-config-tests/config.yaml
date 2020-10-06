@@ -1,0 +1,5 @@
+rootDir: ./tests/typescript-no-config-tests
+reportsDir: ./results
+execCommand:
+  - npm
+  - test

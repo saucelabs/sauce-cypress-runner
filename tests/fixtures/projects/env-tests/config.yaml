@@ -1,0 +1,5 @@
+rootDir: ./tests/env-tests
+reportsDir: ./results
+execCommand:
+  - npm
+  - test
