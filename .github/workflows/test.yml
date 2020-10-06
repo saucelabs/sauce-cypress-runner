@@ -33,8 +33,11 @@ jobs:
         name: Build Saucectl and run E2E tests
 
       # Run e2e tests
-      - run: node ./tests/run-e2e.js
-        name: Run E2E Tests
+      - name: Run E2E tests
+        run: npm run e2e:docker
+        env:
+          SKIP_CI: true
+          SAUCE_CTL_BINARY: ./saucectl/saucectl
   build-ubuntu-bundle-and-test:
     runs-on: ubuntu-latest
     steps:
@@ -59,3 +62,5 @@ jobs:
       - 
         name: List bundle contents
         run: ls -R bundle/
+
+
