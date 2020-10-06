@@ -19,6 +19,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
         run: npm ci --production
-      - name: Run integration tests
-        run: bash tests/integration/integration-tests.sh
+      - name: Run E2E tests
+        run: node ./tests/run-e2e.js
 
