@@ -17,6 +17,14 @@ describe('Custom Reporter', function () {
       report.call(ctx, 'a', 'b');
       expect(ctx.flush.mock.calls).toEqual([['a', 'path/to/spec', 'b']]);
     });
+    it('skips reporter if no file is in suite', function () {
+      const { report } = MochaJUnitReporter.prototype;
+      const ctx = {};
+      ctx._runner = {suite: {}};
+      ctx.flush = jest.fn(function () {});
+      report.call(ctx, 'a', 'b');
+      expect(ctx.flush.mock.calls).toEqual([]);
+    });
   });
   describe('.writeXmlToDisk', function () {
     it('maintains relative paths correctly (addresses DEVX-273)', function () {
