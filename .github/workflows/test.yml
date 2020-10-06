@@ -42,7 +42,7 @@ jobs:
           npm run e2e:docker
         env:
           SKIP_CI: true
-          SAUCE_CTL_BINARY: ./saucectl/saucectl
+          SAUCE_CTL_BINARY: ${{ env.working-directory }}/saucectl/saucectl
         name: Build SauceCtl and run
   build-ubuntu-bundle-and-test:
     runs-on: ubuntu-latest
