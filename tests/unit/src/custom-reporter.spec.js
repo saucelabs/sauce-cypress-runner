@@ -17,7 +17,7 @@ describe('Custom Reporter', function () {
       report.call(ctx, 'a', 'b');
       expect(ctx.flush.mock.calls).toEqual([['a', 'path/to/spec', 'b']]);
     });
-    it('skips reporter if no file is in suite', function () {
+    it('skips report flush if no file is in suite', function () {
       const { report } = MochaJUnitReporter.prototype;
       const ctx = {};
       ctx._runner = {suite: {}};
