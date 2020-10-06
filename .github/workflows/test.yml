@@ -35,16 +35,15 @@ jobs:
           node-version: 14.x
       - run: npm ci
 
-      # Build saucectl
-      - run: pushd saucectl && make build && popd
-        name: Build Saucectl and run E2E tests
-
-      # Run e2e tests
-      - name: Run E2E tests
-        run: npm run e2e:docker
+      # Build SauceCtl and run it
+      - run: |
+          make docker
+          pushd saucectl && make build && popd
+          npm run e2e:docker
         env:
           SKIP_CI: true
           SAUCE_CTL_BINARY: ./saucectl/saucectl
+        name: Build SauceCtl and run
   build-ubuntu-bundle-and-test:
     runs-on: ubuntu-latest
     steps:
@@ -69,5 +68,3 @@ jobs:
       - 
         name: List bundle contents
         run: ls -R bundle/
-
-
