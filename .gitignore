@@ -108,6 +108,7 @@ dist
 
 # saucectl configuration folder
 .sauce
+!tests/**/.sauce/
 
 results/
 
