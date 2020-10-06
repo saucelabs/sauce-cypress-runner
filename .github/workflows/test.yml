@@ -28,6 +28,13 @@ jobs:
           repository: saucelabs/saucectl
           path: saucectl
 
+      # Node/NPM dependency
+      - name: Use Node.JS 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - run: npm ci
+
       # Build saucectl
       - run: pushd saucectl && make build && popd
         name: Build Saucectl and run E2E tests
