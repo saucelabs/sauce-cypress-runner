@@ -51,15 +51,23 @@ jobs:
 
   # Checkout the latest saucectl
   build-docker-and-run-tests:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       -
         name: Checkout
         uses: actions/checkout@v2
+      - name: ls
+        run: ls -lah
       - uses: actions/checkout@v2
         with:
           repository: saucelabs/saucectl
           path: saucectl
+
+      - name: Workaround for container permissions
+        run: sudo chown -R $USER:$(id -gn $USER) /github/home
+      
+      - name: Workaround for container folder
+        run: sudo ln -s /home/seluser/.cache /github/home/.cache
 
       # Node/NPM dependency
       - name: Use Node.JS 14.x
