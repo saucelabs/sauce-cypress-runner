@@ -64,10 +64,10 @@ jobs:
           path: saucectl
 
       - name: Workaround for container permissions
-        run: sudo chown -R $USER:$(id -gn $USER) /github/home
+        run: sudo chown -R $USER:$(id -gn $USER) /home/runner/work/sauce-cypress-runner/sauce-cypress-runner
       
       - name: Workaround for container folder
-        run: sudo ln -s /home/seluser/.cache /github/home/.cache
+        run: sudo ln -s /home/seluser/.cache /home/runner/work/sauce-cypress-runner/sauce-cypress-runner/.cache
 
       # Node/NPM dependency
       - name: Use Node.JS 14.x
