@@ -35,6 +35,13 @@ jobs:
           node-version: 14.x
       - run: npm ci
 
+      # Fix permissions problem
+      - name: Workaround for container permissions
+        run: sudo chown -R $USER:$(id -gn $USER) /github/home
+      
+      - name: Workaround for container folder
+        run: sudo ln -s /home/seluser/.cache /github/home/.cache
+
       # Build SauceCtl and run it
       - run: |
           make docker
