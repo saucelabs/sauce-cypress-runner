@@ -51,7 +51,7 @@ jobs:
 
   # Checkout the latest saucectl
   build-docker-and-run-tests:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       -
         name: Checkout
