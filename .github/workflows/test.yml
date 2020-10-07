@@ -24,35 +24,6 @@ jobs:
           cache_froms: saucelabs/stt-cypress-mocha-node:latest
           push: false
       
-      # Checkout the latest saucectl
-      - uses: actions/checkout@v2
-        with:
-          repository: saucelabs/saucectl
-          path: saucectl
-
-      # Node/NPM dependency
-      - name: Use Node.JS 14.x
-        uses: actions/setup-node@v1
-        with:
-          node-version: 14.x
-      - run: npm ci
-
-      # Fix permissions problem
-      - name: Workaround for container permissions
-        run: sudo chown -R $USER:$(id -gn $USER) /home/runner
-      
-      - name: Workaround for container folder
-        run: sudo ln -s /home/seluser/.cache /home/runner/.cache
-
-      # Build SauceCtl and run it
-      - run: |
-          make docker
-          pushd saucectl && make build && popd
-          npm run e2e:docker
-        env:
-          SKIP_CI: true
-          SAUCE_CTL_BINARY: ./saucectl/saucectl
-        name: Build SauceCtl and run
   build-ubuntu-bundle-and-test:
     runs-on: ubuntu-latest
     steps:
@@ -77,3 +48,29 @@ jobs:
       - 
         name: List bundle contents
         run: ls -R bundle/
+
+  # Checkout the latest saucectl
+  build-docker-and-run-tests:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: saucelabs/saucectl
+          path: saucectl
+
+      # Node/NPM dependency
+      - name: Use Node.JS 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - run: npm ci
+
+      # Build SauceCtl and run it
+      - run: |
+          make docker
+          pushd saucectl && make build && popd
+          npm run e2e:docker
+        env:
+          SKIP_CI: true
+          SAUCE_CTL_BINARY: ./saucectl/saucectl
+        name: Build SauceCtl and run
