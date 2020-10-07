@@ -57,7 +57,7 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2
       - name: ls
-        run: ls -lah
+        run: pwd
       - uses: actions/checkout@v2
         with:
           repository: saucelabs/saucectl
