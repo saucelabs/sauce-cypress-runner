@@ -65,9 +65,6 @@ jobs:
 
       - name: Workaround for container permissions
         run: sudo chown -R $USER:$(id -gn $USER) /home/runner/work/sauce-cypress-runner/sauce-cypress-runner
-      
-      - name: Workaround for container folder
-        run: sudo ln -s /home/seluser/.cache /home/runner/work/sauce-cypress-runner/sauce-cypress-runner/.cache
 
       # Node/NPM dependency
       - name: Use Node.JS 14.x
