@@ -13,7 +13,7 @@ const readFile = promisify(fs.readFile);
 exec = promisify(exec);
 
 let home = '/home/seluser';
-if (process.env.CI) {
+if (process.env.SAUCE_VM) {
   home = path.join(__dirname, '..');
 }
 
@@ -64,9 +64,16 @@ const report = async (results) => {
 const cypressRunner = async function () {
   try {
     // Get the configuration info from config.yaml
-    const configYamlDefault = process.env.CI ? 'config-local.yaml' : 'config.yaml';
+    const configYamlDefault = 'config.yaml';
     const configYamlPath = process.env.CONFIG_FILE || configYamlDefault;
     const config = yaml.safeLoad(await readFile(configYamlPath, 'utf8'));
+
+    let home = process.env.SAUCE_VM ? process.cwd() : '/home/seluser';
+    for (const key of Object.keys(config)) {
+      if (typeof config[key] === 'string') {
+        config[key] = config[key].replace('$HOME', home);
+      }
+    }
 
     // If relative paths were provided in YAML, convert them to absolute
     const reportsDir = getAbsolutePath(config.reportsDir);
