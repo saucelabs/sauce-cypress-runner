@@ -114,3 +114,6 @@ results/
 tests/fixtures/cypress-tests/typescript-*/**/*.js
 
 bundle/
+
+# Run yaml produced by saucectl
+run.yaml

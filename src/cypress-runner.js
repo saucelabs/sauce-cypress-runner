@@ -13,7 +13,7 @@ const readFile = promisify(fs.readFile);
 exec = promisify(exec);
 
 let home = '/home/seluser';
-if (process.env.SAUCE_RUNNER_LOCAL) {
+if (process.env.CI) {
   home = path.join(__dirname, '..');
 }
 
@@ -64,7 +64,7 @@ const report = async (results) => {
 const cypressRunner = async function () {
   try {
     // Get the configuration info from config.yaml
-    const configYamlDefault = process.env.SAUCE_RUNNER_LOCAL ? 'config-local.yaml' : 'config.yaml';
+    const configYamlDefault = process.env.CI ? 'config-local.yaml' : 'config.yaml';
     const configYamlPath = process.env.CONFIG_FILE || configYamlDefault;
     const config = yaml.safeLoad(await readFile(configYamlPath, 'utf8'));
 
