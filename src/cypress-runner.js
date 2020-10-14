@@ -12,19 +12,6 @@ const fileExists = promisify(fs.exists);
 const readFile = promisify(fs.readFile);
 exec = promisify(exec);
 
-let home = '/home/seluser';
-if (process.env.SAUCE_VM) {
-  home = path.join(__dirname, '..');
-}
-
-// the default test matching behavior for versions <= v0.1.8
-const DefaultRunCfg = {
-  projectPath: path.join(home, 'cypress', 'integration'),
-  match: [
-    `**/?(*.)+(spec|test).[jt]s?(x)`
-  ]
-};
-
 const DEFAULT_BROWSER = 'chrome';
 const buildName = process.env.SAUCE_BUILD_NAME || `stt-cypress-build-${(new Date()).getTime()}`;
 const supportedBrowsers = {
@@ -36,16 +23,6 @@ browserName = supportedBrowsers[browserName.toLowerCase()];
 if (!browserName) {
   console.error(`Unsupported browser: ${process.env.BROWSER_NAME}. Sorry.`);
   process.exit(1);
-}
-
-async function loadRunConfig (cfgPath) {
-  if (await fileExists(cfgPath)) {
-    return yaml.safeLoad(await readFile(cfgPath, 'utf8'));
-  }
-  console.log(`Run config (${cfgPath}) unavailable. Loading defaults.`);
-
-  // the default test matching behavior for versions <= v0.1.8
-  return DefaultRunCfg;
 }
 
 const report = async (results) => {
@@ -62,81 +39,83 @@ const report = async (results) => {
 };
 
 const cypressRunner = async function () {
-  try {
+  let config;
+
+  if (process.env.SAUCE_VM) {
+    const cwd = process.cwd();
+    config = {
+      rootDir: cwd,
+      targetDir: path.join(cwd, 'cypress', 'integration'),
+      reportsDir: path.join(cwd, 'cypress', 'results'),
+    };
+  } else {
     // Get the configuration info from config.yaml
     const configYamlDefault = 'config.yaml';
     const configYamlPath = process.env.CONFIG_FILE || configYamlDefault;
-    const config = yaml.safeLoad(await readFile(configYamlPath, 'utf8'));
-
-    let home = process.env.SAUCE_VM ? process.cwd() : '/home/seluser';
-    for (const key of Object.keys(config)) {
-      if (typeof config[key] === 'string') {
-        config[key] = config[key].replace('$HOME', home);
-      }
-    }
-
-    // If relative paths were provided in YAML, convert them to absolute
-    const reportsDir = getAbsolutePath(config.reportsDir);
-
-    const runCfgPath = path.join(config.rootDir, 'run.yaml');
-    const runCfg = await loadRunConfig(runCfgPath);
-
-    // If a typescript config is found in the project path, then compile with it
-    const tsconfigPath = path.join(runCfg.projectPath, 'tsconfig.json');
-
-    if (await fileExists(tsconfigPath)) {
-      console.log(`Compiling Typescript files from tsconfig '${tsconfigPath}'`);
-      await exec(`npx tsc -p "${tsconfigPath}"`);
-    }
-
-    // Get the cypress.json config file (https://docs.cypress.io/guides/references/configuration.html#Options)
-    let configFile = 'cypress.json';
-    let cypressJsonPath = path.join(runCfg.projectPath, 'cypress.json');
-    if (await fileExists(cypressJsonPath)) {
-      configFile = path.relative(process.cwd(), cypressJsonPath);
-    }
-
-    // Get the cypress env variables from 'cypress.env.json' (if present)
-    let env = {};
-    const cypressEnvPath = path.join(runCfg.projectPath, 'cypress.env.json');
-    if (await fileExists(cypressEnvPath)) {
-      try {
-        env = JSON.parse(await readFile(cypressEnvPath));
-      } catch (e) {
-        console.error(`Could not parse contents of '${cypressEnvPath}'. Will use empty object for environment variables.`);
-      }
-    }
-
-    const results = await cypress.run({
-      browser: browserName,
-      configFile,
-      config: {
-        env,
-        video: true,
-        videosFolder: reportsDir,
-        videoCompression: false,
-        videoUploadOnPasses: false,
-        screenshotsFolder: reportsDir,
-        integrationFolder: runCfg.projectPath,
-        testFiles: runCfg.match,
-        reporter: 'src/custom-reporter.js',
-        reporterOptions: {
-          mochaFile: `${reportsDir}/[suite].xml`,
-          specFolder: runCfg.projectPath,
-        },
-      }
-    });
-    const status = await report(results);
-    process.exit(status);
-  } catch (err) {
-    console.log(err);
-    process.exit(1);
+    config = yaml.safeLoad(await readFile(configYamlPath, 'utf8'));
   }
+
+  // If relative paths were provided in YAML, convert them to absolute
+  const reportsDir = getAbsolutePath(config.reportsDir);
+
+  // If a typescript config is found in the project path, then compile with it
+  const tsconfigPath = path.join(config.rootDir, 'tsconfig.json');
+
+  if (await fileExists(tsconfigPath)) {
+    console.log(`Compiling Typescript files from tsconfig '${tsconfigPath}'`);
+    await exec(`npx tsc -p "${tsconfigPath}"`);
+  }
+
+  // Get the cypress.json config file (https://docs.cypress.io/guides/references/configuration.html#Options)
+  let configFile = 'cypress.json';
+  let cypressJsonPath = path.join(config.rootDir, 'cypress.json');
+  if (await fileExists(cypressJsonPath)) {
+    configFile = path.relative(process.cwd(), cypressJsonPath);
+  }
+
+  // Get the cypress env variables from 'cypress.env.json' (if present)
+  let env = {};
+  const cypressEnvPath = path.join(config.rootDir, 'cypress.env.json');
+  if (await fileExists(cypressEnvPath)) {
+    try {
+      env = JSON.parse(await readFile(cypressEnvPath));
+    } catch (e) {
+      console.error(`Could not parse contents of '${cypressEnvPath}'. Will use empty object for environment variables.`);
+    }
+  }
+
+  const results = await cypress.run({
+    browser: browserName,
+    configFile,
+    config: {
+      env,
+      video: true,
+      videosFolder: reportsDir,
+      videoCompression: false,
+      videoUploadOnPasses: false,
+      screenshotsFolder: reportsDir,
+      integrationFolder: config.targetDir,
+      testFiles: path.join(config.targetDir, '**', '*.*'),
+      reporter: path.join('src', 'custom-reporter.js'),
+      reporterOptions: {
+        mochaFile: path.join(reportsDir, '[suite].xml'),
+        specFolder: config.targetDir,
+      },
+    }
+  });
+  return await report(results);
 };
 
 // For dev and test purposes, this allows us to run our Cypress Runner from command line
 if (require.main === module) {
-  cypressRunner();
+  cypressRunner()
+      // eslint-disable-next-line promise/prefer-await-to-then
+      .then((status) => process.exit(status))
+      // eslint-disable-next-line promise/prefer-await-to-callbacks
+      .catch((err) => {
+        console.log(err);
+        process.exit(1);
+      });
 }
 
 exports.cypressRunner = cypressRunner;

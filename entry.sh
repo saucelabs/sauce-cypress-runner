@@ -21,7 +21,7 @@ if [ "${DEBUG}" == "bash" ]; then
   exec bash
 fi
 
-if [ "${CI}" != "true" ]; then
+if [ "${CI}" != "true" && "${SAUCE_VM}" == "" ]; then
   exec run-supervisord.sh
 fi
 

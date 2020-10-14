@@ -1,5 +1,12 @@
 #!/usr/bin/env node
-var { cypressRunner } = require('../src/cypress-runner.js');
-(async() => {
-  await cypressRunner();
-})();
+const { cypressRunner } = require('../src/cypress-runner.js');
+
+if (require.main === module) {
+  console.log('Running sauce cypress runner');
+  cypressRunner()
+    .then((status) => process.exit(status))
+    .catch((err) => {
+      console.error(err);
+      process.exit(1);
+    });
+}
