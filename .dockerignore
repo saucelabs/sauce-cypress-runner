@@ -6,4 +6,5 @@ Dockerfile
 .git
 .gitignore
 .sauce
+.saucetpl
 cypress
