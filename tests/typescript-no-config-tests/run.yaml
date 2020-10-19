@@ -1,2 +1,0 @@
-projectPath: ./tests/typescript-no-config-tests/
-match: ["cypress/integration/actions.spec.ts"]
