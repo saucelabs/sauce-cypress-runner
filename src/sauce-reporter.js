@@ -95,7 +95,7 @@ SauceReporter.sauceReporter = async (buildName, browserName, spec) => {
   console.log(`Preparing assets for ${specFile}`);
   let assets = await SauceReporter.prepareAssets(
     specFile,
-    'cypress/results'
+    process.env.SAUCE_REPORTS_DIR || 'cypress/results'
   );
 
   // upload assets

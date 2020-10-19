@@ -117,3 +117,5 @@ bundle/
 
 # Run yaml produced by saucectl
 run.yaml
+
+__assets__

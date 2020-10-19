@@ -5,12 +5,19 @@ const { promisify } = require('util');
 const yaml = require('js-yaml');
 const cypress = require('cypress');
 let { exec } = require('child_process');
-const { getAbsolutePath } = require('./utils');
 
 // Promisify the callback functions
 const fileExists = promisify(fs.exists);
 const readFile = promisify(fs.readFile);
 exec = promisify(exec);
+
+
+// the default test matching behavior for versions <= v0.1.8
+const DefaultRunCfg = {
+  match: [
+    `**/?(*.)+(spec|test).[jt]s?(x)`
+  ]
+};
 
 const DEFAULT_BROWSER = 'chrome';
 const buildName = process.env.SAUCE_BUILD_NAME || `stt-cypress-build-${(new Date()).getTime()}`;
@@ -23,6 +30,16 @@ browserName = supportedBrowsers[browserName.toLowerCase()];
 if (!browserName) {
   console.error(`Unsupported browser: ${process.env.BROWSER_NAME}. Sorry.`);
   process.exit(1);
+}
+
+async function loadRunConfig (cfgPath) {
+  if (await fileExists(cfgPath)) {
+    return yaml.safeLoad(await readFile(cfgPath, 'utf8'));
+  }
+  console.log(`Run config (${cfgPath}) unavailable. Loading defaults.`);
+
+  // the default test matching behavior for versions <= v0.1.8
+  return DefaultRunCfg;
 }
 
 const report = async (results) => {
@@ -41,25 +58,25 @@ const report = async (results) => {
 const cypressRunner = async function () {
   let config;
 
-  if (process.env.SAUCE_VM) {
-    const cwd = process.cwd();
-    config = {
-      rootDir: cwd,
-      targetDir: path.join(cwd, 'cypress', 'integration'),
-      reportsDir: path.join(cwd, 'cypress', 'results'),
-    };
-  } else {
-    // Get the configuration info from config.yaml
-    const configYamlDefault = 'config.yaml';
-    const configYamlPath = process.env.CONFIG_FILE || configYamlDefault;
-    config = yaml.safeLoad(await readFile(configYamlPath, 'utf8'));
-  }
+  // Get the configuration info from config.yaml
+  const configYamlDefault = 'config.yaml';
+  const configYamlPath = process.env.CONFIG_FILE || configYamlDefault;
+  config = yaml.safeLoad(await readFile(configYamlPath, 'utf8'));
 
   // If relative paths were provided in YAML, convert them to absolute
-  const reportsDir = getAbsolutePath(config.reportsDir);
+  const rootDir = process.env.SAUCE_ROOT_DIR || config.rootDir;
+  const reportsDir = process.env.SAUCE_REPORTS_DIR || config.reportsDir;
+  const targetDir = process.env.SAUCE_TARGET_DIR || config.targetDir;
+
+  const runCfgPath = path.join(rootDir, 'run.yaml');
+  const runCfg = await loadRunConfig(runCfgPath);
+
+  if (!runCfg.projectPath) {
+    runCfg.projectPath = targetDir;
+  }
 
   // If a typescript config is found in the project path, then compile with it
-  const tsconfigPath = path.join(config.rootDir, 'tsconfig.json');
+  const tsconfigPath = path.join(runCfg.projectPath, 'tsconfig.json');
 
   if (await fileExists(tsconfigPath)) {
     console.log(`Compiling Typescript files from tsconfig '${tsconfigPath}'`);
@@ -68,14 +85,14 @@ const cypressRunner = async function () {
 
   // Get the cypress.json config file (https://docs.cypress.io/guides/references/configuration.html#Options)
   let configFile = 'cypress.json';
-  let cypressJsonPath = path.join(config.rootDir, 'cypress.json');
+  let cypressJsonPath = path.join(runCfg.projectPath, 'cypress.json');
   if (await fileExists(cypressJsonPath)) {
     configFile = path.relative(process.cwd(), cypressJsonPath);
   }
 
   // Get the cypress env variables from 'cypress.env.json' (if present)
   let env = {};
-  const cypressEnvPath = path.join(config.rootDir, 'cypress.env.json');
+  const cypressEnvPath = path.join(runCfg.projectPath, 'cypress.env.json');
   if (await fileExists(cypressEnvPath)) {
     try {
       env = JSON.parse(await readFile(cypressEnvPath));
@@ -94,12 +111,12 @@ const cypressRunner = async function () {
       videoCompression: false,
       videoUploadOnPasses: false,
       screenshotsFolder: reportsDir,
-      integrationFolder: config.targetDir,
-      testFiles: path.join(config.targetDir, '**', '*.*'),
+      integrationFolder: runCfg.projectPath,
+      testFiles: runCfg.match,
       reporter: path.join('src', 'custom-reporter.js'),
       reporterOptions: {
         mochaFile: path.join(reportsDir, '[suite].xml'),
-        specFolder: config.targetDir,
+        specFolder: runCfg.projectPath,
       },
     }
   });
