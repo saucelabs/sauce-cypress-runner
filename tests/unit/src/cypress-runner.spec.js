@@ -12,11 +12,12 @@ describe('.cypressRunner', function () {
     cypress.run.mockImplementation(() => ([]));
   });
   it('uses CWD when SAUCE_VM is set', async function () {
-    process.env.SAUCE_VM = 'truthy';
+    process.env.SAUCE_REPORTS_DIR = '/path/to/results';
+    process.env.SAUCE_TARGET_DIR = '/path/to/target';
+    process.env.SAUCE_ROOT_DIR = '/path/to/root';
     process.env.SAUCE_USERNAME = null;
     process.env.SAUCE_ACCESS_KEY = null;
     await cypressRunner();
-    const cwd = process.cwd();
     const expectedCypressRun = [
       [{
         browser: 'chrome',
@@ -24,16 +25,18 @@ describe('.cypressRunner', function () {
         config: {
           env: {},
           video: true,
-          videosFolder: `${cwd}/cypress/results`,
+          videosFolder: '/path/to/results',
           videoCompression: false,
           videoUploadOnPasses: false,
-          screenshotsFolder: `${cwd}/cypress/results`,
-          integrationFolder: `${cwd}/cypress/integration`,
-          testFiles: `${cwd}/cypress/integration/**/*.*`,
+          screenshotsFolder: '/path/to/results',
+          integrationFolder: '/path/to/target',
+          testFiles: [
+            '**/?(*.)+(spec|test).[jt]s?(x)'
+          ],
           reporter: 'src/custom-reporter.js',
           reporterOptions: {
-            mochaFile: `${cwd}/cypress/results/[suite].xml`,
-            specFolder: `${cwd}/cypress/integration`,
+            mochaFile: '/path/to/results/[suite].xml',
+            specFolder: '/path/to/target',
           }
         }
       }]

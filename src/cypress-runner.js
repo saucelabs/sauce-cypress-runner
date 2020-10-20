@@ -5,6 +5,7 @@ const { promisify } = require('util');
 const yaml = require('js-yaml');
 const cypress = require('cypress');
 let { exec } = require('child_process');
+const { getRunnerConfig } = require('./utils');
 
 // Promisify the callback functions
 const fileExists = promisify(fs.exists);
@@ -56,17 +57,7 @@ const report = async (results) => {
 };
 
 const cypressRunner = async function () {
-  let config;
-
-  // Get the configuration info from config.yaml
-  const configYamlDefault = 'config.yaml';
-  const configYamlPath = process.env.CONFIG_FILE || configYamlDefault;
-  config = yaml.safeLoad(await readFile(configYamlPath, 'utf8'));
-
-  // If relative paths were provided in YAML, convert them to absolute
-  const rootDir = process.env.SAUCE_ROOT_DIR || config.rootDir;
-  const reportsDir = process.env.SAUCE_REPORTS_DIR || config.reportsDir;
-  const targetDir = process.env.SAUCE_TARGET_DIR || config.targetDir;
+  let {rootDir, reportsDir, targetDir} = await getRunnerConfig();
 
   const runCfgPath = path.join(rootDir, 'run.yaml');
   const runCfg = await loadRunConfig(runCfgPath);
