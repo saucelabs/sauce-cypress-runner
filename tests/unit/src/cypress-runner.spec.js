@@ -11,7 +11,7 @@ describe('.cypressRunner', function () {
     cypressRunSpy = jest.spyOn(cypress, 'run');
     cypress.run.mockImplementation(() => ([]));
   });
-  it('uses CWD when SAUCE_VM is set', async function () {
+  it('can hardcode locations of reports, target and root', async function () {
     process.env.SAUCE_REPORTS_DIR = '/path/to/results';
     process.env.SAUCE_TARGET_DIR = '/path/to/target';
     process.env.SAUCE_ROOT_DIR = '/path/to/root';
