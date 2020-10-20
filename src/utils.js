@@ -10,7 +10,7 @@ function getAbsolutePath (pathToDir) {
     return pathToDir;
   }
   return path.join(process.cwd(), pathToDir);
-};
+}
 
 async function getRunnerConfig () {
   // Get the configuration info from config.yaml
@@ -22,13 +22,13 @@ async function getRunnerConfig () {
   const rootDir = process.env.SAUCE_ROOT_DIR || config.rootDir;
   const reportsDir = process.env.SAUCE_REPORTS_DIR || config.reportsDir;
   const targetDir = process.env.SAUCE_TARGET_DIR || config.targetDir;
-  
+
   return {
     rootDir,
     reportsDir,
     targetDir,
   };
-};
+}
 
 function shouldRecordVideo () {
   let isVideoRecording = process.env.SAUCE_CYPRESS_VIDEO_RECORDING;

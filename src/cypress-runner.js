@@ -5,7 +5,7 @@ const { promisify } = require('util');
 const yaml = require('js-yaml');
 const cypress = require('cypress');
 let { exec } = require('child_process');
-const { getAbsolutePath, shouldRecordVideo, getRunnerConfig } = require('./utils');
+const { getRunnerConfig } = require('./utils');
 
 // Promisify the callback functions
 const fileExists = promisify(fs.exists);
