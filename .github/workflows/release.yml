@@ -15,7 +15,11 @@ jobs:
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
           echo ::set-output name=version::${VERSION}
+      - name: Check if release exists
+        id: check_release
+        run: echo ::set-output name=success::$(curl -s -o /dev/null -w "%{http_code}" https://api.github.com/repos/saucelabs/sauce-cypress-runner/releases/tags/${{ steps.prep.outputs.version }})
       - name: Create Release
+        if: steps.check_release.outputs.success != '200'
         id: create_release
         uses: actions/create-release@v1
         env:
