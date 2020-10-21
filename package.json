@@ -15,7 +15,7 @@
   },
   "keywords": [],
   "dependencies": {
-    "cypress": "4.9.0",
+    "cypress": "^5.4.0",
     "cypress-multi-reporters": "^1.4.0",
     "glob": "^7.1.6",
     "js-yaml": "3.14.0",
