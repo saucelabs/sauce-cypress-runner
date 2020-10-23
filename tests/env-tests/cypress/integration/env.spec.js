@@ -9,7 +9,7 @@ context('Actions', function () {
     expect(Cypress.env('foo')).to.equal('BAR');
   });
 
-  it('should stop recording cypress video', function () {
-    expect(process.env.SAUCE_CYPRESS_VIDEO_RECORDING).to.equal('false');
+  it('should skip recording cypress video', function () {
+    expect(String(process.env.SAUCE_CYPRESS_VIDEO_RECORDING).toLowerCase() === 'true').to.equal(false);
   });
 });
