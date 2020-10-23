@@ -105,7 +105,7 @@ const cypressRunner = async function () {
       configFile,
       config: {
         env,
-        video: true,
+        video: String(process.env.SAUCE_CYPRESS_VIDEO_RECORDING).toLowerCase() === 'true',
         videosFolder: reportsDir,
         videoCompression: false,
         videoUploadOnPasses: false,
