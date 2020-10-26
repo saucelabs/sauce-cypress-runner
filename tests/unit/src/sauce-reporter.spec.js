@@ -30,6 +30,7 @@ describe('SauceReporter', function () {
       expect(res).toEqual([
         'tmp/folder/video.mp4',
         'tmp/folder/log.json',
+        'tmp/folder/cypress.log',
         'tmp/folder/junit.xml'
       ]);
     });

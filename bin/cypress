@@ -1,5 +1,20 @@
 #!/usr/bin/env node
-var { cypressRunner } = require('../src/cypress-runner.js');
-(async() => {
-  await cypressRunner();
+
+const path = require('path');
+const child_process = require('child_process');
+const { realpathSync } = require('fs');
+
+(async () => {
+    const fd = fs.createWriteStream(path.join(__dirname, '../cypress/cypress.log'));
+    child = child_process.spawn('node', ['./src/cypress-runner.js']);
+
+    child.stdout.pipe(process.stdout);
+    child.stderr.pipe(process.stderr);
+    child.stdout.pipe(fd);
+    child.stderr.pipe(fd);
+
+    await new Promise((acc) => {
+        fd.close();
+        child.on('exit', () => acc());
+    });
 })();
