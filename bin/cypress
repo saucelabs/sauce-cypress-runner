@@ -2,10 +2,10 @@
 
 const path = require('path');
 const child_process = require('child_process');
-const { realpathSync } = require('fs');
+const { createWriteStream } = require('fs');
 
 (async () => {
-    const fd = fs.createWriteStream(path.join(__dirname, '../cypress/cypress.log'));
+    const fd = createWriteStream(path.join(__dirname, '../cypress/cypress.log'));
     child = child_process.spawn('node', ['./src/cypress-runner.js']);
 
     child.stdout.pipe(process.stdout);
