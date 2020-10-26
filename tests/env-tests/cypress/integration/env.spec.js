@@ -1,5 +1,7 @@
 /// <reference types="cypress" />
 
+const { shouldRecordVideo } = require('../../../../src/utils');
+
 context('Actions', function () {
   beforeEach(function () {
     cy.visit('https://example.cypress.io/commands/actions');
@@ -10,6 +12,6 @@ context('Actions', function () {
   });
 
   it('should skip recording cypress video', function () {
-    expect(String(process.env.SAUCE_CYPRESS_VIDEO_RECORDING).toLowerCase() === 'true').to.equal(false);
+    expect(shouldRecordVideo()).to.not.equal('true');
   });
 });

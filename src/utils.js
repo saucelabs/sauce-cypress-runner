@@ -12,7 +12,8 @@ function shouldRecordVideo () {
   if (isVideoRecording === undefined) {
     return true;
   }
-  return String(isVideoRecording).toLowerCase() === 'true';
+  let videoOption = String(isVideoRecording).toLowerCase();
+  return videoOption === 'true' || videoOption === '1';
 }
 
 module.exports.getAbsolutePath = getAbsolutePath;
