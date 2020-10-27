@@ -5,7 +5,7 @@ const { promisify } = require('util');
 const yaml = require('js-yaml');
 const cypress = require('cypress');
 let { exec } = require('child_process');
-const { getAbsolutePath } = require('./utils');
+const { getAbsolutePath, shouldRecordVideo } = require('./utils');
 
 // Promisify the callback functions
 const fileExists = promisify(fs.exists);
@@ -105,7 +105,7 @@ const cypressRunner = async function () {
       configFile,
       config: {
         env,
-        video: true,
+        video: shouldRecordVideo(),
         videosFolder: reportsDir,
         videoCompression: false,
         videoUploadOnPasses: false,

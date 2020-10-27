@@ -20,5 +20,7 @@ jobs:
       - name: Install dependencies
         run: npm ci --production
       - name: Run integration tests
+        env:
+          SAUCE_CYPRESS_VIDEO_RECORDING: false
         run: bash tests/integration/integration-tests.sh
 
