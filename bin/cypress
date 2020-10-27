@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-var { cypressRunner } = require('../src/cypress-runner.js');
-(async() => {
-  await cypressRunner();
-})();
+
+const { cypressRecorder } = require('../src/cypress-recorder');
+
+(async () => await cypressRecorder())();
