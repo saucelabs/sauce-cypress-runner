@@ -15,7 +15,7 @@ function getAbsolutePath (pathToDir) {
 async function getRunnerConfig () {
   // Get the configuration info from config.yaml
   const configYamlDefault = 'config.yaml';
-  const configYamlPath = process.env.CONFIG_FILE || configYamlDefault;
+  const configYamlPath = process.env.SAUCE_CONFIG_FILE || configYamlDefault;
   const config = yaml.safeLoad(await readFile(configYamlPath, 'utf8'));
 
   // If relative paths were provided in YAML, convert them to absolute

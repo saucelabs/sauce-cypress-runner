@@ -267,7 +267,7 @@ MochaJUnitReporter.prototype.report = function (testsuites, sauceJson) {
     const { specFolder } = this._options;
     const absoluteSpecFolder = path.isAbsolute(specFolder) ? specFolder : path.join(cwd, specFolder);
     let specFile = absoluteSpecFile.replace(absoluteSpecFolder, '');
-    if (specFile.startsWith('/')) {
+    if (path.isAbsolute(specFile)) {
       specFile = specFile.substr(1);
     }
     this.flush(testsuites, specFile, sauceJson);

@@ -3,7 +3,7 @@
 # set -e: exit asap if a command exits with a non-zero status
 set -e
 
-if ["${SAUCE_VM}" != ""]; then
+if [[ ! -z "${SAUCE_VM}" ]]; then
   echo "Not running entry.sh in Sauce VM"
   exit 0
 fi
