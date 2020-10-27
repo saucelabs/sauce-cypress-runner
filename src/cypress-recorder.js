@@ -11,8 +11,7 @@ const cypressRecorder = () => {
   });
 
   const [nodeBin] = process.argv;
-  console.log(nodeBin);
-  const child = child_process.spawn(nodeBin, [path.join(__dirname, 'src', 'cypress-runner.js')]);
+  const child = child_process.spawn(nodeBin, [path.join(__dirname, 'cypress-runner.js')]);
 
   child.stdout.pipe(process.stdout);
   child.stderr.pipe(process.stderr);
