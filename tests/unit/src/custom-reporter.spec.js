@@ -17,6 +17,16 @@ describe('Custom Reporter', function () {
       report.call(ctx, 'a', 'b');
       expect(ctx.flush.mock.calls).toEqual([['a', 'path/to/spec', 'b']]);
     });
+    it('translates relative paths to absolute paths', function () {
+      const { report } = MochaJUnitReporter.prototype;
+      const ctx = {};
+      ctx._runner = {suite: { file: 'spec/folder/path/to/spec'}};
+      ctx.flush = jest.fn(function () {});
+      ctx._options = {};
+      ctx._options.specFolder = path.join('spec', 'folder');
+      report.call(ctx, 'a', 'b');
+      expect(ctx.flush.mock.calls).toEqual([['a', 'path/to/spec', 'b']]);
+    });
   });
   describe('.writeXmlToDisk', function () {
     it('maintains relative paths correctly (addresses DEVX-273)', function () {

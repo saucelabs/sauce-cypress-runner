@@ -114,3 +114,6 @@ results/
 tests/fixtures/cypress-tests/typescript-*/**/*.js
 
 bundle/
+
+run.yaml
+__assets__
