@@ -13,7 +13,6 @@ describe('.cypressRunner', function () {
     jest.resetModules();
     process.env = { ...oldEnv };
     cypressRunSpy.mockClear();
-    sauceReporter.mockClear();
     const cypressRunResults = {
       runs: ['spec-a', 'spec-b'],
       failures: [],
@@ -62,6 +61,7 @@ describe('.cypressRunner', function () {
   it('calls sauce reporter and returns a job status', async function () {
     process.env.SAUCE_BUILD_NAME = 'fake-build-name';
     process.env.BROWSER_NAME = 'firefox';
+    sauceReporter.mockClear();
     await cypressRunner();
     expect(sauceReporter.mock.calls).toEqual([
       ['fake-build-name', 'firefox', 'spec-a'],
