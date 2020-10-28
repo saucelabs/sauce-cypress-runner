@@ -24,6 +24,6 @@ async function cypressRecorder () {
     fs.closeSync(fd);
     process.exit(exitCode);
   }));
-};
+}
 
 exports.cypressRecorder = cypressRecorder;

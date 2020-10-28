@@ -1,10 +1,11 @@
 jest.mock('fs');
 jest.mock('webdriverio');
 jest.mock('saucelabs');
+jest.mock('../../../src/utils');
 const fs = require('fs');
 const webdriverio = require('webdriverio');
 const SauceLabs = require('saucelabs');
-
+const utils = require('../../../src/utils');
 const SauceReporter = require('../../../src/sauce-reporter');
 
 describe('SauceReporter', function () {
@@ -26,6 +27,7 @@ describe('SauceReporter', function () {
       fs.existsSync.mockReturnValue(true);
       fs.copyFileSync.mockReturnValue(true);
       fs.mkdtempSync.mockReturnValue('tmp/folder');
+      utils.getRunnerConfig.mockReturnValue({reportsDir: '/fake/reports/dir/'});
       const res = await SauceReporter.prepareAssets('spec/file', 'results/');
       expect(res).toEqual([
         'tmp/folder/video.mp4',
@@ -38,6 +40,7 @@ describe('SauceReporter', function () {
       fs.existsSync.mockReturnValue(false);
       fs.copyFileSync.mockReturnValue(true);
       fs.mkdtempSync.mockReturnValue('tmp/folder');
+      utils.getRunnerConfig.mockReturnValue({reportsDir: '/fake/reports/dir/'});
       const res = await SauceReporter.prepareAssets('spec/file', 'results/');
       expect(res).toEqual([]);
     });
