@@ -4,6 +4,7 @@ const os = require('os');
 const SauceLabs = require('saucelabs').default;
 const { getRunnerConfig } = require('./utils');
 let md5 = require('md5');
+let ffmpeg = require('fluent-ffmpeg');
 const region = process.env.SAUCE_REGION || 'us-west-1';
 
 const { remote } = require('webdriverio');
@@ -26,31 +27,50 @@ SauceReporter.prepareAsset = (specFile, resultsFolder, tmpFolder, ext, name) => 
   return null;
 };
 
-SauceReporter.prepareAssets = async (specFile, resultsFolder) => {
-  // Copy global log as specFile cypress log
-  const {rootDir} = await getRunnerConfig();
-  fs.copyFileSync(path.join(rootDir, 'console.log'), path.join(resultsFolder, `${specFile}.log`));
 
-  const tmpFolder = fs.mkdtempSync(path.join(os.tmpdir(), md5(specFile)));
-  const sauceAssets = [
-    { name: 'video.mp4', ext: 'mp4' },
-    { name: 'log.json', ext: 'json' },
-    { name: 'console.log', ext: 'log' },
-    { name: 'junit.xml', ext: 'xml' },
-  ];
+SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
   const assets = [];
-  for (let ast of sauceAssets) {
-    let assetFile = await SauceReporter.prepareAsset(specFile, resultsFolder, tmpFolder, ast.ext, ast.name);
-    if (assetFile) {
-      assets.push(assetFile);
+  const videos = [];
+
+  for (let specFile of specFiles) {
+    // Copy global log as specFile cypress log
+    const {rootDir} = await getRunnerConfig();
+    fs.copyFileSync(path.join(rootDir, 'console.log'), path.join(resultsFolder, `${specFile}.log`));
+
+    const tmpFolder = fs.mkdtempSync(path.join(os.tmpdir(), md5(specFile)));
+    const specFilename = path.basename(specFile);
+    const sauceAssets = [
+      { name: `${specFilename}.mp4`, ext: 'mp4' },
+      { name: `${specFilename}.json`, ext: 'json' },
+      { name: `${specFilename}.log`, ext: 'log' },
+      { name: `${specFilename}.xml`, ext: 'xml' },
+    ];
+
+    for (let ast of sauceAssets) {
+      let assetFile = await SauceReporter.prepareAsset(specFile, resultsFolder, tmpFolder, ast.ext, ast.name);
+      if (assetFile) {
+        assets.push(assetFile);
+
+        if (ast.ext === 'mp4') {
+          videos.push(assetFile);
+        }
+      }
     }
   }
+
+  if (videos.length !== 0) {
+    let comboVideo = path.join(resultsFolder, 'video.mp4');
+    console.info(`Combining videos ${videos}`);
+    await SauceReporter.mergeVideos(videos, comboVideo);
+    assets.push(comboVideo);
+  }
+
   return assets;
 };
 
-SauceReporter.sauceReporter = async (buildName, browserName, spec) => {
-  let specFile = spec.spec.name;
-  let testName = `devx cypress - ${specFile}`;
+SauceReporter.sauceReporter = async (buildName, browserName, testruns, failures) => {
+  // TODO take test name from saucectl
+  let testName = `devx cypress - full suite`;
   let tags = process.env.SAUCE_TAGS;
 
   const api = new SauceLabs({
@@ -97,32 +117,36 @@ SauceReporter.sauceReporter = async (buildName, browserName, spec) => {
     console.warn('Failed to prepare test', e);
   }
 
-  // create sauce asset
-  console.log(`Preparing assets for ${specFile}`);
+  const resultsFolder = 'cypress/results';
+  let specFiles = testruns.map((run) => run.spec.name);
   let assets = await SauceReporter.prepareAssets(
-    specFile,
-    process.env.SAUCE_REPORTS_DIR || 'cypress/results',
+    specFiles,
+    process.env.SAUCE_REPORTS_DIR || resultsFolder,
   );
 
   // upload assets
   await Promise.all([
     api.uploadJobAssets(
-      sessionId,
-      { files: assets },
+        sessionId,
+        { files: assets },
     ).then(
-      (resp) => {
-        if (resp.errors) {
-          for (let err of resp.errors) { console.error(err); }
-        }
-      },
-      (e) => console.log('upload failed:', e.stack)
-    ),
+        (resp) => {
+          if (resp.errors) {
+            for (let err of resp.errors) { console.error(err); }
+          }
+        },
+        (e) => console.log('Upload failed:', e.stack)
+    )
+  ]);
+
+  // set appropriate job status
+  await Promise.all([
     api.updateJob(process.env.SAUCE_USERNAME, sessionId, {
       name: testName,
-      passed: spec.stats.failures === 0 ? true : false
+      passed: failures === 0
     }).then(
-      () => {},
-      (e) => console.log('Failed to update job status', e)
+        () => {},
+        (e) => console.log('Failed to update job status', e)
     )
   ]);
 
@@ -139,6 +163,25 @@ SauceReporter.sauceReporter = async (buildName, browserName, spec) => {
 
   console.log(`\nOpen job details page: https://app.${domain}/tests/${sessionId}\n`);
 
+};
+
+SauceReporter.mergeVideos = function (videos, target) {
+  return new Promise((resolve, reject) => {
+    let cmd = ffmpeg();
+    for (let video of videos) {
+      cmd.input(video);
+    }
+    cmd
+        .on('error', function (err) {
+          console.log('Failed to merge videos: ' + err.message);
+          reject();
+        })
+        .on('end', function () {
+          console.log('Finished merging videos!');
+          resolve();
+        })
+        .mergeToFile(target, os.tmpdir());
+  });
 };
 
 module.exports = SauceReporter;
