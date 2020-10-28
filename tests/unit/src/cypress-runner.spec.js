@@ -59,6 +59,8 @@ describe('.cypressRunner', function () {
     expect(calledBrowser).toEqual('C:/User/App/browser.exe:chrome');
   });
   it('calls sauce reporter and returns a job status', async function () {
+    process.env.SAUCE_USERNAME = 'bruno.alassia';
+    process.env.SAUCE_ACCESS_KEY = 'i_l0ve_mayonnaise';
     process.env.SAUCE_BUILD_NAME = 'fake-build-name';
     process.env.BROWSER_NAME = 'firefox';
     sauceReporter.mockClear();
