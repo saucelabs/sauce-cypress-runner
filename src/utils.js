@@ -21,7 +21,7 @@ async function getRunnerConfig () {
   // If relative paths were provided in YAML, convert them to absolute
   const rootDir = process.env.SAUCE_ROOT_DIR || config.rootDir;
   const reportsDir = process.env.SAUCE_REPORTS_DIR || config.reportsDir;
-  const targetDir = process.env.SAUCE_TARGET_DIR || config.targetDir;
+  const targetDir = process.env.SAUCE_TARGET_DIR || process.env.SAUCE_ROOT_DIR || config.targetDir;
 
   return {
     rootDir,

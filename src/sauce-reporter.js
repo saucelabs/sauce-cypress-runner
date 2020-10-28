@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const SauceLabs = require('saucelabs').default;
+const { getRunnerConfig } = require('./utils');
 let md5 = require('md5');
 const region = process.env.SAUCE_REGION || 'us-west-1';
 
@@ -27,7 +28,8 @@ SauceReporter.prepareAsset = (specFile, resultsFolder, tmpFolder, ext, name) => 
 
 SauceReporter.prepareAssets = async (specFile, resultsFolder) => {
   // Copy global log as specFile cypress log
-  fs.copyFileSync(path.join(resultsFolder, '..', 'console.log'), path.join(resultsFolder, `${specFile}.log`));
+  const {reportsDir} = await getRunnerConfig();
+  fs.copyFileSync(path.join(reportsDir, 'console.log'), path.join(resultsFolder, `${specFile}.log`));
 
   const tmpFolder = fs.mkdtempSync(path.join(os.tmpdir(), md5(specFile)));
   const sauceAssets = [

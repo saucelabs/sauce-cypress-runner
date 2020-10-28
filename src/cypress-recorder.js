@@ -3,9 +3,11 @@ const fs = require('fs');
 const path = require('path');
 const stream = require('stream');
 const child_process = require('child_process');
+const { getRunnerConfig } = require('./utils');
 
-const cypressRecorder = () => {
-  const fd = fs.openSync(path.join(__dirname, '..', 'cypress', 'console.log'), 'w+', 0o644);
+async function cypressRecorder () {
+  const {reportsDir} = await getRunnerConfig();
+  const fd = fs.openSync(path.join(reportsDir, 'console.log'), 'w+', 0o644);
   const ws = stream.Writable({
     write (data, encoding, cb) { fs.write(fd, data, undefined, encoding, cb); },
   });
