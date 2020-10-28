@@ -1,4 +1,5 @@
 export SAUCE_USERNAME=''
 export SAUCE_ACCESS_KEY=''
-export CONFIG_FILE=./tests/config-tests/config.yaml && node .
-export CONFIG_FILE=./tests/env-tests/config.yaml && node .
+export SAUCE_REPORTS_DIR=$PWD/'__assets__'
+export SAUCE_ROOT_DIR=$PWD/tests/config-tests && node .
+export SAUCE_ROOT_DIR=$PWD/tests/env-tests && node .
