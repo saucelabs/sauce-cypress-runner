@@ -19,7 +19,7 @@ async function getRunnerConfig () {
   const configYamlDefault = 'config.yaml';
   const configYamlPath = process.env.SAUCE_CONFIG_FILE || configYamlDefault;
   if (!config) {
-    config =  yaml.safeLoad(await readFile(configYamlPath, 'utf8'));
+    config = yaml.safeLoad(await readFile(configYamlPath, 'utf8'));
   }
 
   // If relative paths were provided in YAML, convert them to absolute
