@@ -39,11 +39,6 @@ jobs:
           #SKIP_CI: true
           #SAUCE_CTL_BINARY: ./saucectl/saucectl
         #name: Build Saucectl and run E2E tests
-  bundle:
-    runs-on: ubuntu-latest
-    steps:
-      - name: NPM clean install
-        run: npm cache clean --force && npm ci
   build-ubuntu-bundle-and-test:
     runs-on: ubuntu-latest
     steps:
