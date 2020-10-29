@@ -22,7 +22,8 @@
     "mocha-junit-reporter": "^2.0.0",
     "saucelabs": "^4.5.0",
     "typescript": "^3.9.7",
-    "webdriverio": "6.1.22"
+    "webdriverio": "6.1.22",
+    "fluent-ffmpeg": "2.1.2"
   },
   "devDependencies": {
     "@types/chai": "^4.2.12",
@@ -39,8 +40,7 @@
     "husky": "^4.3.0",
     "jest": "^26.4.2",
     "mocha": "^8.1.3",
-    "typescript": "^3.9.7",
-    "fluent-ffmpeg": "2.1.2"
+    "typescript": "^3.9.7"
   },
   "husky": {
     "hooks": {
