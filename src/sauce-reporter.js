@@ -62,7 +62,6 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
 
   if (videos.length !== 0) {
     let comboVideo = path.join(resultsFolder, 'video.mp4');
-    console.info(`Combining videos ${videos}`);
     await SauceReporter.mergeVideos(videos, comboVideo);
     assets.push(comboVideo);
   }
@@ -71,8 +70,8 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
 };
 
 SauceReporter.sauceReporter = async (buildName, browserName, testruns, failures) => {
-  // TODO take test name from saucectl
-  let testName = `devx cypress - full suite`;
+  // SAUCE_JOB_NAME is only available for saucectl >= 0.16, hence the fallback
+  let testName = process.env.SAUCE_JOB_NAME | `DevX Cypress Test Run - ${(new Date()).getTime()}`;
   let tags = process.env.SAUCE_TAGS;
 
   const api = new SauceLabs({
@@ -179,7 +178,6 @@ SauceReporter.mergeVideos = function (videos, target) {
           reject();
         })
         .on('end', function () {
-          console.log('Finished merging videos!');
           resolve();
         })
         .mergeToFile(target, os.tmpdir());
