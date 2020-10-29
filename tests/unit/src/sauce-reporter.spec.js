@@ -75,9 +75,9 @@ describe('SauceReporter', function () {
     it('should output err when upload failed', async function () {
       let originalConsole = console.error;
       prepareAssetsSpy.mockReturnValue(['asset/one', 'asset/two']);
-      await SauceReporter.sauceReporter('build', 'browser', {
+      await SauceReporter.sauceReporter('build', 'browser', [{
         spec: {name: 'MySpec'}, stats: {failures: 0}
-      });
+      }]);
 
       let consoleOutput = [];
       const mockErr = output => consoleOutput.push(output);
