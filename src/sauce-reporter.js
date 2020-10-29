@@ -32,17 +32,19 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
   const assets = [];
   const videos = [];
 
-  for (let specFile of specFiles) {
-    // Copy global log as specFile cypress log
-    const {rootDir} = await getRunnerConfig();
-    fs.copyFileSync(path.join(rootDir, 'console.log'), path.join(resultsFolder, `${specFile}.log`));
+  // Add the main console log
+  const {rootDir} = await getRunnerConfig();
+  let clog = path.join(rootDir, 'console.log');
+  if (fs.existsSync(clog)) {
+    assets.push(clog);
+  }
 
+  for (let specFile of specFiles) {
     const tmpFolder = fs.mkdtempSync(path.join(os.tmpdir(), md5(specFile)));
     const specFilename = path.basename(specFile);
     const sauceAssets = [
       { name: `${specFilename}.mp4`, ext: 'mp4' },
       { name: `${specFilename}.json`, ext: 'json' },
-      { name: `${specFilename}.log`, ext: 'log' },
       { name: `${specFilename}.xml`, ext: 'xml' },
     ];
 

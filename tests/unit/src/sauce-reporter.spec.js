@@ -31,10 +31,10 @@ describe('SauceReporter', function () {
       SauceReporter.mergeVideos = jest.fn().mockImplementation(async function () {});
       const res = await SauceReporter.prepareAssets(['spec/file.test.js'], 'results/');
       expect(res).toEqual([
+        '/fake/root/dir/console.log',
         'tmp/folder/file.test.js.mp4',
         'tmp/folder/file.test.js.json',
         'tmp/folder/file.test.js.xml',
-        'tmp/folder/console.log',
         'results/video.mp4'
       ]);
     });
