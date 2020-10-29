@@ -33,6 +33,12 @@ This env variable is for controlling cypress native video recording.
 saucectl run -e SAUCE_CYPRESS_VIDEO_RECORDING=true
 ```
 
+### `BROWSER_NAME`
+Name of the browser to run the test on
+
+#### `SAUCE_BROWSER_PATH`
+Points to the browser binary path
+
 ## Publishing to Docker Hub
 To publish the Docker image:
 * Create a [new release](https://github.com/saucelabs/sauce-cypress-runner/releases)

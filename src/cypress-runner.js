@@ -13,18 +13,10 @@ const readFile = promisify(fs.readFile);
 exec = promisify(exec);
 
 const DEFAULT_BROWSER = 'chrome';
-const buildName = process.env.SAUCE_BUILD_NAME || `stt-cypress-build-${(new Date()).getTime()}`;
 const supportedBrowsers = {
   'chrome': 'chrome',
   'firefox': 'firefox'
 };
-
-let browserName = process.env.BROWSER_NAME || DEFAULT_BROWSER;
-browserName = supportedBrowsers[browserName.toLowerCase()];
-if (!browserName) {
-  console.error(`Unsupported browser: ${process.env.BROWSER_NAME}. Sorry.`);
-  process.exit(1);
-}
 
 // the default test matching behavior for versions <= v0.1.8
 const DefaultRunCfg = {
@@ -43,13 +35,14 @@ async function loadRunConfig (cfgPath) {
   return DefaultRunCfg;
 }
 
-const report = async (results) => {
+const report = async (results, browserName) => {
   const status = results.failures || results.totalFailed;
   if (!(process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY)) {
     console.log('Skipping asset uploads! Remember to setup your SAUCE_USERNAME/SAUCE_ACCESS_KEY');
     return status;
   }
   const runs = results.runs || [];
+  const buildName = process.env.SAUCE_BUILD_NAME || `stt-cypress-build-${(new Date()).getTime()}`;
   for (let spec of runs) {
     await sauceReporter(buildName, browserName, spec);
   }
@@ -57,6 +50,23 @@ const report = async (results) => {
 };
 
 const cypressRunner = async function () {
+  // Determine the browser (Chrome by default)
+  let browserName;
+  browserName = process.env.BROWSER_NAME || DEFAULT_BROWSER;
+  browserName = supportedBrowsers[browserName.toLowerCase()];
+  if (!browserName) {
+    throw new Error(`Unsupported browser: '${process.env.BROWSER_NAME}'. Sorry.`);
+  }
+
+  // If browser path was provided, use that and append browser name
+  // (e.g.: C:/user/path/to/browser:chrome)
+  let browser;
+  if (process.env.SAUCE_BROWSER_PATH) {
+    browser = `${process.env.SAUCE_BROWSER_PATH}:${browserName}`;
+  } else {
+    browser = browserName;
+  }
+
   // Get the configuration info from config.yaml
   const {rootDir, reportsDir, targetDir} = await getRunnerConfig();
 
@@ -94,7 +104,7 @@ const cypressRunner = async function () {
   }
 
   const results = await cypress.run({
-    browser: browserName,
+    browser,
     configFile,
     config: {
       env,
@@ -112,7 +122,7 @@ const cypressRunner = async function () {
       },
     }
   });
-  return await report(results);
+  return await report(results, browserName);
 };
 
 // For dev and test purposes, this allows us to run our Cypress Runner from command line
