@@ -29,7 +29,7 @@ SauceReporter.prepareAsset = (specFile, resultsFolder, tmpFolder, ext, name) => 
 SauceReporter.prepareAssets = async (specFile, resultsFolder) => {
   // Copy global log as specFile cypress log
   const {reportsDir} = await getRunnerConfig();
-  fs.copyFileSync(path.join(reportsDir, 'console.log'), path.join(resultsFolder, `${specFile}.log`));
+  fs.copyFileSync(path.join(reportsDir, '..', 'console.log'), path.join(resultsFolder, `${specFile}.log`));
 
   const tmpFolder = fs.mkdtempSync(path.join(os.tmpdir(), md5(specFile)));
   const sauceAssets = [
