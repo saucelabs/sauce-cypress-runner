@@ -71,7 +71,7 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
 
 SauceReporter.sauceReporter = async (buildName, browserName, testruns, failures) => {
   // SAUCE_JOB_NAME is only available for saucectl >= 0.16, hence the fallback
-  let testName = process.env.SAUCE_JOB_NAME | `DevX Cypress Test Run - ${(new Date()).getTime()}`;
+  let testName = process.env.SAUCE_JOB_NAME || `DevX Cypress Test Run - ${(new Date()).getTime()}`;
   let tags = process.env.SAUCE_TAGS;
 
   const api = new SauceLabs({
