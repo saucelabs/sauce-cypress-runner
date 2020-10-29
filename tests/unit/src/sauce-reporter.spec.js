@@ -27,7 +27,7 @@ describe('SauceReporter', function () {
       fs.existsSync.mockReturnValue(true);
       fs.copyFileSync.mockReturnValue(true);
       fs.mkdtempSync.mockReturnValue('tmp/folder');
-      utils.getRunnerConfig.mockReturnValue({reportsDir: '/fake/reports/dir/'});
+      utils.getRunnerConfig.mockReturnValue({reportsDir: '/fake/reports/dir/', rootDir: '/fake/root/dir/'});
       const res = await SauceReporter.prepareAssets('spec/file', 'results/');
       expect(res).toEqual([
         'tmp/folder/video.mp4',
@@ -40,7 +40,7 @@ describe('SauceReporter', function () {
       fs.existsSync.mockReturnValue(false);
       fs.copyFileSync.mockReturnValue(true);
       fs.mkdtempSync.mockReturnValue('tmp/folder');
-      utils.getRunnerConfig.mockReturnValue({reportsDir: '/fake/reports/dir/'});
+      utils.getRunnerConfig.mockReturnValue({reportsDir: '/fake/reports/dir/', rootDir: '/fake/root/dir/'});
       const res = await SauceReporter.prepareAssets('spec/file', 'results/');
       expect(res).toEqual([]);
     });
