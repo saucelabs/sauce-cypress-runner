@@ -66,8 +66,7 @@ describe('.cypressRunner', function () {
     sauceReporter.mockClear();
     await cypressRunner();
     expect(sauceReporter.mock.calls).toEqual([
-      ['fake-build-name', 'firefox', 'spec-a'],
-      ['fake-build-name', 'firefox', 'spec-b'],
+      ['fake-build-name', 'firefox', ['spec-a', 'spec-b'], []],
     ]);
   });
   it('throws error if browser is unsupported', function () {

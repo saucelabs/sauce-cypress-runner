@@ -28,12 +28,14 @@ describe('SauceReporter', function () {
       fs.copyFileSync.mockReturnValue(true);
       fs.mkdtempSync.mockReturnValue('tmp/folder');
       utils.getRunnerConfig.mockReturnValue({reportsDir: '/fake/reports/dir/', rootDir: '/fake/root/dir/'});
-      const res = await SauceReporter.prepareAssets('spec/file', 'results/');
+      SauceReporter.mergeVideos = jest.fn().mockImplementation(async function () {});
+      const res = await SauceReporter.prepareAssets(['spec/file.test.js'], 'results/');
       expect(res).toEqual([
-        'tmp/folder/video.mp4',
-        'tmp/folder/log.json',
-        'tmp/folder/console.log',
-        'tmp/folder/junit.xml'
+        '/fake/root/dir/console.log',
+        'tmp/folder/file.test.js.mp4',
+        'tmp/folder/file.test.js.json',
+        'tmp/folder/file.test.js.xml',
+        'results/video.mp4'
       ]);
     });
     it('should return an empty list of assets if files not found (addresses DEVX-273)', async function () {
@@ -63,9 +65,9 @@ describe('SauceReporter', function () {
     });
     it('should call uploadJobAssets on SauceLabs api', async function () {
       prepareAssetsSpy.mockReturnValue(['asset/one', 'asset/two']);
-      await SauceReporter.sauceReporter('build', 'browser', {
+      await SauceReporter.sauceReporter('build', 'browser', [{
         spec: {name: 'MySpec'}, stats: {failures: 0}
-      });
+      }], 0);
       expect(uploadJobAssetsSpy.mock.calls).toEqual([
         ['a', {'files': ['asset/one', 'asset/two']}]
       ]);
@@ -73,9 +75,9 @@ describe('SauceReporter', function () {
     it('should output err when upload failed', async function () {
       let originalConsole = console.error;
       prepareAssetsSpy.mockReturnValue(['asset/one', 'asset/two']);
-      await SauceReporter.sauceReporter('build', 'browser', {
+      await SauceReporter.sauceReporter('build', 'browser', [{
         spec: {name: 'MySpec'}, stats: {failures: 0}
-      });
+      }]);
 
       let consoleOutput = [];
       const mockErr = output => consoleOutput.push(output);

@@ -42,10 +42,10 @@ const report = async (results, browserName) => {
     return status;
   }
   const runs = results.runs || [];
+
   const buildName = process.env.SAUCE_BUILD_NAME || `stt-cypress-build-${(new Date()).getTime()}`;
-  for (let spec of runs) {
-    await sauceReporter(buildName, browserName, spec);
-  }
+  await sauceReporter(buildName, browserName, runs, status);
+
   return status;
 };
 
