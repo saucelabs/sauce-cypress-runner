@@ -1,0 +1,25 @@
+apiVersion: v1alpha
+metadata:
+  name: Testing Cypress Kitchen Sink
+  tags:
+    - e2e
+    - release team
+    - kitchen-sink
+  build: Release $CI_COMMIT_SHORT_SHA
+
+files:
+  - ./tests
+  - ./cypress/fixtures
+
+suites:
+  - name: "cypress kitchen sink test"
+    match: "tests/examples/.*.(spec|test).js$"
+    settings:
+      browserName: "chrome"
+
+image:
+  base: saucelabs/stt-cypress-mocha-node
+  version: latest
+
+sauce:
+  region: us-west-1
