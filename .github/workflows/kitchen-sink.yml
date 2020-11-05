@@ -10,17 +10,18 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: saucelabs/stt-cypress-mocha-node:latest
-    strategy:
-      matrix:
-        node-version: [12.x, 14.x]
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js v${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Install dependencies
-        run: npm ci --production
-      - name: Run cypress kitchen sink tests
+      # appears that checkout@v2 uses javascript which is not compatible 
+      # with the included node version in the container image.
+      - name: Checkout Code
+        uses: actions/checkout@v1
+        
+      - name: Workaround for container permissions
+        run: sudo chown -R $USER:$(id -gn $USER) /github/home
+      
+      - name: Workaround for container folder
+        run: sudo ln -s /home/seluser/.cache /github/home/.cache
+
+      - name: Run kitchen sink test
         run: bash tests/kitchen-sink-tests/kitchen-sink-tests.sh
 
