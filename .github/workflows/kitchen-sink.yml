@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: saucelabs/stt-cypress-mocha-node:latest
     strategy:
       matrix:
         node-version: [12.x, 14.x]
