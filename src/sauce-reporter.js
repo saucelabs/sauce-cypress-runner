@@ -4,7 +4,9 @@ const os = require('os');
 const SauceLabs = require('saucelabs').default;
 const { getRunnerConfig } = require('./utils');
 let md5 = require('md5');
-let ffmpeg = require('fluent-ffmpeg');
+const ffmpeg = require('fluent-ffmpeg');
+const { promisify } = require('util');
+const ffprobe = promisify(ffmpeg.ffprobe);
 const region = process.env.SAUCE_REGION || 'us-west-1';
 
 const { remote } = require('webdriverio');
@@ -62,8 +64,12 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
 
   if (videos.length !== 0) {
     let comboVideo = path.join(resultsFolder, 'video.mp4');
-    await SauceReporter.mergeVideos(videos, comboVideo);
-    assets.push(comboVideo);
+    try {
+      await SauceReporter.mergeVideos(videos, comboVideo);
+      assets.push(comboVideo);
+    } catch (e) {
+      console.error('Failed to merge videos: ', e);
+    }
   }
 
   return assets;
@@ -166,9 +172,17 @@ SauceReporter.sauceReporter = async (buildName, browserName, testruns, failures)
 
 };
 
-SauceReporter.mergeVideos = function (videos, target) {
+SauceReporter.mergeVideos = async (videos, target) => {
+  if (!await SauceReporter.areVideosSameSize(videos)) {
+    console.log('Videos are not of the same size. Unable to merge.');
+    console.log(`Using ${videos[0]} as the main video.`);
+    fs.copyFileSync(videos[0], target);
+    return;
+  }
+
   return new Promise((resolve, reject) => {
     let cmd = ffmpeg();
+    console.log(`Merging videos: ${videos}, to ${target}`);
     for (let video of videos) {
       cmd.input(video);
     }
@@ -182,6 +196,23 @@ SauceReporter.mergeVideos = function (videos, target) {
         })
         .mergeToFile(target, os.tmpdir());
   });
+};
+
+SauceReporter.areVideosSameSize = async (videos) => {
+  let lastSize;
+  for (let video of videos) {
+    let metadata = await ffprobe(video);
+    let vs = metadata.streams[0];
+
+    if (!lastSize) {
+      lastSize = {width: vs.width, height: vs.height};
+    }
+    if (lastSize.width !== vs.width || lastSize.height !== vs.height) {
+      return false;
+    }
+  }
+
+  return true;
 };
 
 module.exports = SauceReporter;
