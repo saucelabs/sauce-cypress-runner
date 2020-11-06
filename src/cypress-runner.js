@@ -36,8 +36,6 @@ async function loadRunConfig (cfgPath) {
 }
 
 const report = async (results, browserName) => {
-  let status = 1;
-
   // Prepare the assets
   const runs = results.runs || [];
   const resultsFolder = process.env.SAUCE_REPORTS_DIR || 'cypress/results';
@@ -47,15 +45,17 @@ const report = async (results, browserName) => {
     resultsFolder,
   );
 
-  if (!process.env.SAUCE_VM) {
-    status = results.failures || results.totalFailed;
-    if (!(process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY)) {
-      console.log('Skipping asset uploads! Remember to setup your SAUCE_USERNAME/SAUCE_ACCESS_KEY');
-      return status;
-    }
-    const buildName = process.env.SAUCE_BUILD_NAME || `stt-cypress-build-${(new Date()).getTime()}`;
-    await sauceReporter(buildName, browserName, assets, status);
+  if (process.env.SAUCE_VM) {
+    return 1;
   }
+
+  let status = results.failures || results.totalFailed;
+  if (!(process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY)) {
+    console.log('Skipping asset uploads! Remember to setup your SAUCE_USERNAME/SAUCE_ACCESS_KEY');
+    return status;
+  }
+  const buildName = process.env.SAUCE_BUILD_NAME || `stt-cypress-build-${(new Date()).getTime()}`;
+  await sauceReporter(buildName, browserName, assets, status);
 
   return status;
 };
