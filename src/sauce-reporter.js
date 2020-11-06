@@ -173,8 +173,8 @@ SauceReporter.sauceReporter = async (buildName, browserName, testruns, failures)
 };
 
 SauceReporter.mergeVideos = async (videos, target) => {
-  if (!await SauceReporter.areVideosSameSize(videos)) {
-    console.log(`Videos are not of the same size. Unable to merge. Using ${videos[0]} as the main video.`);
+  if (videos.length === 1 || !await SauceReporter.areVideosSameSize(videos)) {
+    console.log(`Using ${videos[0]} as the main video.`);
     fs.copyFileSync(videos[0], target);
     return;
   }
@@ -213,6 +213,7 @@ SauceReporter.areVideosSameSize = async (videos) => {
       lastSize = {width: vs.width, height: vs.height};
     }
     if (lastSize.width !== vs.width || lastSize.height !== vs.height) {
+      console.log('Detected inconsistent video sizes.');
       return false;
     }
   }
