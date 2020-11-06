@@ -8,12 +8,11 @@ metadata:
   build: Release $CI_COMMIT_SHORT_SHA
 
 files:
-  - ./tests/integration
-  - ./cypress/fixtures
+  - ./cypress
 
 suites:
   - name: "cypress kitchen sink test"
-    match: "tests/integration/examples/.*.(spec|test).js$"
+    match: "integration/examples/.*.(spec|test).js$"
     settings:
       browserName: "chrome"
 
