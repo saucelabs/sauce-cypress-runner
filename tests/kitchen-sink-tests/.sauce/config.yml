@@ -13,7 +13,7 @@ files:
 
 suites:
   - name: "cypress kitchen sink test"
-    match: "tests/examples/.*.(spec|test).js$"
+    match: "tests/integration/examples/.*.(spec|test).js$"
     settings:
       browserName: "chrome"
 
