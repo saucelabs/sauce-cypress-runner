@@ -75,7 +75,7 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
   return assets;
 };
 
-SauceReporter.sauceReporter = async (buildName, browserName, testruns, failures) => {
+SauceReporter.sauceReporter = async (buildName, browserName, assets, failures) => {
   // SAUCE_JOB_NAME is only available for saucectl >= 0.16, hence the fallback
   let testName = process.env.SAUCE_JOB_NAME || `DevX Cypress Test Run - ${(new Date()).getTime()}`;
   let tags = process.env.SAUCE_TAGS;
@@ -123,13 +123,6 @@ SauceReporter.sauceReporter = async (buildName, browserName, testruns, failures)
   } catch (e) {
     console.warn('Failed to prepare test', e);
   }
-
-  const resultsFolder = 'cypress/results';
-  let specFiles = testruns.map((run) => run.spec.name);
-  let assets = await SauceReporter.prepareAssets(
-    specFiles,
-    process.env.SAUCE_REPORTS_DIR || resultsFolder,
-  );
 
   // upload assets
   await Promise.all([

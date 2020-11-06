@@ -1,4 +1,4 @@
-const { sauceReporter } = require('./sauce-reporter');
+const { sauceReporter, prepareAssets } = require('./sauce-reporter');
 const path = require('path');
 const fs = require('fs');
 const { promisify } = require('util');
@@ -36,15 +36,26 @@ async function loadRunConfig (cfgPath) {
 }
 
 const report = async (results, browserName) => {
-  const status = results.failures || results.totalFailed;
-  if (!(process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY)) {
-    console.log('Skipping asset uploads! Remember to setup your SAUCE_USERNAME/SAUCE_ACCESS_KEY');
-    return status;
-  }
-  const runs = results.runs || [];
+  let status = 1;
 
-  const buildName = process.env.SAUCE_BUILD_NAME || `stt-cypress-build-${(new Date()).getTime()}`;
-  await sauceReporter(buildName, browserName, runs, status);
+  // Prepare the assets
+  const runs = results.runs || [];
+  const resultsFolder = process.env.SAUCE_REPORTS_DIR || 'cypress/results';
+  let specFiles = runs.map((run) => run.spec.name);
+  let assets = await prepareAssets(
+    specFiles,
+    resultsFolder,
+  );
+
+  if (!process.env.SAUCE_VM) {
+    status = results.failures || results.totalFailed;
+    if (!(process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY)) {
+      console.log('Skipping asset uploads! Remember to setup your SAUCE_USERNAME/SAUCE_ACCESS_KEY');
+      return status;
+    }
+    const buildName = process.env.SAUCE_BUILD_NAME || `stt-cypress-build-${(new Date()).getTime()}`;
+    await sauceReporter(buildName, browserName, assets, status);
+  }
 
   return status;
 };
@@ -61,8 +72,9 @@ const cypressRunner = async function () {
   // If browser path was provided, use that and append browser name
   // (e.g.: C:/user/path/to/browser:chrome)
   let browser;
-  if (process.env.SAUCE_BROWSER_PATH) {
-    browser = `${process.env.SAUCE_BROWSER_PATH}:${browserName}`;
+  const browserPath = process.env.SAUCE_BROWSER_PATH;
+  if (browserPath) {
+    browser = `${browserPath}:${browserName}`;
   } else {
     browser = browserName;
   }
@@ -122,6 +134,7 @@ const cypressRunner = async function () {
       },
     }
   });
+
   return await report(results, browserName);
 };
 

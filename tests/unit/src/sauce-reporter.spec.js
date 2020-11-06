@@ -65,30 +65,19 @@ describe('SauceReporter', function () {
     });
     it('should call uploadJobAssets on SauceLabs api', async function () {
       prepareAssetsSpy.mockReturnValue(['asset/one', 'asset/two']);
-      await SauceReporter.sauceReporter('build', 'browser', [{
-        spec: {name: 'MySpec'}, stats: {failures: 0}
-      }], 0);
+      await SauceReporter.sauceReporter('build', 'browser', ['asset/one', 'asset/two'], 0);
       expect(uploadJobAssetsSpy.mock.calls).toEqual([
         ['a', {'files': ['asset/one', 'asset/two']}]
       ]);
     });
     it('should output err when upload failed', async function () {
-      let originalConsole = console.error;
+      let consoleErrorSpy = jest.spyOn(global.console, 'error');
       prepareAssetsSpy.mockReturnValue(['asset/one', 'asset/two']);
-      await SauceReporter.sauceReporter('build', 'browser', [{
-        spec: {name: 'MySpec'}, stats: {failures: 0}
-      }]);
-
-      let consoleOutput = [];
-      const mockErr = output => consoleOutput.push(output);
-      console.error = mockErr;
-
+      await SauceReporter.sauceReporter('build', 'browser', ['asset/one', 'asset/two']);
       expect(uploadJobAssetsSpy.mock.calls).toEqual([
         ['a', {'files': ['asset/one', 'asset/two']}]
       ]);
-      expect(consoleOutput).calledOnce;
-
-      console.error = originalConsole;
+      expect(consoleErrorSpy.mock.calls).toEqual([['some fake error']]);
     });
   });
 });

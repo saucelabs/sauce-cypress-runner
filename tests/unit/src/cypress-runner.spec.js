@@ -2,7 +2,7 @@ jest.mock('cypress');
 jest.mock('../../../src/sauce-reporter');
 
 const cypress = require('cypress');
-const { sauceReporter } = require('../../../src/sauce-reporter');
+const { sauceReporter, prepareAssets } = require('../../../src/sauce-reporter');
 const { cypressRunner } = require('../../../src/cypress-runner');
 
 describe('.cypressRunner', function () {
@@ -14,10 +14,11 @@ describe('.cypressRunner', function () {
     process.env = { ...oldEnv };
     cypressRunSpy.mockClear();
     const cypressRunResults = {
-      runs: ['spec-a', 'spec-b'],
+      runs: [{spec: {name: 'spec-a'}}, {spec: {name: 'spec-b'}}],
       failures: [],
     };
     cypress.run.mockImplementation(() => cypressRunResults);
+    prepareAssets.mockImplementation(() => (['spec-a', 'spec-b']));
   });
   it('can hardcode locations of reports, target and root', async function () {
     process.env.SAUCE_REPORTS_DIR = '/path/to/results';
