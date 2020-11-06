@@ -174,8 +174,7 @@ SauceReporter.sauceReporter = async (buildName, browserName, testruns, failures)
 
 SauceReporter.mergeVideos = async (videos, target) => {
   if (!await SauceReporter.areVideosSameSize(videos)) {
-    console.log('Videos are not of the same size. Unable to merge.');
-    console.log(`Using ${videos[0]} as the main video.`);
+    console.log(`Videos are not of the same size. Unable to merge. Using ${videos[0]} as the main video.`);
     fs.copyFileSync(videos[0], target);
     return;
   }
@@ -201,8 +200,14 @@ SauceReporter.mergeVideos = async (videos, target) => {
 SauceReporter.areVideosSameSize = async (videos) => {
   let lastSize;
   for (let video of videos) {
-    let metadata = await ffprobe(video);
-    let vs = metadata.streams[0];
+    let metadata;
+    try {
+      metadata = await ffprobe(video);
+    } catch (e) {
+      console.error(`Failed to inspect video ${video}, it may be corrupt: `, e);
+      throw e;
+    }
+    let vs = metadata.streams.find(s => s.codec_type === 'video');
 
     if (!lastSize) {
       lastSize = {width: vs.width, height: vs.height};
