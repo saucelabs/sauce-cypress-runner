@@ -18,6 +18,7 @@ describe('.cypressRunner', function () {
       failures: [],
     };
     cypress.run.mockImplementation(() => cypressRunResults);
+    prepareAssets.mockClear();
     prepareAssets.mockImplementation(() => (['spec-a', 'spec-b']));
   });
   it('can hardcode locations of reports, target and root', async function () {
@@ -51,6 +52,11 @@ describe('.cypressRunner', function () {
       }]
     ];
     expect(cypressRunSpy.mock.calls).toEqual(expectedCypressRun);
+    expect(prepareAssets.mock.calls).toEqual([
+      [
+        ['spec-a', 'spec-b'], '/path/to/results'
+      ]
+    ]);
   });
   it('can hardcode the browser path', async function () {
     process.env.BROWSER_NAME = 'chrome';
