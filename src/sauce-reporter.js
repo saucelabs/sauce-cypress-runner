@@ -4,7 +4,9 @@ const os = require('os');
 const SauceLabs = require('saucelabs').default;
 const { getRunnerConfig } = require('./utils');
 let md5 = require('md5');
-let ffmpeg = require('fluent-ffmpeg');
+const ffmpeg = require('fluent-ffmpeg');
+const { promisify } = require('util');
+const ffprobe = promisify(ffmpeg.ffprobe);
 const region = process.env.SAUCE_REGION || 'us-west-1';
 
 const { remote } = require('webdriverio');
@@ -62,8 +64,12 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
 
   if (videos.length !== 0) {
     let comboVideo = path.join(resultsFolder, 'video.mp4');
-    await SauceReporter.mergeVideos(videos, comboVideo);
-    assets.push(comboVideo);
+    try {
+      await SauceReporter.mergeVideos(videos, comboVideo);
+      assets.push(comboVideo);
+    } catch (e) {
+      console.error('Failed to merge videos: ', e);
+    }
   }
 
   return assets;
@@ -166,9 +172,16 @@ SauceReporter.sauceReporter = async (buildName, browserName, testruns, failures)
 
 };
 
-SauceReporter.mergeVideos = function (videos, target) {
+SauceReporter.mergeVideos = async (videos, target) => {
+  if (videos.length === 1 || !await SauceReporter.areVideosSameSize(videos)) {
+    console.log(`Using ${videos[0]} as the main video.`);
+    fs.copyFileSync(videos[0], target);
+    return;
+  }
+
   return new Promise((resolve, reject) => {
     let cmd = ffmpeg();
+    console.log(`Merging videos: ${videos}, to ${target}`);
     for (let video of videos) {
       cmd.input(video);
     }
@@ -182,6 +195,30 @@ SauceReporter.mergeVideos = function (videos, target) {
         })
         .mergeToFile(target, os.tmpdir());
   });
+};
+
+SauceReporter.areVideosSameSize = async (videos) => {
+  let lastSize;
+  for (let video of videos) {
+    let metadata;
+    try {
+      metadata = await ffprobe(video);
+    } catch (e) {
+      console.error(`Failed to inspect video ${video}, it may be corrupt: `, e);
+      throw e;
+    }
+    let vs = metadata.streams.find(s => s.codec_type === 'video');
+
+    if (!lastSize) {
+      lastSize = {width: vs.width, height: vs.height};
+    }
+    if (lastSize.width !== vs.width || lastSize.height !== vs.height) {
+      console.log('Detected inconsistent video sizes.');
+      return false;
+    }
+  }
+
+  return true;
 };
 
 module.exports = SauceReporter;
