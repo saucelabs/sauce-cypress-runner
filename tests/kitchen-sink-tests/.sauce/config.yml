@@ -9,7 +9,7 @@ metadata:
 
 files:
   - ./tests/integration
-  - ./cypress
+  - ./cypress/fixtures
 
 suites:
   - name: "cypress kitchen sink test"
