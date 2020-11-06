@@ -93,7 +93,7 @@ context('Files', function () {
     // generate a fixture file for use later
     cy.request('https://jsonplaceholder.cypress.io/users')
       .then((response) => {
-        cy.writeFile('tests/kitchen-sink-tests/cypress/fixtures/users.json', response.body);
+        cy.writeFile('cypress/fixtures/users.json', response.body);
       });
 
     cy.fixture('users').should((users) => {
@@ -102,7 +102,7 @@ context('Files', function () {
 
     // JavaScript arrays and objects are stringified
     // and formatted into text.
-    cy.writeFile('tests/kitchen-sink-tests/cypress/fixtures/profile.json', {
+    cy.writeFile('cypress/fixtures/profile.json', {
       id: 8739,
       name: 'Jane',
       email: 'jane@example.com',
