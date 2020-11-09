@@ -46,7 +46,7 @@ const report = async (results, browserName) => {
   );
 
   if (process.env.SAUCE_VM) {
-    return 1;
+    return 0;
   }
 
   let status = results.failures || results.totalFailed;
