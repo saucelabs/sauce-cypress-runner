@@ -2,7 +2,5 @@
 
 export SAUCE_USERNAME=''
 export SAUCE_ACCESS_KEY='' 
-export WORKING_DIR=$PWD/tests/kitchen-sink-tests 
-export WORKING_RPT_DIR=$WORKING_DIR/'__assets__'
-cd $WORKING_DIR && \
+cd $PWD/tests/kitchen-sink-tests && \
   saucectl run --verbose
