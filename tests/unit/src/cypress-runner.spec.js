@@ -82,4 +82,18 @@ describe('.cypressRunner', function () {
       `Unsupported browser: 'lynx'. Sorry.`
     ));
   });
+  describe('from SAUCE VM', function () {
+    it('returns false if there are test failures', async function () {
+      process.env.SAUCE_VM = 'truthy';
+      cypressRunSpy.mockImplementation(() => ({failures: 100}));
+      const status = await cypressRunner();
+      expect(status).toEqual(false);
+    });
+    it('returns true if there are no test failures', async function () {
+      process.env.SAUCE_VM = 'truthy';
+      cypressRunSpy.mockImplementation(() => ({failures: 0}));
+      const status = await cypressRunner();
+      expect(status).toEqual(false);
+    });
+  });
 });

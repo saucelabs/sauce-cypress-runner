@@ -45,19 +45,19 @@ const report = async (results, browserName) => {
     resultsFolder,
   );
 
-  if (process.env.SAUCE_VM) {
-    return 0;
-  }
-
-  let status = results.failures || results.totalFailed;
+  let failures = results.failures || results.totalFailed;
   if (!(process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY)) {
     console.log('Skipping asset uploads! Remember to setup your SAUCE_USERNAME/SAUCE_ACCESS_KEY');
-    return status;
+    return failures === 0;
+  }
+  if (process.env.SAUCE_VM) {
+    console.log('Skipping asset upload inside of sauce vm. Asset uploads will take place in post process batch job');
+    return failures === 0;
   }
   const buildName = process.env.SAUCE_BUILD_NAME || `stt-cypress-build-${(new Date()).getTime()}`;
-  await sauceReporter(buildName, browserName, assets, status);
+  await sauceReporter(buildName, browserName, assets, failures);
 
-  return status;
+  return failures === 0;
 };
 
 const cypressRunner = async function () {
@@ -142,7 +142,7 @@ const cypressRunner = async function () {
 if (require.main === module) {
   cypressRunner()
       // eslint-disable-next-line promise/prefer-await-to-then
-      .then((status) => process.exit(status))
+      .then((passed) => process.exit(passed ? 0 : 1))
       // eslint-disable-next-line promise/prefer-await-to-callbacks
       .catch((err) => {
         console.log(err);
