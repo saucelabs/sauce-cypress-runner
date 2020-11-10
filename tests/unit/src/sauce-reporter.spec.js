@@ -73,11 +73,24 @@ describe('SauceReporter', function () {
     it('should output err when upload failed', async function () {
       let consoleErrorSpy = jest.spyOn(global.console, 'error');
       prepareAssetsSpy.mockReturnValue(['asset/one', 'asset/two']);
-      await SauceReporter.sauceReporter('build', 'browser', ['asset/one', 'asset/two']);
+      expect(await SauceReporter.sauceReporter('build', 'browser', ['asset/one', 'asset/two'], 0)).toBeUndefined();
       expect(uploadJobAssetsSpy.mock.calls).toEqual([
         ['a', {'files': ['asset/one', 'asset/two']}]
       ]);
       expect(consoleErrorSpy.mock.calls).toEqual([['some fake error']]);
+    });
+    it('should not push assets when no sessionId from SauceLabs API', async function () {
+      SauceLabs.default.mockImplementation(function () {
+        // eslint-disable-next-line require-await
+        this.listJobs = async () => ({
+          jobs: []
+        });
+        this.uploadJobAssets = uploadJobAssetsSpy;
+        this.updateJob = async () => {};
+      });
+
+      prepareAssetsSpy.mockReturnValue(['asset/one', 'asset/two']);
+      expect(await SauceReporter.sauceReporter('build', 'browser', ['asset/one', 'asset/two'], 0)).toBeDefined();
     });
   });
 });

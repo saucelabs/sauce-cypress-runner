@@ -124,6 +124,11 @@ SauceReporter.sauceReporter = async (buildName, browserName, assets, failures) =
     console.warn('Failed to prepare test', e);
   }
 
+  if (undefined === sessionId || 0 === sessionId) {
+    console.error('Unable to retrieve test entry. Assets won\'t be uploaded.');
+    return 'unable to retrieve test';
+  }
+
   // upload assets
   await Promise.all([
     api.uploadJobAssets(
@@ -162,7 +167,6 @@ SauceReporter.sauceReporter = async (buildName, browserName, assets, failures) =
   }
 
   console.log(`\nOpen job details page: https://app.${domain}/tests/${sessionId}\n`);
-
 };
 
 SauceReporter.mergeVideos = async (videos, target) => {
