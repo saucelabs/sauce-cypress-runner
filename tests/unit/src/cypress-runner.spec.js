@@ -2,7 +2,7 @@ jest.mock('cypress');
 jest.mock('../../../src/sauce-reporter');
 
 const cypress = require('cypress');
-const { sauceReporter } = require('../../../src/sauce-reporter');
+const { sauceReporter, prepareAssets } = require('../../../src/sauce-reporter');
 const { cypressRunner } = require('../../../src/cypress-runner');
 
 describe('.cypressRunner', function () {
@@ -14,10 +14,12 @@ describe('.cypressRunner', function () {
     process.env = { ...oldEnv };
     cypressRunSpy.mockClear();
     const cypressRunResults = {
-      runs: ['spec-a', 'spec-b'],
+      runs: [{spec: {name: 'spec-a'}}, {spec: {name: 'spec-b'}}],
       failures: [],
     };
     cypress.run.mockImplementation(() => cypressRunResults);
+    prepareAssets.mockClear();
+    prepareAssets.mockImplementation(() => (['spec-a', 'spec-b']));
   });
   it('can hardcode locations of reports, target and root', async function () {
     process.env.SAUCE_REPORTS_DIR = '/path/to/results';
@@ -50,6 +52,11 @@ describe('.cypressRunner', function () {
       }]
     ];
     expect(cypressRunSpy.mock.calls).toEqual(expectedCypressRun);
+    expect(prepareAssets.mock.calls).toEqual([
+      [
+        ['spec-a', 'spec-b'], '/path/to/results'
+      ]
+    ]);
   });
   it('can hardcode the browser path', async function () {
     process.env.BROWSER_NAME = 'chrome';
@@ -74,5 +81,19 @@ describe('.cypressRunner', function () {
     expect(cypressRunner()).rejects.toThrow(new Error(
       `Unsupported browser: 'lynx'. Sorry.`
     ));
+  });
+  describe('from SAUCE VM', function () {
+    it('returns false if there are test failures', async function () {
+      process.env.SAUCE_VM = 'truthy';
+      cypressRunSpy.mockImplementation(() => ({failures: 100}));
+      const status = await cypressRunner();
+      expect(status).toEqual(false);
+    });
+    it('returns true if there are no test failures', async function () {
+      process.env.SAUCE_VM = 'truthy';
+      cypressRunSpy.mockImplementation(() => ({failures: 0}));
+      const status = await cypressRunner();
+      expect(status).toEqual(false);
+    });
   });
 });
