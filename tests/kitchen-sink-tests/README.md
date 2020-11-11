@@ -1,5 +1,5 @@
 ## Cypress Kitchen Sink Test
-These tests are from Cypress which is used to showcase [Cypress.io](https://www.cypress.io/) testing. For a full reference of our documentation, go to [docs.cypress.i](https://docs.cypress.io/guides/overview/why-cypress.html).
+These tests have been copied over from the Cypress kitchen sink to test and demonstrate compatibility.
 It can work along with `saucectl` perfectly.
 
 ## How to run
