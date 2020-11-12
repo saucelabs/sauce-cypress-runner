@@ -3,7 +3,6 @@ const path = require('path');
 const fs = require('fs');
 const { promisify } = require('util');
 const { getRunnerConfig, shouldRecordVideo } = require('./utils');
-const yaml = require('js-yaml');
 const cypress = require('cypress');
 let { exec } = require('child_process');
 
@@ -18,21 +17,11 @@ const supportedBrowsers = {
   'firefox': 'firefox'
 };
 
-// the default test matching behavior for versions <= v0.1.8
-const DefaultRunCfg = {
-  match: [
-    `**/?(*.)+(spec|test).[jt]s?(x)`
-  ]
-};
-
 async function loadRunConfig (cfgPath) {
   if (await fileExists(cfgPath)) {
-    return yaml.safeLoad(await readFile(cfgPath, 'utf8'));
+    return JSON.parse(await readFile(cfgPath, 'utf8'));
   }
-  console.log(`Run config (${cfgPath}) unavailable. Loading defaults.`);
-
-  // the default test matching behavior for versions <= v0.1.8
-  return DefaultRunCfg;
+  console.error(`Run config (${cfgPath}) unavailable.`);
 }
 
 const report = async (results, browserName) => {
@@ -82,15 +71,11 @@ const cypressRunner = async function () {
   // Get the configuration info from config.yaml
   const {rootDir, reportsDir, targetDir} = await getRunnerConfig();
 
-  const runCfgPath = path.join(rootDir, 'run.yaml');
+  const runCfgPath = path.join(rootDir, 'runner.json'); // TODO load via CLI args
   const runCfg = await loadRunConfig(runCfgPath);
 
-  if (!runCfg.projectPath) {
-    runCfg.projectPath = targetDir;
-  }
-
   // If a typescript config is found in the project path, then compile with it
-  const tsconfigPath = path.join(runCfg.projectPath, 'tsconfig.json');
+  const tsconfigPath = path.join(rootDir, 'tsconfig.json');
 
   if (await fileExists(tsconfigPath)) {
     console.log(`Compiling Typescript files from tsconfig '${tsconfigPath}'`);
@@ -99,14 +84,14 @@ const cypressRunner = async function () {
 
   // Get the cypress.json config file (https://docs.cypress.io/guides/references/configuration.html#Options)
   let configFile = 'cypress.json';
-  let cypressJsonPath = path.join(runCfg.projectPath, 'cypress.json');
+  let cypressJsonPath = path.join(rootDir, runCfg.cypress.configFile);
   if (await fileExists(cypressJsonPath)) {
     configFile = path.relative(process.cwd(), cypressJsonPath);
   }
 
   // Get the cypress env variables from 'cypress.env.json' (if present)
   let env = {};
-  const cypressEnvPath = path.join(runCfg.projectPath, 'cypress.env.json');
+  const cypressEnvPath = path.join(rootDir, 'tests/e2e/cypress.env.json'); // FIXME
   if (await fileExists(cypressEnvPath)) {
     try {
       env = JSON.parse(await readFile(cypressEnvPath));
@@ -125,12 +110,11 @@ const cypressRunner = async function () {
       videoCompression: false,
       videoUploadOnPasses: false,
       screenshotsFolder: reportsDir,
-      integrationFolder: runCfg.projectPath,
-      testFiles: runCfg.match,
+      testFiles: runCfg.suites[0].testFiles, // FIXME
       reporter: 'src/custom-reporter.js',
       reporterOptions: {
         mochaFile: `${reportsDir}/[suite].xml`,
-        specFolder: runCfg.projectPath,
+        specFolder: targetDir,
       },
     }
   });
