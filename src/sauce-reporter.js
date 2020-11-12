@@ -6,11 +6,8 @@ const SauceLabs = require('saucelabs').default;
 const ffmpeg = require('fluent-ffmpeg');
 const { promisify } = require('util');
 const ffprobe = promisify(ffmpeg.ffprobe);
-const readdir = promisify(fs.readdir);
-const fsStat = promisify(fs.stat);
 const region = process.env.SAUCE_REGION || 'us-west-1';
-
-const { remote } = require('webdriverio');
+const md5 = require('md5');
 
 const SauceReporter = {};
 
@@ -21,40 +18,57 @@ SauceReporter.prepareAsset = (specFile, resultsFolder, tmpFolder, ext, name) => 
   const assetFile = path.join(resultsFolder, `${specFile}.${ext}`);
   try {
     if (fs.existsSync(assetFile)) {
-      const assetTmpFile = path.join(tmpFolder, name);
+      const assetTmpFile = path.join(tmpFolder, name.replace('/', ':'));
       fs.copyFileSync(assetFile, assetTmpFile);
       return assetTmpFile;
     }
-  } catch (e) {}
+  } catch (e) {
+    console.log(e);
+  }
   console.warn(`Could not find: '${assetFile}'`);
   return null;
 };
 
-
-SauceReporter.prepareAssets = async (cypressRunObj) => {
+SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
   const assets = [];
-  const { videosFolder, screenshotsFolder } = cypressRunObj.config;
-  const { resultsFolder, project } = cypressRunObj;
+  const videos = [];
 
-  let pathToProject = process.cwd();
-  if (project) {
-    pathToProject = path.join(pathToProject, project);
+  // Add the main console log
+  let consoleLogPath = path.join(process.cwd(), 'console.log');
+  if (fs.existsSync(consoleLogPath)) {
+    assets.push(consoleLogPath);
   }
 
-  const videosFolderFullPath = path.join(pathToProject, videosFolder);
-  if (await fsStat(videosFolderFullPath)) {
-    for (const video of await readdir(videosFolderFullPath)) {
-      assets.push(path.join(videosFolderFullPath, video));
+  for (let specFile of specFiles) {
+    const tmpFolder = fs.mkdtempSync(path.join(os.tmpdir(), md5(specFile)));
+    //const specFilename = path.basename(specFile);
+    const sauceAssets = [
+      { name: `${specFile}.mp4`, ext: 'mp4' },
+      { name: `${specFile}.json`, ext: 'json' },
+      { name: `${specFile}.xml`, ext: 'xml' },
+    ];
+
+    for (let ast of sauceAssets) {
+      let assetFile = await SauceReporter.prepareAsset(specFile, resultsFolder, tmpFolder, ast.ext, ast.name);
+      if (assetFile) {
+        assets.push(assetFile);
+
+        if (ast.ext === 'mp4') {
+          videos.push(assetFile);
+        }
+      }
     }
   }
 
-  /*for (const screenshot of await readdir(path.join(pathToProject, screenshotsFolder))) {
-    assets.push(screenshot);
-  }*/
-
-  const resultsPath = path.join(pathToProject, resultsFolder);
-  for (const result of await readdir(resultsPath)) {
-    assets.push(path.join(resultsPath, result));
+  if (videos.length !== 0) {
+    const tmpFolder = fs.mkdtempSync(path.join(os.tmpdir(), md5('video.mp4')));
+    let comboVideo = path.join(tmpFolder, 'video.mp4');
+    try {
+      await SauceReporter.mergeVideos(videos, comboVideo);
+      assets.push(comboVideo);
+    } catch (e) {
+      console.error('Failed to merge videos: ', e);
+    }
   }
 
   return assets;
@@ -68,24 +82,22 @@ SauceReporter.sauceReporter = async (buildName, browserName, assets, failures) =
   const api = new SauceLabs({
     user: process.env.SAUCE_USERNAME,
     key: process.env.SAUCE_ACCESS_KEY,
-    region
+    region,
   });
 
   if (tags) {
     tags = tags.split(',');
   }
   try {
-    let ondemandUrl; 
+    let ondemandUrl;
     let region;
     if (!region || region === 'us' || region === 'us-west-1') {
-      region = 'us-west-1';
       ondemandUrl = 'ondemand.saucelabs.com';
     } else if (region === 'eu-central-1' || region === 'eu') {
-      region = 'eu-central-1';
       ondemandUrl = 'ondemand.eu-central-1.saucelabs.com';
     }
     const newSessionUrl = `https://${process.env.SAUCE_USERNAME}:${process.env.SAUCE_ACCESS_KEY}@${ondemandUrl}/wd/hub/session`;
-    const res = await axios.post(newSessionUrl, {
+    await axios.post(newSessionUrl, {
       desiredCapabilities: {
         browserName,
         browserVersion: '*',
@@ -99,10 +111,8 @@ SauceReporter.sauceReporter = async (buildName, browserName, assets, failures) =
         }
       },
     });
-    console.log('@@@@DONE', res);
   } catch (e) {
     console.log(e);
-    console.log('*****');
   }
   let sessionId;
   try {
@@ -199,7 +209,7 @@ SauceReporter.areVideosSameSize = async (videos) => {
       console.error(`Failed to inspect video ${video}, it may be corrupt: `, e);
       throw e;
     }
-    let vs = metadata.streams.find(s => s.codec_type === 'video');
+    let vs = metadata.streams.find((s) => s.codec_type === 'video');
 
     if (!lastSize) {
       lastSize = {width: vs.width, height: vs.height};

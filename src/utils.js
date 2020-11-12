@@ -47,7 +47,8 @@ function shouldRecordVideo () {
 function getCypressConfigObject (runJson, suiteName) {
   const cwd = process.cwd();
   let defaultCypressConfig = {
-    browser: 'chrome'
+    browser: 'chrome',
+    project: cwd, // If project not specified, assume it's wherever the process is being run
   };
   let cypressConfig = _.defaultsDeep(runJson.cypress, defaultCypressConfig);
 
@@ -62,15 +63,15 @@ function getCypressConfigObject (runJson, suiteName) {
   if (!cypressConfig.config) {
     cypressConfig.config = {};
   }
-  
-  const resultsFolder = path.join('__assets__', 'results');
+
+  const resultsFolder = path.join('__assets__');
 
   // Whatever the user provides is overridden by these
   const mandatoryCypressSettings = {
     resultsFolder, // not used by cypress, used by us
     config: {
-      videosFolder: path.join('__assets__', 'videos'),
-      screenshotsFolder: path.join('__assets__', 'screenshots'),
+      videosFolder: resultsFolder,
+      screenshotsFolder: resultsFolder,
       video: shouldRecordVideo(),
       reporter: path.join(cwd, 'src', 'custom-reporter.js'),
       reporterOptions: {

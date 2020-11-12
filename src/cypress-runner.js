@@ -1,17 +1,16 @@
 const { sauceReporter, prepareAssets } = require('./sauce-reporter');
 const path = require('path');
 const fs = require('fs');
-const { promisify } = require('util');
 const { getCypressConfigObject } = require('./utils');
 const cypress = require('cypress');
-let { exec } = require('child_process');
 const yargs = require('yargs/yargs');
 
-// Promisify the callback functions
-exec = promisify(exec);
-
 const report = async (results, cypressRunObj) => {
-  let assets = await prepareAssets(cypressRunObj);
+  // Prepare the assets
+  const runs = results.runs || [];
+  const resultsFolder = path.join(cypressRunObj.project, cypressRunObj.resultsFolder);
+  let specFiles = runs.map((run) => run.spec.name);
+  let assets = await prepareAssets(specFiles, resultsFolder);
   let failures = results.failures || results.totalFailed;
   if (!(process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY)) {
     console.log('Skipping asset uploads! Remember to setup your SAUCE_USERNAME/SAUCE_ACCESS_KEY');
