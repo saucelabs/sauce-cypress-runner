@@ -1,0 +1,21 @@
+{
+    "cypress": {
+        "project": "tests/config-tests/",
+        "configFile": "tests/config-tests/cypress.json",
+        "env": {
+
+        },
+        "config": {
+        }
+    },
+    "suites": [
+        {
+            "browser": "chrome",
+            "browserVersion": "82.9.9",
+            "config": {
+                "viewportWidth": 500,
+                "viewportHeight": 1000
+            }
+        }
+    ]
+}

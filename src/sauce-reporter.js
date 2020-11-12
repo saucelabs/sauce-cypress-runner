@@ -1,12 +1,13 @@
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
+const axios = require('axios');
 const SauceLabs = require('saucelabs').default;
-const { getRunnerConfig } = require('./utils');
-let md5 = require('md5');
 const ffmpeg = require('fluent-ffmpeg');
 const { promisify } = require('util');
 const ffprobe = promisify(ffmpeg.ffprobe);
+const readdir = promisify(fs.readdir);
+const fsStat = promisify(fs.stat);
 const region = process.env.SAUCE_REGION || 'us-west-1';
 
 const { remote } = require('webdriverio');
@@ -30,46 +31,30 @@ SauceReporter.prepareAsset = (specFile, resultsFolder, tmpFolder, ext, name) => 
 };
 
 
-SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
+SauceReporter.prepareAssets = async (cypressRunObj) => {
   const assets = [];
-  const videos = [];
+  const { videosFolder, screenshotsFolder } = cypressRunObj.config;
+  const { resultsFolder, project } = cypressRunObj;
 
-  // Add the main console log
-  const {rootDir} = await getRunnerConfig();
-  let clog = path.join(rootDir, 'console.log');
-  if (fs.existsSync(clog)) {
-    assets.push(clog);
+  let pathToProject = process.cwd();
+  if (project) {
+    pathToProject = path.join(pathToProject, project);
   }
 
-  for (let specFile of specFiles) {
-    const tmpFolder = fs.mkdtempSync(path.join(os.tmpdir(), md5(specFile)));
-    const specFilename = path.basename(specFile);
-    const sauceAssets = [
-      { name: `${specFilename}.mp4`, ext: 'mp4' },
-      { name: `${specFilename}.json`, ext: 'json' },
-      { name: `${specFilename}.xml`, ext: 'xml' },
-    ];
-
-    for (let ast of sauceAssets) {
-      let assetFile = await SauceReporter.prepareAsset(specFile, resultsFolder, tmpFolder, ast.ext, ast.name);
-      if (assetFile) {
-        assets.push(assetFile);
-
-        if (ast.ext === 'mp4') {
-          videos.push(assetFile);
-        }
-      }
+  const videosFolderFullPath = path.join(pathToProject, videosFolder);
+  if (await fsStat(videosFolderFullPath)) {
+    for (const video of await readdir(videosFolderFullPath)) {
+      assets.push(path.join(videosFolderFullPath, video));
     }
   }
 
-  if (videos.length !== 0) {
-    let comboVideo = path.join(resultsFolder, 'video.mp4');
-    try {
-      await SauceReporter.mergeVideos(videos, comboVideo);
-      assets.push(comboVideo);
-    } catch (e) {
-      console.error('Failed to merge videos: ', e);
-    }
+  /*for (const screenshot of await readdir(path.join(pathToProject, screenshotsFolder))) {
+    assets.push(screenshot);
+  }*/
+
+  const resultsPath = path.join(pathToProject, resultsFolder);
+  for (const result of await readdir(resultsPath)) {
+    assets.push(path.join(resultsPath, result));
   }
 
   return assets;
@@ -90,35 +75,45 @@ SauceReporter.sauceReporter = async (buildName, browserName, assets, failures) =
     tags = tags.split(',');
   }
   try {
-    await remote({
-      user: process.env.SAUCE_USERNAME,
-      key: process.env.SAUCE_ACCESS_KEY,
-      region,
-      connectionRetryCount: 0,
-      logLevel: 'silent',
-      capabilities: {
+    let ondemandUrl; 
+    let region;
+    if (!region || region === 'us' || region === 'us-west-1') {
+      region = 'us-west-1';
+      ondemandUrl = 'ondemand.saucelabs.com';
+    } else if (region === 'eu-central-1' || region === 'eu') {
+      region = 'eu-central-1';
+      ondemandUrl = 'ondemand.eu-central-1.saucelabs.com';
+    }
+    const newSessionUrl = `https://${process.env.SAUCE_USERNAME}:${process.env.SAUCE_ACCESS_KEY}@${ondemandUrl}/wd/hub/session`;
+    const res = await axios.post(newSessionUrl, {
+      desiredCapabilities: {
         browserName,
-        platformName: '*',
         browserVersion: '*',
+        platformName: '*',
+        name: testName,
         'sauce:options': {
           devX: true,
-          name: testName,
           framework: 'cypress',
           build: buildName,
-          tags
+          tags: []
         }
-      }
-    }).catch((err) => err);
+      },
+    });
+    console.log('@@@@DONE', res);
   } catch (e) {
     console.log(e);
+    console.log('*****');
   }
-
   let sessionId;
   try {
-    const { jobs } = await api.listJobs(
-      process.env.SAUCE_USERNAME,
-      { limit: 1, full: true, name: testName }
-    );
+    const jobsUrl = `https://api.${region}.saucelabs.com/rest/v1.1/${process.env.SAUCE_USERNAME}/jobs?limit=1&full=true&name=${testName}`;
+    const { data } = await axios.get(jobsUrl, {
+      auth: {
+        username: process.env.SAUCE_USERNAME,
+        password: process.env.SAUCE_ACCESS_KEY,
+      }
+    });
+    const { jobs } = data;
     sessionId = jobs && jobs.length && jobs[0].id;
   } catch (e) {
     console.warn('Failed to prepare test', e);

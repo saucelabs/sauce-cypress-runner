@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="0.538" tests="1" failures="0">
+  <testsuite name="Root Suite" timestamp="2020-11-11T01:38:49" tests="0" file="cypress/integration/env.spec.js" failures="0" time="0">
+  </testsuite>
+  <testsuite name="Actions" timestamp="2020-11-11T01:38:49" tests="1" failures="0" time="0.538">
+    <testcase name="Actions should use .env.json" time="0.538" classname="should use .env.json">
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -1,1 +1,10 @@
-{}
+{
+    "env": {
+        "foo": "bar"
+    },
+    "reporter": "src/custom-reporter.js",
+    "reporterOptions": {
+        "mochaFile": "cypress/results/[suite].xml",
+        "specFolder": "cypress/results"
+    }
+}

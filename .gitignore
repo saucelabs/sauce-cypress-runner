@@ -122,3 +122,6 @@ tests/*/cypress/plugins/
 tests/*/cypress/screenshots/
 tests/*/cypress/support/
 tests/*/cypress/videos/
+
+Cache/
+**/*.DS_store

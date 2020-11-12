@@ -2,6 +2,7 @@ const path = require('path');
 const yaml = require('js-yaml');
 const fs = require('fs');
 const { promisify } = require('util');
+const _ = require('lodash');
 
 const readFile = promisify(fs.readFile);
 
@@ -43,6 +44,47 @@ function shouldRecordVideo () {
   return videoOption === 'true' || videoOption === '1';
 }
 
-module.exports.getAbsolutePath = getAbsolutePath;
-module.exports.shouldRecordVideo = shouldRecordVideo;
-module.exports.getRunnerConfig = getRunnerConfig;
+function getCypressConfigObject (runJson, suiteName) {
+  const cwd = process.cwd();
+  let defaultCypressConfig = {
+    browser: 'chrome'
+  };
+  let cypressConfig = _.defaultsDeep(runJson.cypress, defaultCypressConfig);
+
+  if (suiteName) {
+    const suites = runJson.suites || [];
+    const suite = _.find(suites, (testSuite) => testSuite.name === suiteName);
+    if (!suite) {
+      throw new Error(`Could not find suite named '${suiteName}'; suites='${suites}`);
+    }
+    cypressConfig = _.defaultsDeep(suite, cypressConfig);
+  }
+  if (!cypressConfig.config) {
+    cypressConfig.config = {};
+  }
+  
+  const resultsFolder = path.join('__assets__', 'results');
+
+  // Whatever the user provides is overridden by these
+  const mandatoryCypressSettings = {
+    resultsFolder, // not used by cypress, used by us
+    config: {
+      videosFolder: path.join('__assets__', 'videos'),
+      screenshotsFolder: path.join('__assets__', 'screenshots'),
+      video: shouldRecordVideo(),
+      reporter: path.join(cwd, 'src', 'custom-reporter.js'),
+      reporterOptions: {
+        mochaFile: `${resultsFolder}/[suite].xml`,
+        specFolder: `${resultsFolder}/`,
+        specRoot: cypressConfig.config.integrationFolder || 'cypress/integration',
+      },
+      videoCompression: false,
+      videoUploadOnPasses: false,
+    }
+  };
+  cypressConfig = _.defaultsDeep(mandatoryCypressSettings, cypressConfig);
+
+  return cypressConfig;
+}
+
+module.exports = { getAbsolutePath, shouldRecordVideo, getRunnerConfig, getCypressConfigObject };

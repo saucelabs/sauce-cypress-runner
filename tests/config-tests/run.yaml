@@ -1,2 +1,3 @@
+match:
+- cypress/integration/example.test.js
 projectPath: ./tests/config-tests/
-match: ["cypress/integration/config.spec.js"]
