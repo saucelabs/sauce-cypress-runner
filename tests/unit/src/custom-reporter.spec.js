@@ -7,25 +7,17 @@ const MochaJUnitReporter = require('../../../src/custom-reporter');
 
 describe('Custom Reporter', function () {
   describe('.report', function () {
-    it('calls flush on a spec file with full path', function () {
+    it('calls flush on a spec file with proper paths', function () {
       const { report } = MochaJUnitReporter.prototype;
       const ctx = {};
-      ctx._runner = {suite: { file: 'spec/folder/path/to/spec'}};
+      ctx._runner = {suite: { file: 'spec/root/folder/path/to/spec.js'}};
       ctx.flush = jest.fn(function () {});
-      ctx._options = {};
-      ctx._options.specFolder = path.join(process.cwd(), 'spec', 'folder');
+      ctx._options = {
+        specFolder: path.join(process.cwd(), 'spec', 'root', 'folder'),
+        specRoot: path.join(process.cwd(), 'spec', 'root'),
+      };
       report.call(ctx, 'a', 'b');
-      expect(ctx.flush.mock.calls).toEqual([['a', 'path/to/spec', 'b']]);
-    });
-    it('translates relative paths to absolute paths', function () {
-      const { report } = MochaJUnitReporter.prototype;
-      const ctx = {};
-      ctx._runner = {suite: { file: 'spec/folder/path/to/spec'}};
-      ctx.flush = jest.fn(function () {});
-      ctx._options = {};
-      ctx._options.specFolder = path.join('spec', 'folder');
-      report.call(ctx, 'a', 'b');
-      expect(ctx.flush.mock.calls).toEqual([['a', 'path/to/spec', 'b']]);
+      expect(ctx.flush.mock.calls).toMatchSnapshot();
     });
   });
   describe('.writeXmlToDisk', function () {

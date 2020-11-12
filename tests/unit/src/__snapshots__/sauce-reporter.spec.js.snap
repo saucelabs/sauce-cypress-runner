@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SauceReporter .prepareAssets should return a list of assets 1`] = `
+Array [
+  "/Users/danielgraham/sauce-cypress-runner/console.log",
+  "tmp/folder/spec:file.test.js.mp4",
+  "tmp/folder/spec:file.test.js.json",
+  "tmp/folder/spec:file.test.js.xml",
+  "tmp/folder/video.mp4",
+]
+`;

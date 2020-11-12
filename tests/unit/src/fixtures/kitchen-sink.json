@@ -1,0 +1,24 @@
+{
+    "cypress": {
+        "project": "/path/to/cypress/project",
+        "configFile": "alternative-cypress.json"
+    },
+    "suites": [
+        {
+            "name": "foo",
+            "browser": "chrome",
+            "config": {
+                "viewportHeight": 100,
+                "viewportWidth": 200
+            }
+        },
+        {
+            "name": "bar",
+            "browser": "firefox",
+            "config": {
+                "viewportHeight": 300,
+                "viewportWidth": 400
+            }
+        }
+    ]
+}

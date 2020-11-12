@@ -1,0 +1,71 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`.cypressRunner fixtures/kitchen-sink.json 1`] = `
+Array [
+  Array [
+    Object {
+      "browser": "chrome",
+      "config": Object {
+        "reporter": "/Users/danielgraham/sauce-cypress-runner/src/custom-reporter.js",
+        "reporterOptions": Object {
+          "mochaFile": "__assets__/[suite].xml",
+          "specFolder": "__assets__/",
+          "specRoot": "cypress/integration",
+        },
+        "screenshotsFolder": "__assets__",
+        "video": true,
+        "videoCompression": false,
+        "videoUploadOnPasses": false,
+        "videosFolder": "__assets__",
+        "viewportHeight": 100,
+        "viewportWidth": 200,
+      },
+      "configFile": "alternative-cypress.json",
+      "name": "foo",
+      "project": "/path/to/cypress/project",
+      "resultsFolder": "__assets__",
+    },
+  ],
+  Array [
+    Object {
+      "browser": "firefox",
+      "config": Object {
+        "reporter": "/Users/danielgraham/sauce-cypress-runner/src/custom-reporter.js",
+        "reporterOptions": Object {
+          "mochaFile": "__assets__/[suite].xml",
+          "specFolder": "__assets__/",
+          "specRoot": "cypress/integration",
+        },
+        "screenshotsFolder": "__assets__",
+        "video": true,
+        "videoCompression": false,
+        "videoUploadOnPasses": false,
+        "videosFolder": "__assets__",
+        "viewportHeight": 300,
+        "viewportWidth": 400,
+      },
+      "configFile": "alternative-cypress.json",
+      "name": "bar",
+      "project": "/path/to/cypress/project",
+      "resultsFolder": "__assets__",
+    },
+  ],
+]
+`;
+
+exports[`.cypressRunner fixtures/kitchen-sink.json 2`] = `
+Array [
+  Array [
+    "fake-build",
+    "chrome",
+    Array [],
+    0,
+  ],
+  Array [
+    "fake-build",
+    "firefox",
+    Array [],
+    0,
+  ],
+]
+`;
