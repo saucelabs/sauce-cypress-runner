@@ -5,7 +5,7 @@ const stream = require('stream');
 const child_process = require('child_process');
 
 function cypressRecorder () {
-  // console.log is saved out of reportsDir since it is cleared on startup.
+  // save console.log to where process.cwd is
   const fd = fs.openSync(path.join(process.cwd(), 'console.log'), 'w+', 0o644);
   const ws = stream.Writable({
     // eslint-disable-next-line promise/prefer-await-to-callbacks

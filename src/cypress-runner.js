@@ -41,9 +41,10 @@ const cypressRunner = async function (pathToCypressRunJson, suite) {
     throw new Error(`Could not parse JSON in '${pathToCypressRunJson}'. reason=${e.message}`);
   }
 
+  // Run cypress
   const results = await cypress.run(cypressRunObj);
 
-  // TODO: Pass runOjb and results to reporter
+  // Report the results to SauceLabs
   return await report(results, cypressRunObj);
 };
 

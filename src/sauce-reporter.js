@@ -18,6 +18,8 @@ SauceReporter.prepareAsset = (specFile, resultsFolder, tmpFolder, ext, name) => 
   const assetFile = path.join(resultsFolder, `${specFile}.${ext}`);
   try {
     if (fs.existsSync(assetFile)) {
+      // for fileName, replace / with ':' so we can have nested assets that don't overwrite eachother
+      // (e.g.: 'nested/a.spec.js' shows up as 'nested:a.spec.js.json' and 'a.spec.js' shows up as 'a.spec.js.json')
       const assetTmpFile = path.join(tmpFolder, name.replace('/', ':'));
       fs.copyFileSync(assetFile, assetTmpFile);
       return assetTmpFile;
@@ -41,7 +43,6 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
 
   for (let specFile of specFiles) {
     const tmpFolder = fs.mkdtempSync(path.join(os.tmpdir(), md5(specFile)));
-    //const specFilename = path.basename(specFile);
     const sauceAssets = [
       { name: `${specFile}.mp4`, ext: 'mp4' },
       { name: `${specFile}.json`, ext: 'json' },
@@ -107,7 +108,7 @@ SauceReporter.sauceReporter = async (buildName, browserName, assets, failures) =
           devX: true,
           framework: 'cypress',
           build: buildName,
-          tags: []
+          tags,
         }
       },
     });

@@ -125,3 +125,5 @@ tests/*/cypress/videos/
 
 Cache/
 **/*.DS_store
+
+console.log

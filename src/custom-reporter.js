@@ -262,13 +262,6 @@ function MochaJUnitReporter (runner, options) {
 
 MochaJUnitReporter.prototype.report = function (testsuites, sauceJson) {
   if (this._runner.suite.file) {
-    /*const absoluteSpecFile = path.join(cwd, this._runner.suite.file);
-    const { specFolder } = this._options;
-    const absoluteSpecFolder = path.isAbsolute(specFolder) ? specFolder : path.join(cwd, specFolder);
-    let specFile = absoluteSpecFile.replace(absoluteSpecFolder, '');
-    if (path.isAbsolute(specFile)) {
-      specFile = specFile.substr(1);
-    }*/
     const specFile = this._runner.suite.file;
     const specRoot = this._options.specRoot;
     this.flush(testsuites, path.relative(specRoot, specFile), sauceJson);
