@@ -14,7 +14,7 @@ async function cypressRecorder () {
   });
 
   const [nodeBin] = process.argv;
-  const child = child_process.spawn(nodeBin, [path.join(__dirname, 'cypress-runner.js')]);
+  const child = child_process.spawn(nodeBin, [path.join(__dirname, 'cypress-runner.js'), ...process.argv.slice(2)]);
 
   child.stdout.pipe(process.stdout);
   child.stderr.pipe(process.stderr);
