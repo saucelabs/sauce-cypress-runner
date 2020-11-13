@@ -204,7 +204,7 @@ SauceReporter.areVideosSameSize = async (videos) => {
       console.error(`Failed to inspect video ${video}, it may be corrupt: `, e);
       throw e;
     }
-    let vs = metadata.streams.find(s => s.codec_type === 'video');
+    let vs = metadata.streams.find((s) => s.codec_type === 'video');
 
     if (!lastSize) {
       lastSize = {width: vs.width, height: vs.height};

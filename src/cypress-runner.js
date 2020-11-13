@@ -5,6 +5,7 @@ const { promisify } = require('util');
 const { shouldRecordVideo } = require('./utils');
 const cypress = require('cypress');
 const yargs = require('yargs/yargs');
+const _ = require('lodash');
 // let { exec } = require('child_process');
 
 // Promisify the callback functions
@@ -16,7 +17,7 @@ async function loadRunConfig (cfgPath) {
   if (await fileExists(cfgPath)) {
     return JSON.parse(await readFile(cfgPath, 'utf8'));
   }
-  console.error(`Run config (${cfgPath}) unavailable.`);
+  throw new Error(`Runner config (${cfgPath}) unavailable.`)
 }
 
 const report = async (results, browserName) => {
@@ -45,7 +46,6 @@ const report = async (results, browserName) => {
 };
 
 const getCypressOpts = function (runCfg, suiteName) {
-  // const resultsFolder = path.join('__assets__'); // TODO this is what dan had
   const resultsFolder = 'cypress/results'; // that's where we collect assets from
 
   // Get user settings from suites.
@@ -60,11 +60,11 @@ const getCypressOpts = function (runCfg, suiteName) {
     throw new Error(`Unable to locate the cypress config file. Looked for '${cypressCfgFile}'.`);
   }
 
-  let cypressOpts = {
+  let opts = {
     browser: suite.browser || 'chrome',
     configFile: cypressCfgFile,
     config: {
-      testFiles: suite.testFiles,
+      testFiles: suite.config.testFiles,
       videosFolder: resultsFolder,
       screenshotsFolder: resultsFolder,
       video: shouldRecordVideo(),
@@ -72,14 +72,18 @@ const getCypressOpts = function (runCfg, suiteName) {
       reporterOptions: {
         mochaFile: `${resultsFolder}/[suite].xml`,
         specFolder: `${resultsFolder}/`,
-        specRoot: runCfg.integrationFolder || 'cypress/integration', // TODO this setting doesn't exist in saucectl yet
+        specRoot: runCfg.integrationFolder || 'cypress/integration', // TODO this setting doesn't exist in saucectl yet, use project level or suite level?
       },
       videoCompression: false,
       videoUploadOnPasses: false,
     }
   };
 
-  return cypressOpts;
+  _.defaultsDeep(opts.config, suite.config);
+
+  console.dir(opts);
+
+  return opts;
 };
 
 const cypressRunner = async function (runCfgPath, suiteName) {
@@ -90,25 +94,6 @@ const cypressRunner = async function (runCfgPath, suiteName) {
   let cypressOpts = getCypressOpts(runCfg, suiteName);
 
   const results = await cypress.run(cypressOpts);
-
-  // const results = await cypress.run({
-  //   browser,
-  //   configFile,
-  //   config: {
-  //     env,
-  //     video: shouldRecordVideo(),
-  //     videosFolder: reportsDir,
-  //     videoCompression: false,
-  //     videoUploadOnPasses: false,
-  //     screenshotsFolder: reportsDir,
-  //     testFiles: suite.testFiles,
-  //     reporter: path.join('src/custom-reporter.js'),
-  //     reporterOptions: {
-  //       mochaFile: `${reportsDir}/[suite].xml`,
-  //       specFolder: targetDir,
-  //     },
-  //   }
-  // });
 
   return await report(results, cypressOpts.browser);
 };
