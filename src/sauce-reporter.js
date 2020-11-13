@@ -18,8 +18,7 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
   const videos = [];
 
   // Add the main console log
-  const {rootDir} = await getRunnerConfig();
-  let clog = path.join(rootDir, 'console.log');
+  let clog = 'console.log';
   if (fs.existsSync(clog)) {
     assets.push(clog);
   }
