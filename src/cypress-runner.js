@@ -6,12 +6,10 @@ const { shouldRecordVideo } = require('./utils');
 const cypress = require('cypress');
 const yargs = require('yargs/yargs');
 const _ = require('lodash');
-// let { exec } = require('child_process');
 
 // Promisify the callback functions
 const fileExists = promisify(fs.exists);
 const readFile = promisify(fs.readFile);
-// exec = promisify(exec);
 
 async function loadRunConfig (cfgPath) {
   if (await fileExists(cfgPath)) {
