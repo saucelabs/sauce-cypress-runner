@@ -71,7 +71,6 @@ const getCypressOpts = function (runCfg, suiteName) {
       reporter: path.join('src', 'custom-reporter.js'),
       reporterOptions: {
         mochaFile: `${resultsFolder}/[suite].xml`,
-        specFolder: `${resultsFolder}/`,
         specRoot: runCfg.integrationFolder || 'cypress/integration', // TODO this setting doesn't exist in saucectl yet, use project level or suite level?
       },
       videoCompression: false,
@@ -81,15 +80,10 @@ const getCypressOpts = function (runCfg, suiteName) {
 
   _.defaultsDeep(opts.config, suite.config);
 
-  console.dir(opts);
-
   return opts;
 };
 
 const cypressRunner = async function (runCfgPath, suiteName) {
-  // Get the configuration info from config.yaml
-  // const {rootDir, reportsDir, targetDir} = await getRunnerConfig();
-
   const runCfg = await loadRunConfig(runCfgPath);
   let cypressOpts = getCypressOpts(runCfg, suiteName);
 

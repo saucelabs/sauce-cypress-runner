@@ -63,7 +63,6 @@ function configureDefaults (options) {
   let config = findReporterOptions(options);
   debug('options', config);
   config.mochaFile = getSetting(config.mochaFile, 'MOCHA_FILE', 'test-results.xml');
-  config.specFolder = getSetting(config.specFolder, 'SPEC_FOLDER', 'test-results.xml');
   config.attachments = getSetting(config.attachments, 'ATTACHMENTS', false);
   config.antMode = getSetting(config.antMode, 'ANT_MODE', false);
   config.jenkinsMode = getSetting(config.jenkinsMode, 'JENKINS_MODE', false);

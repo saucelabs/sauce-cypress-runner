@@ -13,23 +13,6 @@ const { remote } = require('webdriverio');
 
 const SauceReporter = {};
 
-SauceReporter.prepareAsset = (specFile, resultsFolder, tmpFolder, ext, name) => {
-  // Sauce only accepts file with certain names, otherwise the UI doesnt show them
-  // why copy them ? we also want to show the reports locally so changing name
-  // could generate conflicts
-  const assetFile = path.join(resultsFolder, `${specFile}.${ext}`);
-  try {
-    if (fs.existsSync(assetFile)) {
-      const assetTmpFile = path.join(tmpFolder, name);
-      fs.copyFileSync(assetFile, assetTmpFile);
-      return assetTmpFile;
-    }
-  } catch (e) {}
-  console.warn(`Could not find: '${assetFile}'`);
-  return null;
-};
-
-
 SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
   const assets = [];
   const videos = [];
@@ -42,22 +25,22 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
   }
 
   for (let specFile of specFiles) {
-    const tmpFolder = fs.mkdtempSync(path.join(os.tmpdir(), md5(specFile)));
-    const specFilename = path.basename(specFile);
     const sauceAssets = [
-      { name: `${specFilename}.mp4`, ext: 'mp4' },
-      { name: `${specFilename}.json`, ext: 'json' },
-      { name: `${specFilename}.xml`, ext: 'xml' },
+      { name: `${specFile}.mp4`},
+      { name: `${specFile}.json`},
+      { name: `${specFile}.xml`},
     ];
 
-    for (let ast of sauceAssets) {
-      let assetFile = await SauceReporter.prepareAsset(specFile, resultsFolder, tmpFolder, ast.ext, ast.name);
-      if (assetFile) {
-        assets.push(assetFile);
+    for (let asset of sauceAssets) {
+      const assetFile = path.join(resultsFolder, asset.name);
+      if (!fs.existsSync(assetFile)) {
+        console.warn(`Failed to prepare asset. Could not find: '${assetFile}'`);
+        continue
+      }
+      assets.push(assetFile);
 
-        if (ast.ext === 'mp4') {
-          videos.push(assetFile);
-        }
+      if (asset.name.endsWith('.mp4')) {
+        videos.push(assetFile);
       }
     }
   }
