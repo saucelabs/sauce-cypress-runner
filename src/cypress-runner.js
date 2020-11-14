@@ -100,16 +100,14 @@ if (require.main === module) {
         alias: 'r',
         type: 'string',
         description: 'Path to sauce runner json',
-        default: path.join(process.cwd(), '.sauce', 'runner.json'),
       })
       .option('suiteName', {
         alias: 's',
         type: 'string',
         description: 'Select the suite to run'
       })
+      .demandOption(['runCfgPath', 'suiteName'])
       .argv;
-  // FIXME make suite option mandatory
-  // FIXME considering making run-cfg mandatory
   const { runCfgPath, suiteName } = argv;
 
   cypressRunner(runCfgPath, suiteName)
