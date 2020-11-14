@@ -58,6 +58,8 @@ const getCypressOpts = function (runCfg, suiteName) {
     throw new Error(`Unable to locate the cypress config file. Looked for '${cypressCfgFile}'.`);
   }
 
+  const cypressCfg = JSON.parse(fs.readFileSync(cypressCfgFile, 'utf8'));
+
   let opts = {
     browser: suite.browser || 'chrome',
     configFile: cypressCfgFile,
@@ -69,7 +71,7 @@ const getCypressOpts = function (runCfg, suiteName) {
       reporter: path.join('src', 'custom-reporter.js'),
       reporterOptions: {
         mochaFile: `${resultsFolder}/[suite].xml`,
-        specRoot: runCfg.integrationFolder || 'cypress/integration', // TODO this setting doesn't exist in saucectl yet, use project level or suite level?
+        specRoot: cypressCfg.integrationFolder || 'cypress/integration',
       },
       videoCompression: false,
       videoUploadOnPasses: false,
