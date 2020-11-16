@@ -20,7 +20,7 @@ async function loadRunConfig (cfgPath) {
   throw new Error(`Runner config (${cfgPath}) unavailable.`)
 }
 
-const report = async (results, browserName) => {
+const report = async (results, browserName, buildName) => {
   // Prepare the assets
   const runs = results.runs || [];
   let specFiles = runs.map((run) => run.spec.name);
@@ -38,7 +38,7 @@ const report = async (results, browserName) => {
     console.log('Skipping asset upload inside of sauce vm. Asset uploads will take place in post process batch job');
     return failures === 0;
   }
-  const buildName = process.env.SAUCE_BUILD_NAME || `stt-cypress-build-${(new Date()).getTime()}`;
+
   await sauceReporter(buildName, browserName, assets, failures);
 
   return failures === 0;
@@ -88,7 +88,7 @@ const cypressRunner = async function (runCfgPath, suiteName) {
 
   const results = await cypress.run(cypressOpts);
 
-  return await report(results, cypressOpts.browser);
+  return await report(results, cypressOpts.browser, runCfg.sauce.metadata.build);
 };
 
 // For dev and test purposes, this allows us to run our Cypress Runner from command line
