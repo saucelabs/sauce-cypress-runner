@@ -5,7 +5,6 @@ const SauceLabs = require('saucelabs').default;
 const ffmpeg = require('fluent-ffmpeg');
 const { promisify } = require('util');
 const ffprobe = promisify(ffmpeg.ffprobe);
-const region = process.env.SAUCE_REGION || 'us-west-1';
 
 const { remote } = require('webdriverio');
 
@@ -55,10 +54,9 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
   return assets;
 };
 
-SauceReporter.sauceReporter = async (buildName, browserName, assets, failures) => {
-  // SAUCE_JOB_NAME is only available for saucectl >= 0.16, hence the fallback
-  let testName = process.env.SAUCE_JOB_NAME || `DevX Cypress Test Run - ${(new Date()).getTime()}`;
-  let tags = process.env.SAUCE_TAGS;
+SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, failures) => {
+  const testName = runCfg.sauce.metadata.name + ' - ' + suiteName;
+  const region = runCfg.sauce.region || 'us-west-1';
 
   const api = new SauceLabs({
     user: process.env.SAUCE_USERNAME,
@@ -66,9 +64,6 @@ SauceReporter.sauceReporter = async (buildName, browserName, assets, failures) =
     region
   });
 
-  if (tags) {
-    tags = tags.split(',');
-  }
   try {
     await remote({
       user: process.env.SAUCE_USERNAME,
@@ -84,8 +79,8 @@ SauceReporter.sauceReporter = async (buildName, browserName, assets, failures) =
           devX: true,
           name: testName,
           framework: 'cypress',
-          build: buildName,
-          tags
+          build: runCfg.sauce.metadata.build,
+          tags: runCfg.sauce.metadata.tags,
         }
       }
     }).catch((err) => err);

@@ -20,7 +20,7 @@ async function loadRunConfig (cfgPath) {
   throw new Error(`Runner config (${cfgPath}) unavailable.`)
 }
 
-const report = async (results, browserName, buildName) => {
+const report = async (results, browserName, runCfg, suiteName) => {
   // Prepare the assets
   const runs = results.runs || [];
   let specFiles = runs.map((run) => run.spec.name);
@@ -39,7 +39,7 @@ const report = async (results, browserName, buildName) => {
     return failures === 0;
   }
 
-  await sauceReporter(buildName, browserName, assets, failures);
+  await sauceReporter(runCfg, suiteName, browserName, assets, failures);
 
   return failures === 0;
 };
@@ -88,7 +88,7 @@ const cypressRunner = async function (runCfgPath, suiteName) {
 
   const results = await cypress.run(cypressOpts);
 
-  return await report(results, cypressOpts.browser, runCfg.sauce.metadata.build);
+  return await report(results, cypressOpts.browser, runCfg, suiteName);
 };
 
 // For dev and test purposes, this allows us to run our Cypress Runner from command line
