@@ -7,6 +7,8 @@ const cypress = require('cypress');
 const yargs = require('yargs/yargs');
 const _ = require('lodash');
 
+const RESULTS_DIR = 'cypress/results';
+
 // Promisify the callback functions
 const fileExists = promisify(fs.exists);
 const readFile = promisify(fs.readFile);
@@ -21,11 +23,10 @@ async function loadRunConfig (cfgPath) {
 const report = async (results, browserName) => {
   // Prepare the assets
   const runs = results.runs || [];
-  const resultsFolder = process.env.SAUCE_REPORTS_DIR || 'cypress/results';
   let specFiles = runs.map((run) => run.spec.name);
   let assets = await prepareAssets(
-    specFiles,
-    resultsFolder,
+      specFiles,
+      RESULTS_DIR,
   );
 
   let failures = results.failures || results.totalFailed;
@@ -44,8 +45,6 @@ const report = async (results, browserName) => {
 };
 
 const getCypressOpts = function (runCfg, suiteName) {
-  const resultsFolder = 'cypress/results'; // that's where we collect assets from
-
   // Get user settings from suites.
   const suites = runCfg.suites || [];
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
@@ -65,12 +64,12 @@ const getCypressOpts = function (runCfg, suiteName) {
     configFile: cypressCfgFile,
     config: {
       testFiles: suite.config.testFiles,
-      videosFolder: resultsFolder,
-      screenshotsFolder: resultsFolder,
+      videosFolder: RESULTS_DIR,
+      screenshotsFolder: RESULTS_DIR,
       video: shouldRecordVideo(),
       reporter: path.join('src', 'custom-reporter.js'),
       reporterOptions: {
-        mochaFile: `${resultsFolder}/[suite].xml`,
+        mochaFile: `${RESULTS_DIR}/[suite].xml`,
         specRoot: cypressCfg.integrationFolder || 'cypress/integration',
       },
       videoCompression: false,
