@@ -13,17 +13,6 @@ RUN wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM_VERSION}/insta
 
 ENV PATH="/home/seluser/bin:/home/seluser/.nvm/versions/node/v${NODE_VERSION}/bin:${PATH}"
 
-ARG SAUCECTL_VERSION=0.16.0
-ENV SAUCECTL_BINARY=saucectl_${SAUCECTL_VERSION}_linux_64-bit.tar.gz
-
-RUN curl -L -o ${SAUCECTL_BINARY} \
-  -H "Accept: application/octet-stream" \
-  https://github.com/saucelabs/saucectl/releases/download/v${SAUCECTL_VERSION}/${SAUCECTL_BINARY} \
-  && tar -xvzf ${SAUCECTL_BINARY} \
-  && mkdir -p /home/seluser/bin/ \
-  && mv ./saucectl /home/seluser/bin/saucectl \
-  && rm ${SAUCECTL_BINARY}
-
 COPY package.json .
 COPY package-lock.json .
 RUN npm i
