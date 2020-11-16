@@ -34,14 +34,8 @@ COPY --chown=seluser:seluser . .
 # That's why we let Cypress know where the location actually is.
 ENV CYPRESS_CACHE_FOLDER=/home/seluser/.cache/Cypress
 
-# Prepare cypress folders
-RUN mkdir -p /home/seluser/cypress \
- && mkdir -p /home/seluser/cypress/integration/tests \
- && mkdir -p /home/seluser/cypress/fixtures \
- && mkdir -p /home/seluser/cypress/plugins \
- && mkdir -p /home/seluser/cypress/reporters \
- && mkdir -p /home/seluser/cypress/results \
- && mkdir -p /home/seluser/cypress/support
+# Let saucectl know where to mount files
+LABEL com.saucelabs.project-dir=/home/seluser/
 
 # Workaround for permissions in CI if run with a different user
 RUN chmod 777 -R /home/seluser/
