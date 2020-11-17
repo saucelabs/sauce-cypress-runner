@@ -60,7 +60,7 @@ const getCypressOpts = function (runCfg, suiteName) {
   const cypressCfg = JSON.parse(fs.readFileSync(cypressCfgFile, 'utf8'));
 
   let opts = {
-    browser: suite.browser || 'chrome',
+    browser: process.env.SAUCE_BROWSER || suite.browser || 'chrome',
     configFile: cypressCfgFile,
     config: {
       testFiles: suite.config.testFiles,
