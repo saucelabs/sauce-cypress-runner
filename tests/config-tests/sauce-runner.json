@@ -1,4 +1,5 @@
 {
+    
     "cypress": {
         "configFile": "cypress.json"
     },
