@@ -4,7 +4,7 @@ const path = require('path');
 const stream = require('stream');
 const child_process = require('child_process');
 
-async function cypressRecorder () {
+function cypressRecorder () {
   // console.log is saved out of reportsDir since it is cleared on startup.
   const fd = fs.openSync('console.log', 'w+', 0o644);
   const ws = stream.Writable({

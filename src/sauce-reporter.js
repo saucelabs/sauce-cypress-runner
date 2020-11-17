@@ -31,7 +31,7 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
       const assetFile = path.join(resultsFolder, asset.name);
       if (!fs.existsSync(assetFile)) {
         console.warn(`Failed to prepare asset. Could not find: '${assetFile}'`);
-        continue
+        continue;
       }
       assets.push(assetFile);
 
@@ -55,8 +55,11 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
 };
 
 SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, failures) => {
-  const testName = runCfg.sauce.metadata.name + ' - ' + suiteName;
-  const region = runCfg.sauce.region || 'us-west-1';
+  const { sauce = {} } = runCfg;
+  const { metadata = {} } = sauce;
+  const baseTestName = metadata.name || `Test ${+new Date()}`;
+  const testName = baseTestName + ' - ' + suiteName;
+  const region = sauce.region || 'us-west-1';
 
   const api = new SauceLabs({
     user: process.env.SAUCE_USERNAME,
@@ -79,8 +82,8 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
           devX: true,
           name: testName,
           framework: 'cypress',
-          build: runCfg.sauce.metadata.build,
-          tags: runCfg.sauce.metadata.tags,
+          build: metadata.build,
+          tags: metadata.tags,
         }
       }
     }).catch((err) => err);

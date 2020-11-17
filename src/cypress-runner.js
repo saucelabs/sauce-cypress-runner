@@ -1,23 +1,12 @@
 const { sauceReporter, prepareAssets } = require('./sauce-reporter');
 const path = require('path');
 const fs = require('fs');
-const { promisify } = require('util');
-const { shouldRecordVideo } = require('./utils');
+const { shouldRecordVideo, getAbsolutePath, loadRunConfig } = require('./utils');
 const cypress = require('cypress');
 const yargs = require('yargs/yargs');
 const _ = require('lodash');
 
 const RESULTS_DIR = '__assets__';
-
-// Promisify the callback functions
-const fileExists = promisify(fs.exists);
-
-async function loadRunConfig (cfgPath) {
-  if (await fileExists(cfgPath)) {
-    return require(cfgPath);
-  }
-  throw new Error(`Runner config (${cfgPath}) unavailable.`)
-}
 
 const report = async (results, browserName, runCfg, suiteName) => {
   // Prepare the assets
@@ -51,9 +40,9 @@ const getCypressOpts = function (runCfg, suiteName) {
     throw new Error(`Could not find suite named '${suiteName}'; available suites='${suites}`);
   }
 
-  let cypressCfgFile = path.basename(runCfg.cypress.configFile);
-  if (!fs.existsSync(cypressCfgFile)) {
-    throw new Error(`Unable to locate the cypress config file. Looked for '${cypressCfgFile}'.`);
+  let cypressCfgFile = runCfg.cypress.configFile;
+  if (!fs.existsSync(getAbsolutePath(cypressCfgFile))) {
+    throw new Error(`Unable to locate the cypress config file. Looked for '${getAbsolutePath(cypressCfgFile)}'.`);
   }
 
   const cypressCfg = JSON.parse(fs.readFileSync(cypressCfgFile, 'utf8'));
@@ -66,7 +55,7 @@ const getCypressOpts = function (runCfg, suiteName) {
       videosFolder: RESULTS_DIR,
       screenshotsFolder: RESULTS_DIR,
       video: shouldRecordVideo(),
-      reporter: path.join('src', 'custom-reporter.js'),
+      reporter: path.join(__dirname, 'custom-reporter.js'),
       reporterOptions: {
         mochaFile: `${RESULTS_DIR}/[suite].xml`,
         specRoot: cypressCfg.integrationFolder || 'cypress/integration',
@@ -82,6 +71,7 @@ const getCypressOpts = function (runCfg, suiteName) {
 };
 
 const cypressRunner = async function (runCfgPath, suiteName) {
+  runCfgPath = getAbsolutePath(runCfgPath);
   const runCfg = await loadRunConfig(runCfgPath);
   let cypressOpts = getCypressOpts(runCfg, suiteName);
 

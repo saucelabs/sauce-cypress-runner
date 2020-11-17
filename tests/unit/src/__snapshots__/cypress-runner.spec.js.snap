@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`.cypressRunner calls sauce reporter and returns a job status 1`] = `
+Array [
+  Array [
+    Object {
+      "cypress": Object {
+        "configFile": "fake-cypress.json",
+      },
+      "suites": Array [
+        Object {
+          "config": Object {},
+          "name": "fake-suite",
+        },
+      ],
+    },
+    "fake-suite",
+    "firefox",
+    Array [
+      "spec-a",
+      "spec-b",
+    ],
+    Array [],
+  ],
+]
+`;
+
+exports[`.cypressRunner can call Cypress.run with basic args 1`] = `
+Array [
+  Array [
+    Object {
+      "browser": "chrome",
+      "config": Object {
+        "reporter": "/Users/danielgraham/sauce-cypress-runner/src/custom-reporter.js",
+        "reporterOptions": Object {
+          "mochaFile": "__assets__/[suite].xml",
+          "specRoot": "cypress/integration",
+        },
+        "screenshotsFolder": "__assets__",
+        "testFiles": undefined,
+        "video": undefined,
+        "videoCompression": false,
+        "videoUploadOnPasses": false,
+        "videosFolder": "__assets__",
+      },
+      "configFile": "fake-cypress.json",
+    },
+  ],
+]
+`;

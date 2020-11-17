@@ -1,0 +1,16 @@
+{
+    
+    "cypress": {
+        "configFile": "cypress.json"
+    },
+    "suites": [
+        {
+            "name": "default",
+            "browser": "chrome",
+            "browserVersion": "",
+            "config": {
+                
+            }
+        }
+    ]
+}
