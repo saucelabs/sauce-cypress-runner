@@ -124,3 +124,5 @@ tests/*/cypress/support/
 tests/*/cypress/videos/
 
 node
+
+Cache/

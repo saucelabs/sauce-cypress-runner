@@ -42,7 +42,7 @@ const getCypressOpts = function (runCfg, suiteName) {
 
   let cypressCfgFile = runCfg.cypress.configFile;
   if (!fs.existsSync(getAbsolutePath(cypressCfgFile))) {
-    throw new Error(`Unable to locate the cypress config file. Looked for '${path.join(process.cwd(), cypressCfgFile)}'.`);
+    throw new Error(`Unable to locate the cypress config file. Looked for '${getAbsolutePath(cypressCfgFile)}'.`);
   }
 
   const cypressCfg = JSON.parse(fs.readFileSync(cypressCfgFile, 'utf8'));
