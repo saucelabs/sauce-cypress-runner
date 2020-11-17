@@ -31,7 +31,7 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
       const assetFile = path.join(resultsFolder, asset.name);
       if (!fs.existsSync(assetFile)) {
         console.warn(`Failed to prepare asset. Could not find: '${assetFile}'`);
-        continue
+        continue;
       }
       assets.push(assetFile);
 
