@@ -11,11 +11,10 @@ const RESULTS_DIR = '__assets__';
 
 // Promisify the callback functions
 const fileExists = promisify(fs.exists);
-const readFile = promisify(fs.readFile);
 
 async function loadRunConfig (cfgPath) {
   if (await fileExists(cfgPath)) {
-    return JSON.parse(await readFile(cfgPath, 'utf8'));
+    return require(cfgPath);
   }
   throw new Error(`Runner config (${cfgPath}) unavailable.`)
 }
