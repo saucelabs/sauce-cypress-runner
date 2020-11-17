@@ -7,7 +7,7 @@ const cypress = require('cypress');
 const yargs = require('yargs/yargs');
 const _ = require('lodash');
 
-const RESULTS_DIR = 'cypress/results';
+const RESULTS_DIR = '__assets__';
 
 // Promisify the callback functions
 const fileExists = promisify(fs.exists);
