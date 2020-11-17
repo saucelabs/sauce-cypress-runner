@@ -40,7 +40,7 @@ const getCypressOpts = function (runCfg, suiteName) {
     throw new Error(`Could not find suite named '${suiteName}'; available suites='${suites}`);
   }
 
-  let cypressCfgFile = runCfg.cypress.configFile;
+  let cypressCfgFile = path.basename(runCfg.cypress.configFile);
   if (!fs.existsSync(getAbsolutePath(cypressCfgFile))) {
     throw new Error(`Unable to locate the cypress config file. Looked for '${getAbsolutePath(cypressCfgFile)}'.`);
   }
