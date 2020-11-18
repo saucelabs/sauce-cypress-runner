@@ -1,5 +1,0 @@
-rootDir: ./tests/config-tests/
-reportsDir: ./results
-execCommand:
-  - npm
-  - test
