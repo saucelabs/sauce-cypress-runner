@@ -4,6 +4,7 @@ jest.mock('../../../src/sauce-reporter');
 jest.mock('../../../src/utils');
 
 const cypress = require('cypress');
+const path = require('path');
 const fs = require('fs');
 const { sauceReporter, prepareAssets } = require('../../../src/sauce-reporter');
 const { cypressRunner } = require('../../../src/cypress-runner');
@@ -40,6 +41,9 @@ describe('.cypressRunner', function () {
     process.env.SAUCE_USERNAME = null;
     process.env.SAUCE_ACCESS_KEY = null;
     await cypressRunner('/fake/runner/path', 'fake-suite');
+    // Change reporter to not be fully-qualified path
+    const {reporter} = cypressRunSpy.mock.calls[0][0].config;
+    cypressRunSpy.mock.calls[0][0].config.reporter = path.basename(reporter);
     expect(cypressRunSpy.mock.calls).toMatchSnapshot();
     expect(prepareAssets.mock.calls).toEqual([
       [
