@@ -31,7 +31,7 @@ Array [
     Object {
       "browser": "chrome",
       "config": Object {
-        "reporter": "/Users/danielgraham/sauce-cypress-runner/src/custom-reporter.js",
+        "reporter": "custom-reporter.js",
         "reporterOptions": Object {
           "mochaFile": "__assets__/[suite].xml",
           "specRoot": "cypress/integration",
