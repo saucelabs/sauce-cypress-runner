@@ -6,7 +6,7 @@ const child_process = require('child_process');
 
 function cypressRecorder () {
   // console.log is saved out of reportsDir since it is cleared on startup.
-  const fd = fs.openSync('console.log', 'w+', 0o644);
+  const fd = fs.openSync(path.join(process.cwd(), 'console.log'), 'w+', 0o644);
   const ws = stream.Writable({
     write (data, encoding, cb) { fs.write(fd, data, undefined, encoding, cb); },
   });
