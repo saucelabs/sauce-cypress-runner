@@ -7,6 +7,8 @@ Array [
       "cypress": Object {
         "configFile": "fake-cypress.json",
       },
+      "path": "/fake/runner/path",
+      "resultsDir": "/fake/runner/__assets__",
       "suites": Array [
         Object {
           "config": Object {},
@@ -33,17 +35,18 @@ Array [
       "config": Object {
         "reporter": "custom-reporter.js",
         "reporterOptions": Object {
-          "mochaFile": "__assets__/[suite].xml",
+          "mochaFile": "/fake/runner/__assets__/[suite].xml",
           "specRoot": "cypress/integration",
         },
-        "screenshotsFolder": "__assets__",
+        "screenshotsFolder": "/fake/runner/__assets__",
         "testFiles": undefined,
         "video": undefined,
         "videoCompression": false,
         "videoUploadOnPasses": false,
-        "videosFolder": "__assets__",
+        "videosFolder": "/fake/runner/__assets__",
       },
       "configFile": "fake-cypress.json",
+      "project": "/fake/runner",
     },
   ],
 ]

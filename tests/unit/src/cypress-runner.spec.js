@@ -8,7 +8,7 @@ const path = require('path');
 const fs = require('fs');
 const { sauceReporter, prepareAssets } = require('../../../src/sauce-reporter');
 const { cypressRunner } = require('../../../src/cypress-runner');
-const { loadRunConfig } = require('../../../src/utils');
+const { loadRunConfig, getAbsolutePath } = require('../../../src/utils');
 
 describe('.cypressRunner', function () {
   let oldEnv = { ...process.env };
@@ -33,6 +33,7 @@ describe('.cypressRunner', function () {
         {name: 'fake-suite', config: {}}
       ]
     };
+    getAbsolutePath.mockImplementation((path) => path);
     loadRunConfig.mockImplementation(() => fakeRunnerJson);
     fs.existsSync.mockImplementation(() => true);
     fs.readFileSync.mockImplementation(() => JSON.stringify(fakeRunnerJson));
@@ -47,7 +48,7 @@ describe('.cypressRunner', function () {
     expect(cypressRunSpy.mock.calls).toMatchSnapshot();
     expect(prepareAssets.mock.calls).toEqual([
       [
-        ['spec-a', 'spec-b'], '__assets__'
+        ['spec-a', 'spec-b'], '/fake/runner/__assets__'
       ]
     ]);
   });

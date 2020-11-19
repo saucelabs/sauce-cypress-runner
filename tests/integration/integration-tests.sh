@@ -1,4 +1,4 @@
 export SAUCE_USERNAME=''
 export SAUCE_ACCESS_KEY=''
-pushd tests/config-tests/ && node ../../ -r sauce-runner.json -s "default" && popd
-pushd tests/env-tests/ && node ../../ -r sauce-runner.json -s "default" && popd
+node . -r tests/config-tests/sauce-runner.json -s "default"
+node . -r tests/env-tests/sauce-runner.json -s "default"

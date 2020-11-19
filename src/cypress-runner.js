@@ -6,15 +6,13 @@ const cypress = require('cypress');
 const yargs = require('yargs/yargs');
 const _ = require('lodash');
 
-const RESULTS_DIR = '__assets__';
-
 const report = async (results, browserName, runCfg, suiteName) => {
   // Prepare the assets
   const runs = results.runs || [];
   let specFiles = runs.map((run) => run.spec.name);
   let assets = await prepareAssets(
       specFiles,
-      RESULTS_DIR,
+      runCfg.resultsDir,
   );
 
   let failures = results.failures || results.totalFailed;
@@ -48,16 +46,17 @@ const getCypressOpts = function (runCfg, suiteName) {
   const cypressCfg = JSON.parse(fs.readFileSync(cypressCfgFile, 'utf8'));
 
   let opts = {
+    project: path.dirname(runCfg.path),
     browser: process.env.SAUCE_BROWSER || suite.browser || 'chrome',
     configFile: cypressCfgFile,
     config: {
       testFiles: suite.config.testFiles,
-      videosFolder: RESULTS_DIR,
-      screenshotsFolder: RESULTS_DIR,
+      videosFolder: runCfg.resultsDir,
+      screenshotsFolder: runCfg.resultsDir,
       video: shouldRecordVideo(),
       reporter: path.join(__dirname, 'custom-reporter.js'),
       reporterOptions: {
-        mochaFile: `${RESULTS_DIR}/[suite].xml`,
+        mochaFile: `${runCfg.resultsDir}/[suite].xml`,
         specRoot: cypressCfg.integrationFolder || 'cypress/integration',
       },
       videoCompression: false,
@@ -73,8 +72,10 @@ const getCypressOpts = function (runCfg, suiteName) {
 const cypressRunner = async function (runCfgPath, suiteName) {
   runCfgPath = getAbsolutePath(runCfgPath);
   const runCfg = await loadRunConfig(runCfgPath);
-  let cypressOpts = getCypressOpts(runCfg, suiteName);
+  runCfg.path = runCfgPath;
+  runCfg.resultsDir = path.join(path.dirname(runCfgPath), '__assets__');
 
+  let cypressOpts = getCypressOpts(runCfg, suiteName);
   const results = await cypress.run(cypressOpts);
 
   return await report(results, cypressOpts.browser, runCfg, suiteName);
@@ -82,6 +83,8 @@ const cypressRunner = async function (runCfgPath, suiteName) {
 
 // For dev and test purposes, this allows us to run our Cypress Runner from command line
 if (require.main === module) {
+  console.log(`Sauce Cypress Runner ${require(path.join(__dirname, '..', 'package.json')).version}`);
+
   const argv = yargs(process.argv.slice(2))
       .command('$0', 'the default command')
       .option('runCfgPath', {
