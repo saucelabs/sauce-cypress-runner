@@ -1,5 +1,5 @@
 apiVersion: v1alpha
-kind: Cypress
+kind: cypress
 sauce:
   region: us-west-1
   metadata:
