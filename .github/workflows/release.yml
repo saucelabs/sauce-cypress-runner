@@ -15,7 +15,6 @@ jobs:
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
           echo ::set-output name=version::${VERSION}
-          npm version from-git
       - name: Check if release exists
         id: check_release
         run: echo ::set-output name=success::$(curl -s -o /dev/null -w "%{http_code}" https://api.github.com/repos/saucelabs/sauce-cypress-runner/releases/tags/${{ steps.prep.outputs.version }})
@@ -45,7 +44,7 @@ jobs:
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
           echo ::set-output name=version::${VERSION}
-          npm version from-git
+          npm version ${VERSION}
       -
         name: Login to DockerHub
         uses: docker/login-action@v1
@@ -73,7 +72,12 @@ jobs:
         with:
           node-version: 14.x
       - run: npm install
-      - run: npm version from-git
+      - name: Prepare
+        id: prep
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo ::set-output name=version::${VERSION}
+          npm version ${VERSION}
       - name: Get release ID
         id: get_release_id
         run: |
