@@ -1,48 +1,18 @@
 const { sauceReporter, prepareAssets } = require('./sauce-reporter');
 const path = require('path');
 const fs = require('fs');
-const { promisify } = require('util');
-const { getRunnerConfig, shouldRecordVideo } = require('./utils');
-const yaml = require('js-yaml');
+const { shouldRecordVideo, getAbsolutePath, loadRunConfig } = require('./utils');
 const cypress = require('cypress');
-let { exec } = require('child_process');
+const yargs = require('yargs/yargs');
+const _ = require('lodash');
 
-// Promisify the callback functions
-const fileExists = promisify(fs.exists);
-const readFile = promisify(fs.readFile);
-exec = promisify(exec);
-
-const DEFAULT_BROWSER = 'chrome';
-const supportedBrowsers = {
-  'chrome': 'chrome',
-  'firefox': 'firefox'
-};
-
-// the default test matching behavior for versions <= v0.1.8
-const DefaultRunCfg = {
-  match: [
-    `**/?(*.)+(spec|test).[jt]s?(x)`
-  ]
-};
-
-async function loadRunConfig (cfgPath) {
-  if (await fileExists(cfgPath)) {
-    return yaml.safeLoad(await readFile(cfgPath, 'utf8'));
-  }
-  console.log(`Run config (${cfgPath}) unavailable. Loading defaults.`);
-
-  // the default test matching behavior for versions <= v0.1.8
-  return DefaultRunCfg;
-}
-
-const report = async (results, browserName) => {
+const report = async (results, browserName, runCfg, suiteName) => {
   // Prepare the assets
   const runs = results.runs || [];
-  const resultsFolder = process.env.SAUCE_REPORTS_DIR || 'cypress/results';
   let specFiles = runs.map((run) => run.spec.name);
   let assets = await prepareAssets(
-    specFiles,
-    resultsFolder,
+      specFiles,
+      runCfg.resultsDir,
   );
 
   let failures = results.failures || results.totalFailed;
@@ -54,93 +24,84 @@ const report = async (results, browserName) => {
     console.log('Skipping asset upload inside of sauce vm. Asset uploads will take place in post process batch job');
     return failures === 0;
   }
-  const buildName = process.env.SAUCE_BUILD_NAME || `stt-cypress-build-${(new Date()).getTime()}`;
-  await sauceReporter(buildName, browserName, assets, failures);
+
+  await sauceReporter(runCfg, suiteName, browserName, assets, failures);
 
   return failures === 0;
 };
 
-const cypressRunner = async function () {
-  // Determine the browser (Chrome by default)
-  let browserName;
-  browserName = process.env.BROWSER_NAME || DEFAULT_BROWSER;
-  browserName = supportedBrowsers[browserName.toLowerCase()];
-  if (!browserName) {
-    throw new Error(`Unsupported browser: '${process.env.BROWSER_NAME}'. Sorry.`);
+const getCypressOpts = function (runCfg, suiteName) {
+  // Get user settings from suites.
+  const suites = runCfg.suites || [];
+  const suite = suites.find((testSuite) => testSuite.name === suiteName);
+  if (!suite) {
+    throw new Error(`Could not find suite named '${suiteName}'; available suites='${suites}`);
   }
 
-  // If browser path was provided, use that and append browser name
-  // (e.g.: C:/user/path/to/browser:chrome)
-  let browser;
-  const browserPath = process.env.SAUCE_BROWSER_PATH;
-  if (browserPath) {
-    browser = `${browserPath}:${browserName}`;
-  } else {
-    browser = browserName;
+  let cypressCfgFile = path.basename(runCfg.cypress.configFile);
+  if (!fs.existsSync(getAbsolutePath(cypressCfgFile))) {
+    throw new Error(`Unable to locate the cypress config file. Looked for '${getAbsolutePath(cypressCfgFile)}'.`);
   }
 
-  // Get the configuration info from config.yaml
-  const {rootDir, reportsDir, targetDir} = await getRunnerConfig();
+  const cypressCfg = JSON.parse(fs.readFileSync(cypressCfgFile, 'utf8'));
 
-  const runCfgPath = path.join(rootDir, 'run.yaml');
-  const runCfg = await loadRunConfig(runCfgPath);
-
-  if (!runCfg.projectPath) {
-    runCfg.projectPath = targetDir;
-  }
-
-  // If a typescript config is found in the project path, then compile with it
-  const tsconfigPath = path.join(runCfg.projectPath, 'tsconfig.json');
-
-  if (await fileExists(tsconfigPath)) {
-    console.log(`Compiling Typescript files from tsconfig '${tsconfigPath}'`);
-    await exec(`npx tsc -p "${tsconfigPath}"`);
-  }
-
-  // Get the cypress.json config file (https://docs.cypress.io/guides/references/configuration.html#Options)
-  let configFile = 'cypress.json';
-  let cypressJsonPath = path.join(runCfg.projectPath, 'cypress.json');
-  if (await fileExists(cypressJsonPath)) {
-    configFile = path.relative(process.cwd(), cypressJsonPath);
-  }
-
-  // Get the cypress env variables from 'cypress.env.json' (if present)
-  let env = {};
-  const cypressEnvPath = path.join(runCfg.projectPath, 'cypress.env.json');
-  if (await fileExists(cypressEnvPath)) {
-    try {
-      env = JSON.parse(await readFile(cypressEnvPath));
-    } catch (e) {
-      console.error(`Could not parse contents of '${cypressEnvPath}'. Will use empty object for environment variables.`);
-    }
-  }
-
-  const results = await cypress.run({
-    browser,
-    configFile,
+  let opts = {
+    project: path.dirname(runCfg.path),
+    browser: process.env.SAUCE_BROWSER || suite.browser || 'chrome',
+    configFile: cypressCfgFile,
     config: {
-      env,
+      testFiles: suite.config.testFiles,
+      videosFolder: runCfg.resultsDir,
+      screenshotsFolder: runCfg.resultsDir,
       video: shouldRecordVideo(),
-      videosFolder: reportsDir,
+      reporter: path.join(__dirname, 'custom-reporter.js'),
+      reporterOptions: {
+        mochaFile: `${runCfg.resultsDir}/[suite].xml`,
+        specRoot: cypressCfg.integrationFolder || 'cypress/integration',
+      },
       videoCompression: false,
       videoUploadOnPasses: false,
-      screenshotsFolder: reportsDir,
-      integrationFolder: runCfg.projectPath,
-      testFiles: runCfg.match,
-      reporter: 'src/custom-reporter.js',
-      reporterOptions: {
-        mochaFile: `${reportsDir}/[suite].xml`,
-        specFolder: runCfg.projectPath,
-      },
     }
-  });
+  };
 
-  return await report(results, browserName);
+  _.defaultsDeep(opts.config, suite.config);
+
+  return opts;
+};
+
+const cypressRunner = async function (runCfgPath, suiteName) {
+  runCfgPath = getAbsolutePath(runCfgPath);
+  const runCfg = await loadRunConfig(runCfgPath);
+  runCfg.path = runCfgPath;
+  runCfg.resultsDir = path.join(path.dirname(runCfgPath), '__assets__');
+
+  let cypressOpts = getCypressOpts(runCfg, suiteName);
+  const results = await cypress.run(cypressOpts);
+
+  return await report(results, cypressOpts.browser, runCfg, suiteName);
 };
 
 // For dev and test purposes, this allows us to run our Cypress Runner from command line
 if (require.main === module) {
-  cypressRunner()
+  console.log(`Sauce Cypress Runner ${require(path.join(__dirname, '..', 'package.json')).version}`);
+
+  const argv = yargs(process.argv.slice(2))
+      .command('$0', 'the default command')
+      .option('runCfgPath', {
+        alias: 'r',
+        type: 'string',
+        description: 'Path to sauce runner json',
+      })
+      .option('suiteName', {
+        alias: 's',
+        type: 'string',
+        description: 'Select the suite to run'
+      })
+      .demandOption(['runCfgPath', 'suiteName'])
+      .argv;
+  const { runCfgPath, suiteName } = argv;
+
+  cypressRunner(runCfgPath, suiteName)
       // eslint-disable-next-line promise/prefer-await-to-then
       .then((passed) => process.exit(passed ? 0 : 1))
       // eslint-disable-next-line promise/prefer-await-to-callbacks

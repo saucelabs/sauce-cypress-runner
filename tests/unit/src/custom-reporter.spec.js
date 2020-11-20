@@ -14,6 +14,7 @@ describe('Custom Reporter', function () {
       ctx.flush = jest.fn(function () {});
       ctx._options = {};
       ctx._options.specFolder = path.join(process.cwd(), 'spec', 'folder');
+      ctx._options.specRoot = path.join(process.cwd(), 'spec', 'folder');
       report.call(ctx, 'a', 'b');
       expect(ctx.flush.mock.calls).toEqual([['a', 'path/to/spec', 'b']]);
     });
@@ -24,6 +25,7 @@ describe('Custom Reporter', function () {
       ctx.flush = jest.fn(function () {});
       ctx._options = {};
       ctx._options.specFolder = path.join('spec', 'folder');
+      ctx._options.specRoot = path.join('spec', 'folder');
       report.call(ctx, 'a', 'b');
       expect(ctx.flush.mock.calls).toEqual([['a', 'path/to/spec', 'b']]);
     });

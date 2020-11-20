@@ -1,4 +1,4 @@
-const { getAbsolutePath, getRunnerConfig, shouldRecordVideo } = require('../../../src/utils');
+const { getAbsolutePath, shouldRecordVideo } = require('../../../src/utils');
 
 describe('utils', function () {
   describe('.getAbsolutePath', function () {
@@ -7,27 +7,6 @@ describe('utils', function () {
     });
     it('translates relative path to absolute', function () {
       expect(getAbsolutePath('path/to/asset/')).toMatch(/\/path\/to\/asset\/$/);
-    });
-  });
-  describe('.getRunnerConfig', function () {
-    it('uses default config file', async function () {
-      const sauceTargetDir = process.env.SAUCE_TARGET_DIR;
-      const sauceReportsDir = process.env.SAUCE_REPORTS_DIR;
-      const sauceRootDir = process.env.SAUCE_ROOT_DIR;
-      delete process.env.SAUCE_TARGET_DIR;
-      delete process.env.SAUCE_REPORTS_DIR;
-      delete process.env.SAUCE_ROOT_DIR;
-      try {
-        expect(await getRunnerConfig()).toEqual({
-          reportsDir: '/home/seluser/cypress/results',
-          rootDir: '/home/seluser/',
-          targetDir: '/home/seluser/cypress/integration',
-        });
-      } finally {
-        process.env.SAUCE_TARGET_DIR = sauceTargetDir;
-        process.env.SAUCE_REPORTS_DIR = sauceReportsDir;
-        process.env.SAUCE_ROOT_DIR = sauceRootDir;
-      }
     });
   });
 });

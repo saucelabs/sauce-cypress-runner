@@ -1,9 +1,14 @@
 jest.mock('cypress');
+jest.mock('fs');
 jest.mock('../../../src/sauce-reporter');
+jest.mock('../../../src/utils');
 
 const cypress = require('cypress');
+const path = require('path');
+const fs = require('fs');
 const { sauceReporter, prepareAssets } = require('../../../src/sauce-reporter');
 const { cypressRunner } = require('../../../src/cypress-runner');
+const { loadRunConfig, getAbsolutePath } = require('../../../src/utils');
 
 describe('.cypressRunner', function () {
   let oldEnv = { ...process.env };
@@ -20,65 +25,50 @@ describe('.cypressRunner', function () {
     cypress.run.mockImplementation(() => cypressRunResults);
     prepareAssets.mockClear();
     prepareAssets.mockImplementation(() => (['spec-a', 'spec-b']));
+    const fakeRunnerJson = {
+      cypress: {
+        configFile: 'fake-cypress.json',
+      },
+      suites: [
+        {name: 'fake-suite', config: {}}
+      ]
+    };
+    getAbsolutePath.mockImplementation((path) => path);
+    loadRunConfig.mockImplementation(() => fakeRunnerJson);
+    fs.existsSync.mockImplementation(() => true);
+    fs.readFileSync.mockImplementation(() => JSON.stringify(fakeRunnerJson));
   });
-  it('can hardcode locations of reports, target and root', async function () {
-    process.env.SAUCE_REPORTS_DIR = '/path/to/results';
-    process.env.SAUCE_TARGET_DIR = '/path/to/target';
-    process.env.SAUCE_ROOT_DIR = '/path/to/root';
+  it('can call Cypress.run with basic args', async function () {
     process.env.SAUCE_USERNAME = null;
     process.env.SAUCE_ACCESS_KEY = null;
-    await cypressRunner();
-    const expectedCypressRun = [
-      [{
-        browser: 'chrome',
-        configFile: 'cypress.json',
-        config: {
-          env: {},
-          video: true,
-          videosFolder: '/path/to/results',
-          videoCompression: false,
-          videoUploadOnPasses: false,
-          screenshotsFolder: '/path/to/results',
-          integrationFolder: '/path/to/target',
-          testFiles: [
-            '**/?(*.)+(spec|test).[jt]s?(x)'
-          ],
-          reporter: 'src/custom-reporter.js',
-          reporterOptions: {
-            mochaFile: '/path/to/results/[suite].xml',
-            specFolder: '/path/to/target',
-          }
-        }
-      }]
-    ];
-    expect(cypressRunSpy.mock.calls).toEqual(expectedCypressRun);
+    await cypressRunner('/fake/runner/path', 'fake-suite');
+    // Change reporter to not be fully-qualified path
+    const {reporter} = cypressRunSpy.mock.calls[0][0].config;
+    cypressRunSpy.mock.calls[0][0].config.reporter = path.basename(reporter);
+    expect(cypressRunSpy.mock.calls).toMatchSnapshot();
     expect(prepareAssets.mock.calls).toEqual([
       [
-        ['spec-a', 'spec-b'], '/path/to/results'
+        ['spec-a', 'spec-b'], '/fake/runner/__assets__'
       ]
     ]);
   });
   it('can hardcode the browser path', async function () {
-    process.env.BROWSER_NAME = 'chrome';
-    process.env.SAUCE_BROWSER_PATH = 'C:/User/App/browser.exe';
-    await cypressRunner();
+    process.env.SAUCE_BROWSER = 'C:/User/App/browser.exe:chrome';
+    await cypressRunner('/fake/runner/path', 'fake-suite');
     const calledBrowser = cypressRunSpy.mock.calls[0][0].browser;
     expect(calledBrowser).toEqual('C:/User/App/browser.exe:chrome');
   });
   it('calls sauce reporter and returns a job status', async function () {
     process.env.SAUCE_USERNAME = 'bruno.alassia';
     process.env.SAUCE_ACCESS_KEY = 'i_l0ve_mayonnaise';
-    process.env.SAUCE_BUILD_NAME = 'fake-build-name';
-    process.env.BROWSER_NAME = 'firefox';
+    process.env.SAUCE_BROWSER = 'firefox';
     sauceReporter.mockClear();
-    await cypressRunner();
-    expect(sauceReporter.mock.calls).toEqual([
-      ['fake-build-name', 'firefox', ['spec-a', 'spec-b'], []],
-    ]);
+    await cypressRunner('/fake/runner/path', 'fake-suite');
+    expect(sauceReporter.mock.calls).toMatchSnapshot();
   });
   it('throws error if browser is unsupported', function () {
     process.env.BROWSER_NAME = 'lynx';
-    expect(cypressRunner()).rejects.toThrow(new Error(
+    expect(cypressRunner('/fake/runner/path', 'fake-suite')).rejects.toThrow(new Error(
       `Unsupported browser: 'lynx'. Sorry.`
     ));
   });
@@ -86,13 +76,13 @@ describe('.cypressRunner', function () {
     it('returns false if there are test failures', async function () {
       process.env.SAUCE_VM = 'truthy';
       cypressRunSpy.mockImplementation(() => ({failures: 100}));
-      const status = await cypressRunner();
+      const status = await cypressRunner('/fake/runner/path', 'fake-suite');
       expect(status).toEqual(false);
     });
     it('returns true if there are no test failures', async function () {
       process.env.SAUCE_VM = 'truthy';
       cypressRunSpy.mockImplementation(() => ({failures: 0}));
-      const status = await cypressRunner();
+      const status = await cypressRunner('/fake/runner/path', 'fake-suite');
       expect(status).toEqual(false);
     });
   });

@@ -13,20 +13,9 @@ RUN wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM_VERSION}/insta
 
 ENV PATH="/home/seluser/bin:/home/seluser/.nvm/versions/node/v${NODE_VERSION}/bin:${PATH}"
 
-ARG SAUCECTL_VERSION=0.16.0
-ENV SAUCECTL_BINARY=saucectl_${SAUCECTL_VERSION}_linux_64-bit.tar.gz
-
-RUN curl -L -o ${SAUCECTL_BINARY} \
-  -H "Accept: application/octet-stream" \
-  https://github.com/saucelabs/saucectl/releases/download/v${SAUCECTL_VERSION}/${SAUCECTL_BINARY} \
-  && tar -xvzf ${SAUCECTL_BINARY} \
-  && mkdir -p /home/seluser/bin/ \
-  && mv ./saucectl /home/seluser/bin/saucectl \
-  && rm ${SAUCECTL_BINARY}
-
 COPY package.json .
 COPY package-lock.json .
-RUN npm i
+RUN npm ci
 
 COPY --chown=seluser:seluser . .
 # Cypress caches its binary by default in ~/.cache/Cypress
@@ -34,14 +23,8 @@ COPY --chown=seluser:seluser . .
 # That's why we let Cypress know where the location actually is.
 ENV CYPRESS_CACHE_FOLDER=/home/seluser/.cache/Cypress
 
-# Prepare cypress folders
-RUN mkdir -p /home/seluser/cypress \
- && mkdir -p /home/seluser/cypress/integration/tests \
- && mkdir -p /home/seluser/cypress/fixtures \
- && mkdir -p /home/seluser/cypress/plugins \
- && mkdir -p /home/seluser/cypress/reporters \
- && mkdir -p /home/seluser/cypress/results \
- && mkdir -p /home/seluser/cypress/support
+# Let saucectl know where to mount files
+LABEL com.saucelabs.project-dir=/home/seluser/
 
 # Workaround for permissions in CI if run with a different user
 RUN chmod 777 -R /home/seluser/

@@ -122,3 +122,7 @@ tests/*/cypress/plugins/
 tests/*/cypress/screenshots/
 tests/*/cypress/support/
 tests/*/cypress/videos/
+
+node
+
+Cache/

@@ -63,7 +63,6 @@ function configureDefaults (options) {
   let config = findReporterOptions(options);
   debug('options', config);
   config.mochaFile = getSetting(config.mochaFile, 'MOCHA_FILE', 'test-results.xml');
-  config.specFolder = getSetting(config.specFolder, 'SPEC_FOLDER', 'test-results.xml');
   config.attachments = getSetting(config.attachments, 'ATTACHMENTS', false);
   config.antMode = getSetting(config.antMode, 'ANT_MODE', false);
   config.jenkinsMode = getSetting(config.jenkinsMode, 'JENKINS_MODE', false);
@@ -261,16 +260,10 @@ function MochaJUnitReporter (runner, options) {
 }
 
 MochaJUnitReporter.prototype.report = function (testsuites, sauceJson) {
-  const cwd = process.cwd();
   if (this._runner.suite.file) {
-    const absoluteSpecFile = path.join(cwd, this._runner.suite.file);
-    const { specFolder } = this._options;
-    const absoluteSpecFolder = path.isAbsolute(specFolder) ? specFolder : path.join(cwd, specFolder);
-    let specFile = absoluteSpecFile.replace(absoluteSpecFolder, '');
-    if (path.isAbsolute(specFile)) {
-      specFile = specFile.substr(1);
-    }
-    this.flush(testsuites, specFile, sauceJson);
+    const specFile = this._runner.suite.file;
+    const specRoot = this._options.specRoot;
+    this.flush(testsuites, path.relative(specRoot, specFile), sauceJson);
   }
 };
 

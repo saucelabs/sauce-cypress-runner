@@ -2,62 +2,41 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const SauceLabs = require('saucelabs').default;
-const { getRunnerConfig } = require('./utils');
-let md5 = require('md5');
 const ffmpeg = require('fluent-ffmpeg');
 const { promisify } = require('util');
 const ffprobe = promisify(ffmpeg.ffprobe);
-const region = process.env.SAUCE_REGION || 'us-west-1';
 
 const { remote } = require('webdriverio');
 
 const SauceReporter = {};
-
-SauceReporter.prepareAsset = (specFile, resultsFolder, tmpFolder, ext, name) => {
-  // Sauce only accepts file with certain names, otherwise the UI doesnt show them
-  // why copy them ? we also want to show the reports locally so changing name
-  // could generate conflicts
-  const assetFile = path.join(resultsFolder, `${specFile}.${ext}`);
-  try {
-    if (fs.existsSync(assetFile)) {
-      const assetTmpFile = path.join(tmpFolder, name);
-      fs.copyFileSync(assetFile, assetTmpFile);
-      return assetTmpFile;
-    }
-  } catch (e) {}
-  console.warn(`Could not find: '${assetFile}'`);
-  return null;
-};
-
 
 SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
   const assets = [];
   const videos = [];
 
   // Add the main console log
-  const {rootDir} = await getRunnerConfig();
-  let clog = path.join(rootDir, 'console.log');
+  let clog = 'console.log';
   if (fs.existsSync(clog)) {
     assets.push(clog);
   }
 
   for (let specFile of specFiles) {
-    const tmpFolder = fs.mkdtempSync(path.join(os.tmpdir(), md5(specFile)));
-    const specFilename = path.basename(specFile);
     const sauceAssets = [
-      { name: `${specFilename}.mp4`, ext: 'mp4' },
-      { name: `${specFilename}.json`, ext: 'json' },
-      { name: `${specFilename}.xml`, ext: 'xml' },
+      { name: `${specFile}.mp4`},
+      { name: `${specFile}.json`},
+      { name: `${specFile}.xml`},
     ];
 
-    for (let ast of sauceAssets) {
-      let assetFile = await SauceReporter.prepareAsset(specFile, resultsFolder, tmpFolder, ast.ext, ast.name);
-      if (assetFile) {
-        assets.push(assetFile);
+    for (let asset of sauceAssets) {
+      const assetFile = path.join(resultsFolder, asset.name);
+      if (!fs.existsSync(assetFile)) {
+        console.warn(`Failed to prepare asset. Could not find: '${assetFile}'`);
+        continue;
+      }
+      assets.push(assetFile);
 
-        if (ast.ext === 'mp4') {
-          videos.push(assetFile);
-        }
+      if (asset.name.endsWith('.mp4')) {
+        videos.push(assetFile);
       }
     }
   }
@@ -75,10 +54,12 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
   return assets;
 };
 
-SauceReporter.sauceReporter = async (buildName, browserName, assets, failures) => {
-  // SAUCE_JOB_NAME is only available for saucectl >= 0.16, hence the fallback
-  let testName = process.env.SAUCE_JOB_NAME || `DevX Cypress Test Run - ${(new Date()).getTime()}`;
-  let tags = process.env.SAUCE_TAGS;
+SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, failures) => {
+  const { sauce = {} } = runCfg;
+  const { metadata = {} } = sauce;
+  const baseTestName = metadata.name || `Test ${+new Date()}`;
+  const testName = baseTestName + ' - ' + suiteName;
+  const region = sauce.region || 'us-west-1';
 
   const api = new SauceLabs({
     user: process.env.SAUCE_USERNAME,
@@ -86,9 +67,6 @@ SauceReporter.sauceReporter = async (buildName, browserName, assets, failures) =
     region
   });
 
-  if (tags) {
-    tags = tags.split(',');
-  }
   try {
     await remote({
       user: process.env.SAUCE_USERNAME,
@@ -104,8 +82,8 @@ SauceReporter.sauceReporter = async (buildName, browserName, assets, failures) =
           devX: true,
           name: testName,
           framework: 'cypress',
-          build: buildName,
-          tags
+          build: metadata.build,
+          tags: metadata.tags,
         }
       }
     }).catch((err) => err);
@@ -204,7 +182,7 @@ SauceReporter.areVideosSameSize = async (videos) => {
       console.error(`Failed to inspect video ${video}, it may be corrupt: `, e);
       throw e;
     }
-    let vs = metadata.streams.find(s => s.codec_type === 'video');
+    let vs = metadata.streams.find((s) => s.codec_type === 'video');
 
     if (!lastSize) {
       lastSize = {width: vs.width, height: vs.height};
