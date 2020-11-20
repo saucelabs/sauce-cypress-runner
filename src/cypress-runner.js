@@ -44,7 +44,7 @@ const installDependencies = function (runCfg) {
     const child = child_process.spawn(path.join(path.dirname(process.argv[0]), 'npm'), ['install', '--no-save', ...packageList]);
     child.stdout.pipe(process.stdout);
     child.stderr.pipe(process.stderr);
-    child.on('exit', () => resolve());
+    child.on('exit', resolve);
   });
 };
 
