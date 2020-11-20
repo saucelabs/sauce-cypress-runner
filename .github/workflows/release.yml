@@ -75,9 +75,10 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          echo ::set-output name=version::${VERSION}
-          npm version --no-git-tag-version ${VERSION}
+          $ref_prefix="refs/tags/"
+          $ref=$env:GITHUB_REF
+          $tag=$ref.Substring($ref_prefix.Length)
+          npm version --no-git-tag-version $tag
       - name: Get release ID
         id: get_release_id
         run: |
