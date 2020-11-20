@@ -36,6 +36,10 @@ const installDependencies = function (runCfg) {
   const npmConfig = runCfg.npm || { packages: {}};
   const packageList = Object.entries(npmConfig.packages).map(([pkg, version]) => `${pkg}@${version}`);
 
+  if (packageList.length === 0) {
+    return;
+  }
+
   return new Promise((resolve) => {
     const child = child_process.spawn(path.join(path.dirname(process.argv[0]), 'npm'), ['install', '--no-save', ...packageList]);
     child.stdout.pipe(process.stdout);
