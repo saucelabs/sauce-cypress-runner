@@ -1,4 +1,5 @@
 apiVersion: v1alpha
+kind: Cypress
 metadata:
   name: Testing Cypress Kitchen Sink
   tags:
@@ -8,17 +9,21 @@ metadata:
   build: Release $CI_COMMIT_SHORT_SHA
 
 files:
-  - ./cypress
+  - ./cypress/
+
+cypress:
+  configFile: cypress.json
 
 suites:
   - name: "cypress kitchen sink test"
-    match: ".*.(spec|test).js$"
-    settings:
-      browserName: "chrome"
+    browser: "chrome"
+    config:
+      testFiles: [ "**/*.*" ]
 
-image:
-  base: saucelabs/stt-cypress-mocha-node
-  version: latest
+docker:
+  image:
+    name: saucelabs/stt-cypress-mocha-node
+    tag: latest
 
 sauce:
   region: us-west-1
