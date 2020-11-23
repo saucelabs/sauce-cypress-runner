@@ -19,11 +19,13 @@ jobs:
           LATEST_TAG=`curl -s https://api.github.com/repos/saucelabs/saucectl/releases/latest | jq -r '.name'`
           LATEST_VERSION=`echo ${LATEST_TAG} | sed s/v//`
           curl -s -L https://github.com/saucelabs/saucectl/releases/download/${LATEST_TAG}/saucectl_${LATEST_VERSION}_linux_64-bit.tar.gz | sudo tar -xvz -C /usr/bin/
-        
+
       - name: Run kitchen sink test
         working-directory: ./tests/kitchen-sink-tests
         env:
           SAUCE_USERNAME: ''
           SAUCE_ACCESS_KEY: ''
-        run: saucectl run
+        run: |
+          sudo chown -R 1000:1000 ./cypress
+          saucectl run
 
