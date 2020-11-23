@@ -1,15 +1,13 @@
 apiVersion: v1alpha
 kind: Cypress
-metadata:
-  name: Testing Cypress Kitchen Sink
-  tags:
-    - e2e
-    - release team
-    - kitchen-sink
-  build: Release $CI_COMMIT_SHORT_SHA
-
-files:
-  - ./cypress/
+sauce:
+  metadata:
+    name: Testing Cypress Kitchen Sink
+    tags:
+      - e2e
+      - release team
+      - kitchen-sink
+    build: Release $CI_COMMIT_SHORT_SHA
 
 cypress:
   configFile: cypress.json
