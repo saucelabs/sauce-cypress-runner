@@ -1,7 +1,7 @@
 const { sauceReporter, prepareAssets } = require('./sauce-reporter');
 const path = require('path');
 const fs = require('fs');
-const child_process = require('child_process');
+const childProcess = require('child_process');
 const { shouldRecordVideo, getAbsolutePath, loadRunConfig } = require('./utils');
 const cypress = require('cypress');
 const yargs = require('yargs/yargs');
@@ -40,7 +40,7 @@ const installDependencies = function (runCfg) {
   }
 
   return new Promise((resolve, reject) => {
-    const child = child_process.spawn(path.join(path.dirname(process.argv[0]), 'npm'), ['install', '--no-save', ...packageList]);
+    const child = childProcess.spawn(path.join(path.dirname(process.argv[0]), 'npm'), ['install', '--no-save', ...packageList]);
     child.stdout.pipe(process.stdout);
     child.stderr.pipe(process.stderr);
     child.on('exit', (exitCode) => {
