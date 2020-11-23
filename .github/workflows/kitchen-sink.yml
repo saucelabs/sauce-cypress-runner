@@ -21,7 +21,8 @@ jobs:
         run: |
           if ! command -v saucectl ; then
             LATEST_TAG=`curl -s https://api.github.com/repos/saucelabs/saucectl/releases/latest | jq -r '.name'`
-            curl -s -L https://github.com/saucelabs/saucectl/releases/download/${LATEST_TAG}/saucectl_${LATEST_TAG/v/}_linux_64-bit.tar.gz | sudo tar -xvz -C /usr/local/bin/
+            LATEST_VERSION=`echo ${LATEST_TAG} | sed s/v//`
+            curl -s -L https://github.com/saucelabs/saucectl/releases/download/${LATEST_TAG}/saucectl_${LATEST_VERSION}_linux_64-bit.tar.gz | sudo tar -xvz -C /usr/local/bin/
           fi
         
       - name: Run kitchen sink test
