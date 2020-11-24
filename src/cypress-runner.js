@@ -1,6 +1,7 @@
 const { sauceReporter, prepareAssets } = require('./sauce-reporter');
 const path = require('path');
 const fs = require('fs');
+const childProcess = require('child_process');
 const { shouldRecordVideo, getAbsolutePath, loadRunConfig } = require('./utils');
 const cypress = require('cypress');
 const yargs = require('yargs/yargs');
@@ -28,6 +29,28 @@ const report = async (results, browserName, runCfg, suiteName) => {
   await sauceReporter(runCfg, suiteName, browserName, assets, failures);
 
   return failures === 0;
+};
+
+const installDependencies = function (runCfg) {
+  const npmConfig = runCfg.npm || { packages: {}};
+  const packageList = Object.entries(npmConfig.packages).map(([pkg, version]) => `${pkg}@${version}`);
+
+  if (packageList.length === 0) {
+    return;
+  }
+
+  return new Promise((resolve, reject) => {
+    const child = childProcess.spawn(path.join(path.dirname(process.argv[0]), 'npm'), ['install', '--no-save', ...packageList]);
+    child.stdout.pipe(process.stdout);
+    child.stderr.pipe(process.stderr);
+    child.on('exit', (exitCode) => {
+      if (exitCode === 0) {
+        resolve();
+      } else {
+        reject();
+      }
+    });
+  });
 };
 
 const getCypressOpts = function (runCfg, suiteName) {
@@ -75,6 +98,7 @@ const cypressRunner = async function (runCfgPath, suiteName) {
   runCfg.path = runCfgPath;
   runCfg.resultsDir = path.join(path.dirname(runCfgPath), '__assets__');
 
+  await installDependencies(runCfg);
   let cypressOpts = getCypressOpts(runCfg, suiteName);
   const results = await cypress.run(cypressOpts);
 

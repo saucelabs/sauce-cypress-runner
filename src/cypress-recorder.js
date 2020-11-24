@@ -2,7 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const stream = require('stream');
-const child_process = require('child_process');
+const childProcess = require('child_process');
 
 function cypressRecorder () {
   // console.log is saved out of reportsDir since it is cleared on startup.
@@ -12,7 +12,7 @@ function cypressRecorder () {
   });
 
   const [nodeBin] = process.argv;
-  const child = child_process.spawn(nodeBin, [path.join(__dirname, 'cypress-runner.js'), ...process.argv.slice(2)]);
+  const child = childProcess.spawn(nodeBin, [path.join(__dirname, 'cypress-runner.js'), ...process.argv.slice(2)]);
 
   child.stdout.pipe(process.stdout);
   child.stderr.pipe(process.stderr);
