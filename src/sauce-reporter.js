@@ -54,7 +54,7 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
   return assets;
 };
 
-SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, failures) => {
+SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, failures, startTime, endTime) => {
   const { sauce = {} } = runCfg;
   const { metadata = {} } = sauce;
   const baseTestName = metadata.name || `Test ${+new Date()}`;
@@ -78,8 +78,8 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
           'value': process.env.SAUCE_USERNAME
         }
       ],
-      'start_time': '2020-11-20T17:18:11.168Z', // need collect
-      'end_time': '2020-11-20T17:18:11.168Z', // need collect
+      'start_time': startTime,
+      'end_time': endTime,
       'source': 'vdc', // will use devx
       'platform': 'webdriver', // will use cypress
       'status': 'complete',
@@ -88,17 +88,17 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
       'attributes': {
         'container': false,
         'browser': browserName,
-        'commands_not_successful': 1, // need to be removed
+        'commands_not_successful': 1, // to be removed
         'devx': true,
         'os': 'test', // need collect
-        'performance_enabled': 'true', // need to be removed
+        'performance_enabled': 'true', // to be removed
         'public': 'team',
-        'record_logs': true, // need to bee removed
-        'record_mp4': 'true',
-        'record_screenshots': 'true',
-        'record_video': 'true',
-        'video_url': 'test', // will remove it
-        'log_url': 'test' // will remove it
+        'record_logs': true, // to be removed
+        'record_mp4': 'true', // to be removed
+        'record_screenshots': 'true', // to be removed
+        'record_video': 'true', // to be removed
+        'video_url': 'test', // remove
+        'log_url': 'test' // remove
       }
     };
 
