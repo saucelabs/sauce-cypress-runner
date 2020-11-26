@@ -69,7 +69,7 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
 
   let sessionId;
 
-  if (process.env.ENABLE_PLATFORM) {
+  if (process.env.ENABLE_PLATFORM === true) {
     const body = {
       'name': testName,
       'acl': [
