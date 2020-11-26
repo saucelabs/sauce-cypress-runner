@@ -32,8 +32,8 @@ const report = async (results, browserName, runCfg, suiteName) => {
 };
 
 const installDependencies = function (runCfg) {
-  const npmConfig = runCfg.npm || { packages: {}};
-  const packageList = Object.entries(npmConfig.packages).map(([pkg, version]) => `${pkg}@${version}`);
+  const npmConfig = runCfg && runCfg.npm && runCfg.npm.packages || {};
+  const packageList = Object.entries(npmConfig).map(([pkg, version]) => `${pkg}@${version}`);
 
   if (packageList.length === 0) {
     return;
