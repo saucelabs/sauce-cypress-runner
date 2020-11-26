@@ -67,44 +67,90 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
     region
   });
 
-  try {
-    await remote({
-      user: process.env.SAUCE_USERNAME,
-      key: process.env.SAUCE_ACCESS_KEY,
-      region,
-      connectionRetryCount: 0,
-      logLevel: 'silent',
-      capabilities: {
-        browserName,
-        platformName: '*',
-        browserVersion: '*',
-        'sauce:options': {
-          devX: true,
-          name: testName,
-          framework: 'cypress',
-          build: metadata.build,
-          tags: metadata.tags,
-        }
-      }
-    }).catch((err) => err);
-  } catch (e) {
-    console.log(e);
-  }
-
   let sessionId;
-  try {
-    const { jobs } = await api.listJobs(
-      process.env.SAUCE_USERNAME,
-      { limit: 1, full: true, name: testName }
-    );
-    sessionId = jobs && jobs.length && jobs[0].id;
-  } catch (e) {
-    console.warn('Failed to prepare test', e);
-  }
 
-  if (undefined === sessionId || 0 === sessionId) {
-    console.error('Unable to retrieve test entry. Assets won\'t be uploaded.');
-    return 'unable to retrieve test';
+  if (process.env.ENABLE_PLATFORM) {
+    const body = {
+      'name': testName,
+      'acl': [
+        {
+          'type': 'username',
+          'value': process.env.SAUCE_USERNAME
+        }
+      ],
+      'start_time': '2020-11-20T17:18:11.168Z', // need collect
+      'end_time': '2020-11-20T17:18:11.168Z', // need collect
+      'source': 'vdc', // will use devx
+      'platform': 'webdriver', // will use cypress
+      'status': 'complete',
+      'live': false,
+      'metadata': {},
+      'attributes': {
+        'container': false,
+        'browser': browserName,
+        'commands_not_successful': 1, // need to be removed
+        'devx': true,
+        'os': 'test', // need collect
+        'performance_enabled': 'true', // need to be removed
+        'public': 'team',
+        'record_logs': true, // need to bee removed
+        'record_mp4': 'true',
+        'record_screenshots': 'true',
+        'record_video': 'true',
+        'video_url': 'test', // will remove it
+        'log_url': 'test' // will remove it
+      }
+    };
+
+    await Promise.all([
+      api.createResultJob(
+        body
+      ).then(
+        (resp) => {
+          sessionId = resp.id;
+        },
+        (e) => console.error('Create job failed: ', e.stack)
+      )
+    ]);
+  } else {
+    try {
+      await remote({
+        user: process.env.SAUCE_USERNAME,
+        key: process.env.SAUCE_ACCESS_KEY,
+        region,
+        connectionRetryCount: 0,
+        logLevel: 'silent',
+        capabilities: {
+          browserName,
+          platformName: '*',
+          browserVersion: '*',
+          'sauce:options': {
+            devX: true,
+            name: testName,
+            framework: 'cypress',
+            build: metadata.build,
+            tags: metadata.tags,
+          }
+        }
+      }).catch((err) => err);
+    } catch (e) {
+      console.log(e);
+    }
+
+    try {
+      const { jobs } = await api.listJobs(
+        process.env.SAUCE_USERNAME,
+        { limit: 1, full: true, name: testName }
+      );
+      sessionId = jobs && jobs.length && jobs[0].id;
+    } catch (e) {
+      console.warn('Failed to prepare test', e);
+    }
+
+    if (undefined === sessionId || 0 === sessionId) {
+      console.error('Unable to retrieve test entry. Assets won\'t be uploaded.');
+      return 'unable to retrieve test';
+    }
   }
 
   // upload assets
