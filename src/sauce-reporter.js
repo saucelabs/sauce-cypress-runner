@@ -85,9 +85,11 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
       'status': 'complete',
       'live': false,
       'metadata': {},
+      'tags': metadata.tags,
       'attributes': {
         'container': false,
         'browser': browserName,
+        'browser_version': '*',
         'commands_not_successful': 1, // to be removed
         'devx': true,
         'os': 'test', // need collect
