@@ -21,7 +21,7 @@ suites:
 docker:
   image:
     name: saucelabs/stt-cypress-mocha-node
-    tag: latest
+    tag: local
 
 sauce:
   region: us-west-1
