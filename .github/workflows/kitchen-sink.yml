@@ -17,13 +17,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
-      - name: Build and push
+      - name: Build image
         uses: docker/build-push-action@v2
         with:
           push: false
+          load: true
           context: .
           file: ./Dockerfile
-          tags: saucelabs/stt-cypress-mocha-node:latest
+          tags: |
+            saucelabs/stt-cypress-mocha-node:latest
 
       - name: Install saucectl
         run: |
