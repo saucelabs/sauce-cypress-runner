@@ -162,8 +162,7 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
   const api = new SauceLabs({
     user: process.env.SAUCE_USERNAME,
     key: process.env.SAUCE_ACCESS_KEY,
-    region: 'staging',
-    tld: 'net'
+    region
   });
 
   let sessionId;
