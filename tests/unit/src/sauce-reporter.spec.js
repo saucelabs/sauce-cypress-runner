@@ -62,7 +62,7 @@ describe('SauceReporter', function () {
       expect(uploadJobAssetsSpy.mock.calls).toEqual([
         ['a', {'files': ['asset/one', 'asset/two']}]
       ]);
-      expect(consoleErrorSpy.mock.calls).not.empty;
+      expect(consoleErrorSpy.mock.calls).toMatchSnapshot();
     });
     it('should not push assets when no sessionId from SauceLabs API', async function () {
       SauceLabs.default.mockImplementation(function () {

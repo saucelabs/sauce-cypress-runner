@@ -172,6 +172,14 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
     sessionId = await SauceReporter.createJobLegacy(api, region, browserName, testName, metadata);
   }
 
+  console.log('================')
+  console.log('================')
+  console.log('================')
+  console.log(sessionId)
+  console.log('================')
+  console.log('================')
+  console.log('================')
+
   if (!sessionId) {
     console.error('Unable to retrieve test entry. Assets won\'t be uploaded.');
     return 'unable to retrieve test';
