@@ -15,36 +15,36 @@ const SauceReporter = {};
 // Keep these pieces of code for future integration.
 SauceReporter.createJobShell = async (api, testName, tags, browserName) => {
   const body = {
-    'name': testName,
-    'acl': [
+    name: testName,
+    acl: [
       {
-        'type': 'username',
-        'value': process.env.SAUCE_USERNAME
+        type: 'username',
+        value: process.env.SAUCE_USERNAME
       }
     ],
-    //'start_time': startTime,
-    //'end_time': endTime,
-    'source': 'vdc', // will use devx
-    'platform': 'webdriver', // will use cypress
-    'status': 'complete',
-    'live': false,
-    'metadata': {},
+    //'start_time: startTime,
+    //'end_time: endTime,
+    source: 'vdc', // will use devx
+    platform: 'webdriver', // will use cypress
+    status: 'complete',
+    live: false,
+    metadata: {},
     tags,
-    'attributes': {
-      'container': false,
-      'browser': browserName,
-      'browser_version': '*',
-      'commands_not_successful': 1, // to be removed
-      'devx': true,
-      'os': 'test', // need collect
-      'performance_enabled': 'true', // to be removed
-      'public': 'team',
-      'record_logs': true, // to be removed
-      'record_mp4': 'true', // to be removed
-      'record_screenshots': 'true', // to be removed
-      'record_video': 'true', // to be removed
-      'video_url': 'test', // remove
-      'log_url': 'test' // remove
+    attributes: {
+      container: false,
+      browser: browserName,
+      browser_version: '*',
+      commands_not_successful: 1, // to be removed
+      devx: true,
+      os: 'test', // need collect
+      performance_enabled: 'true', // to be removed
+      public: 'team',
+      record_logs: true, // to be removed
+      record_mp4: 'true', // to be removed
+      record_screenshots: 'true', // to be removed
+      record_video: 'true', // to be removed
+      video_url: 'test', // remove
+      log_url: 'test' // remove
     }
   };
 
@@ -58,11 +58,7 @@ SauceReporter.createJobShell = async (api, testName, tags, browserName) => {
     (e) => console.error('Create job failed: ', e.stack)
   );
 
-  if (!sessionId) {
-    return 0;
-  }
-
-  return sessionId;
+  return sessionId || 0;
 };
 
 SauceReporter.createJobLegacy = async (api, region, browserName, testName, metadata) => {
@@ -101,11 +97,7 @@ SauceReporter.createJobLegacy = async (api, region, browserName, testName, metad
     console.warn('Failed to prepare test', e);
   }
 
-  if (!sessionId) {
-    return 0;
-  }
-
-  return sessionId;
+  return sessionId || 0;
 };
 
 SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
