@@ -63,3 +63,6 @@ jobs:
       - 
         name: List bundle contents
         run: ls -R bundle/
+      -
+        name: Print npm version
+        run: npm -v
