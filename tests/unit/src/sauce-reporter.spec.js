@@ -15,6 +15,10 @@ describe('SauceReporter', function () {
     }
   };
   describe('.prepareAssets', function () {
+    beforeEach(function () {
+      fs.existsSync.mockClear();
+      fs.copyFileSync.mockClear();
+    });
     it('should return a list of assets', async function () {
       fs.existsSync.mockReturnValue(true);
       fs.copyFileSync.mockReturnValue(true);
@@ -31,13 +35,13 @@ describe('SauceReporter', function () {
     });
   });
   describe('.sauceReporter', function () {
-    let prepareAssetsSpy, uploadJobAssetsSpy, createJobSpy;
+    let prepareAssetsSpy, uploadJobAssetsSpy, createJobSpy, backupEnv = process.env;
     beforeEach(function () {
       webdriverio.remote.mockImplementation(function () {});
       prepareAssetsSpy = jest.spyOn(SauceReporter, 'prepareAssets');
       // eslint-disable-next-line require-await
       uploadJobAssetsSpy = jest.fn().mockImplementation(async () => ({errors: ['some fake error']}));
-      createJobSpy = jest.fn().mockImplementation(async () => ({sessionId: '123'}));
+      createJobSpy = jest.fn().mockImplementation(() => ({sessionId: '123'}));
       SauceLabs.default.mockImplementation(function () {
         // eslint-disable-next-line require-await
         this.listJobs = async () => ({
@@ -47,6 +51,10 @@ describe('SauceReporter', function () {
         this.updateJob = async () => { };
         this.createResultJob = createJobSpy;
       });
+      process.env.SAUCE_USERNAME = 'fake-user';
+    });
+    afterEach(function () {
+      process.env = backupEnv;
     });
     it('should call uploadJobAssets on SauceLabs api', async function () {
       prepareAssetsSpy.mockReturnValue(['asset/one', 'asset/two']);

@@ -9,3 +9,52 @@ Array [
   "results/video.mp4",
 ]
 `;
+
+exports[`SauceReporter .sauceReporter should create job via global data store 1`] = `
+Array [
+  Array [
+    Object {
+      "acl": Array [
+        Object {
+          "type": "username",
+          "value": "fake-user",
+        },
+      ],
+      "attributes": Object {
+        "browser": "browser",
+        "browser_version": "*",
+        "commands_not_successful": 1,
+        "container": false,
+        "devx": true,
+        "log_url": "test",
+        "os": "test",
+        "performance_enabled": "true",
+        "public": "team",
+        "record_logs": true,
+        "record_mp4": "true",
+        "record_screenshots": "true",
+        "record_video": "true",
+        "video_url": "test",
+      },
+      "live": false,
+      "metadata": Object {},
+      "name": "Fake Name - build",
+      "platform": "webdriver",
+      "source": "vdc",
+      "status": "complete",
+      "tags": undefined,
+    },
+  ],
+]
+`;
+
+exports[`SauceReporter .sauceReporter should output err when upload failed 1`] = `
+Array [
+  Array [
+    [TypeError: Cannot read property 'catch' of undefined],
+  ],
+  Array [
+    "some fake error",
+  ],
+]
+`;
