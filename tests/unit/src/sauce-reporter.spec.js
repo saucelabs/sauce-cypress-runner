@@ -31,19 +31,21 @@ describe('SauceReporter', function () {
     });
   });
   describe('.sauceReporter', function () {
-    let prepareAssetsSpy, uploadJobAssetsSpy;
+    let prepareAssetsSpy, uploadJobAssetsSpy, createJobSpy;
     beforeEach(function () {
       webdriverio.remote.mockImplementation(function () {});
       prepareAssetsSpy = jest.spyOn(SauceReporter, 'prepareAssets');
       // eslint-disable-next-line require-await
       uploadJobAssetsSpy = jest.fn().mockImplementation(async () => ({errors: ['some fake error']}));
+      createJobSpy = jest.fn().mockImplementation(async () => ({sessionId: '123'}));
       SauceLabs.default.mockImplementation(function () {
         // eslint-disable-next-line require-await
         this.listJobs = async () => ({
-          jobs: [{id: 'a'}, {id: 'b'}]
+          jobs: [{ id: 'a' }, { id: 'b' }]
         });
         this.uploadJobAssets = uploadJobAssetsSpy;
-        this.updateJob = async () => {};
+        this.updateJob = async () => { };
+        this.createResultJob = createJobSpy;
       });
     });
     it('should call uploadJobAssets on SauceLabs api', async function () {
@@ -60,7 +62,7 @@ describe('SauceReporter', function () {
       expect(uploadJobAssetsSpy.mock.calls).toEqual([
         ['a', {'files': ['asset/one', 'asset/two']}]
       ]);
-      expect(consoleErrorSpy.mock.calls).toEqual([['some fake error']]);
+      expect(consoleErrorSpy.mock.calls).not.empty;
     });
     it('should not push assets when no sessionId from SauceLabs API', async function () {
       SauceLabs.default.mockImplementation(function () {
@@ -74,6 +76,22 @@ describe('SauceReporter', function () {
 
       prepareAssetsSpy.mockReturnValue(['asset/one', 'asset/two']);
       expect(await SauceReporter.sauceReporter(fakeRunConfig, 'build', 'browser', ['asset/one', 'asset/two'], 0)).toBeDefined();
+    });
+    it ('should create job via global data store', async function () {
+      process.env.ENABLE_DATA_STORE = 'true';
+      prepareAssetsSpy.mockReturnValue(['asset/one', 'asset/two']);
+      await SauceReporter.sauceReporter(fakeRunConfig, 'build', 'browser', ['asset/one', 'asset/two'], 0);
+      expect(createJobSpy).toBeCalled();
+      expect(createJobSpy.mock.calls).toMatchSnapshot();
+    });
+    it ('should fail when global data store throws error', async function () {
+      process.env.ENABLE_DATA_STORE = 'true';
+      prepareAssetsSpy.mockReturnValue(['asset/one', 'asset/two']);
+      await SauceReporter.sauceReporter(fakeRunConfig, 'build', 'browser', ['asset/one', 'asset/two'], 0);
+      expect(createJobSpy).toBeCalled();
+      createJobSpy.mockReturnValue({ error: ['fake error'] });
+      expect(createJobSpy).not.toBeCalled();
+      expect(createJobSpy.mock.calls).toMatchSnapshot();
     });
   });
 });
