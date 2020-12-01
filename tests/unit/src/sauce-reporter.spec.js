@@ -41,7 +41,7 @@ describe('SauceReporter', function () {
       prepareAssetsSpy = jest.spyOn(SauceReporter, 'prepareAssets');
       // eslint-disable-next-line require-await
       uploadJobAssetsSpy = jest.fn().mockImplementation(async () => ({errors: ['some fake error']}));
-      createJobSpy = jest.fn().mockImplementation(() => ({sessionId: '123'}));
+      createJobSpy = jest.fn().mockImplementation(async () => (await {sessionId: '123'}));
       SauceLabs.default.mockImplementation(function () {
         // eslint-disable-next-line require-await
         this.listJobs = async () => ({
