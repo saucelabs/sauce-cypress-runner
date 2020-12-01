@@ -90,8 +90,6 @@ describe('SauceReporter', function () {
       await SauceReporter.sauceReporter(fakeRunConfig, 'build', 'browser', ['asset/one', 'asset/two'], 0);
       expect(createJobSpy).toBeCalled();
       createJobSpy.mockReturnValue({ error: ['fake error'] });
-      expect(createJobSpy).not.toBeCalled();
-      expect(createJobSpy.mock.calls).toMatchSnapshot();
     });
   });
 });
