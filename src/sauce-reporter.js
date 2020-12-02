@@ -10,6 +10,96 @@ const { remote } = require('webdriverio');
 
 const SauceReporter = {};
 
+// NOTE: this function is not available currently.
+// It will be ready once data store API actually works.
+// Keep these pieces of code for future integration.
+SauceReporter.createJobShell = async (api, testName, tags, browserName) => {
+  const body = {
+    name: testName,
+    acl: [
+      {
+        type: 'username',
+        value: process.env.SAUCE_USERNAME
+      }
+    ],
+    //'start_time: startTime,
+    //'end_time: endTime,
+    source: 'vdc', // will use devx
+    platform: 'webdriver', // will use cypress
+    status: 'complete',
+    live: false,
+    metadata: {},
+    tags,
+    attributes: {
+      container: false,
+      browser: browserName,
+      browser_version: '*',
+      commands_not_successful: 1, // to be removed
+      devx: true,
+      os: 'test', // need collect
+      performance_enabled: 'true', // to be removed
+      public: 'team',
+      record_logs: true, // to be removed
+      record_mp4: 'true', // to be removed
+      record_screenshots: 'true', // to be removed
+      record_video: 'true', // to be removed
+      video_url: 'test', // remove
+      log_url: 'test' // remove
+    }
+  };
+
+  let sessionId;
+  await api.createResultJob(
+    body
+  ).then(
+    (resp) => {
+      sessionId = resp.id;
+    },
+    (e) => console.error('Create job failed: ', e.stack)
+  );
+
+  return sessionId || 0;
+};
+
+SauceReporter.createJobLegacy = async (api, region, browserName, testName, metadata) => {
+  try {
+    await remote({
+      user: process.env.SAUCE_USERNAME,
+      key: process.env.SAUCE_ACCESS_KEY,
+      region,
+      connectionRetryCount: 0,
+      logLevel: 'silent',
+      capabilities: {
+        browserName,
+        platformName: '*',
+        browserVersion: '*',
+        'sauce:options': {
+          devX: true,
+          name: testName,
+          framework: 'cypress',
+          build: metadata.build,
+          tags: metadata.tags,
+        }
+      }
+    }).catch((err) => err);
+  } catch (e) {
+    console.error(e);
+  }
+
+  let sessionId;
+  try {
+    const { jobs } = await api.listJobs(
+      process.env.SAUCE_USERNAME,
+      { limit: 1, full: true, name: testName }
+    );
+    sessionId = jobs && jobs.length && jobs[0].id;
+  } catch (e) {
+    console.warn('Failed to prepare test', e);
+  }
+
+  return sessionId || 0;
+};
+
 SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
   const assets = [];
   const videos = [];
@@ -67,42 +157,14 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
     region
   });
 
-  try {
-    await remote({
-      user: process.env.SAUCE_USERNAME,
-      key: process.env.SAUCE_ACCESS_KEY,
-      region,
-      connectionRetryCount: 0,
-      logLevel: 'silent',
-      capabilities: {
-        browserName,
-        platformName: '*',
-        browserVersion: '*',
-        'sauce:options': {
-          devX: true,
-          name: testName,
-          framework: 'cypress',
-          build: metadata.build,
-          tags: metadata.tags,
-        }
-      }
-    }).catch((err) => err);
-  } catch (e) {
-    console.log(e);
-  }
-
   let sessionId;
-  try {
-    const { jobs } = await api.listJobs(
-      process.env.SAUCE_USERNAME,
-      { limit: 1, full: true, name: testName }
-    );
-    sessionId = jobs && jobs.length && jobs[0].id;
-  } catch (e) {
-    console.warn('Failed to prepare test', e);
+  if (process.env.ENABLE_DATA_STORE) {
+    sessionId = await SauceReporter.createJobShell(api, testName, metadata.tags, browserName);
+  } else {
+    sessionId = await SauceReporter.createJobLegacy(api, region, browserName, testName, metadata);
   }
 
-  if (undefined === sessionId || 0 === sessionId) {
+  if (!sessionId) {
     console.error('Unable to retrieve test entry. Assets won\'t be uploaded.');
     return 'unable to retrieve test';
   }
