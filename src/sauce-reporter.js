@@ -61,6 +61,41 @@ SauceReporter.createJobShell = async (api, testName, tags, browserName) => {
   return sessionId || 0;
 };
 
+
+// This function will be deprecated once the API for global data store is ready
+SauceReporter.createJobWorkaround = async (api, testName, metadata, browserName) => {
+  const body = {
+    name: testName,
+    owner: process.env.SAUCE_USERNAME,
+    //start_time: startTime,
+    //end_time: endTime,
+    source: 'devx', // need to find which column
+    platform: 'cypress', // automation_backend
+    status: 'complete',
+    metadata: {},
+    tags: metadata.tags,
+    build: metadata.build,
+    attributes: {
+      browser: browserName,
+      browser_version: '*',
+      os: 'test', // need collect, need confirm
+      public: 'team'
+    }
+  };
+
+  let sessionId;
+  await api.createJob(
+    body
+  ).then(
+    (resp) => {
+      sessionId = resp.id;
+    },
+    (e) => console.error('Create job failed: ', e.stack)
+  );
+
+  return sessionId || 0;
+};
+
 SauceReporter.createJobLegacy = async (api, region, browserName, testName, metadata) => {
   try {
     await remote({
