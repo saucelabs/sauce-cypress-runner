@@ -62,7 +62,8 @@ SauceReporter.createJobShell = async (api, testName, tags, browserName) => {
 };
 
 
-// This function will be deprecated once the API for global data store is ready
+// TODO Tian: this method is a temporary solution for creating jobs via test-composer.
+// Once the global data store is ready, this method will be deprecated.
 SauceReporter.createJobWorkaround = async (api, testName, metadata, browserName) => {
   const body = {
     name: testName,
