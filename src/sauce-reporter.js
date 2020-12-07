@@ -64,7 +64,7 @@ SauceReporter.createJobShell = async (api, testName, tags, browserName) => {
 
 // TODO Tian: this method is a temporary solution for creating jobs via test-composer.
 // Once the global data store is ready, this method will be deprecated.
-SauceReporter.createJobWorkaround = async (api, testName, metadata, browserName) => {
+SauceReporter.createJobWorkaround = async (api, testName, metadata, browserName, passed) => {
   const body = {
     name: testName,
     owner: process.env.SAUCE_USERNAME,
@@ -73,6 +73,9 @@ SauceReporter.createJobWorkaround = async (api, testName, metadata, browserName)
     source: 'devx', // need to find which column
     platform: 'cypress', // automation_backend
     status: 'complete',
+    createJob: true,
+    errors: [],
+    passed,
     metadata: {},
     tags: metadata.tags,
     build: metadata.build,
