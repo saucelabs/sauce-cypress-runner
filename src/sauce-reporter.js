@@ -67,24 +67,22 @@ SauceReporter.createJobShell = async (api, testName, tags, browserName) => {
 SauceReporter.createJobWorkaround = async (api, testName, metadata, browserName, passed) => {
   const body = {
     name: testName,
-    owner: process.env.SAUCE_USERNAME,
+    user: process.env.SAUCE_USERNAME,
     //start_time: startTime,
     //end_time: endTime,
-    source: 'devx', // need to find which column
-    platform: 'cypress', // automation_backend
+    app: 'devx', // need to find which column
+    framework: 'cypress', // automation_backend
+    frameworkVersion: '', // collect
     status: 'complete',
     createJob: true,
     errors: [],
     passed,
-    metadata: {},
     tags: metadata.tags,
     build: metadata.build,
-    attributes: {
-      browser: browserName,
-      browser_version: '*',
-      os: 'test', // need collect, need confirm
-      public: 'team'
-    }
+    browserName,
+    browserVersion: '*',
+    platformName: 'test', // need collect, need confirm
+    public: 'team'
   };
 
   let sessionId;
