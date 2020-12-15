@@ -8,6 +8,11 @@ const yargs = require('yargs/yargs');
 const _ = require('lodash');
 
 const report = async (results, browserName, runCfg, suiteName) => {
+  if (process.env.SAUCE_VM) {
+    // Don't do any reporting from within a Sauce VM.
+    // Sauce VM's handle reporting externally
+    return;
+  }
   // Prepare the assets
   const runs = results.runs || [];
   let specFiles = runs.map((run) => run.spec.name);
