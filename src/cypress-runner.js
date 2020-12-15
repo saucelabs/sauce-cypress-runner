@@ -8,28 +8,23 @@ const yargs = require('yargs/yargs');
 const _ = require('lodash');
 
 const report = async (results, browserName, runCfg, suiteName) => {
-  if (process.env.SAUCE_VM) {
-    // Don't do any reporting from within a Sauce VM.
-    // Sauce VM's handle reporting externally
-    return;
-  }
   // Prepare the assets
   const runs = results.runs || [];
   let specFiles = runs.map((run) => run.spec.name);
-  let assets = await prepareAssets(
-      specFiles,
-      runCfg.resultsDir,
-  );
 
   let failures = results.failures || results.totalFailed;
+  if (process.env.SAUCE_VM) {
+    return failures === 0;
+  }
   if (!(process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY)) {
     console.log('Skipping asset uploads! Remember to setup your SAUCE_USERNAME/SAUCE_ACCESS_KEY');
     return failures === 0;
   }
-  if (process.env.SAUCE_VM) {
-    console.log('Skipping asset upload inside of sauce vm. Asset uploads will take place in post process batch job');
-    return failures === 0;
-  }
+
+  let assets = await prepareAssets(
+      specFiles,
+      runCfg.resultsDir,
+  );
 
   await sauceReporter(runCfg, suiteName, browserName, assets, failures);
 
