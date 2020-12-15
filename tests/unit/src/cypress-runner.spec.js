@@ -39,8 +39,8 @@ describe('.cypressRunner', function () {
     fs.readFileSync.mockImplementation(() => JSON.stringify(fakeRunnerJson));
   });
   it('can call Cypress.run with basic args', async function () {
-    process.env.SAUCE_USERNAME = null;
-    process.env.SAUCE_ACCESS_KEY = null;
+    process.env.SAUCE_USERNAME = 'fake-sauce-username';
+    process.env.SAUCE_ACCESS_KEY = 'fake-sauce-accesskey';
     await cypressRunner('/fake/runner/path', 'fake-suite');
     // Change reporter to not be fully-qualified path
     const {reporter} = cypressRunSpy.mock.calls[0][0].config;
