@@ -35,7 +35,7 @@ describe('utils', function () {
       await installDeps;
       expect(childProcess.spawn.mock.calls).toMatchSnapshot();
     });
-    it('should call npm plus install otherwise', async function () {
+    it('should call npm + install on non-Sauce VM', async function () {
       const installDeps = installDependencies(runCfg);
       mockSpawnEventEmitter.emit('exit', 0);
       await installDeps;

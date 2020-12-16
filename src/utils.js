@@ -40,7 +40,7 @@ async function installDependencies (runCfg) {
     const npmArgs = ['install', '--no-save', ...packageList];
     const procArgs = process.env.SAUCE_VM ?
       [nodePath, npmCli, ...npmArgs] :
-      [path.join(path.dirname(process.argv[0]), 'npm'), ...npmArgs];
+      ['npm', ...npmArgs];
     console.log(`Running npm install on ${npmArgs.join(', ')}`);
     const child = childProcess.spawn(procArgs[0], procArgs.slice(1));
     child.stdout.pipe(process.stdout);
