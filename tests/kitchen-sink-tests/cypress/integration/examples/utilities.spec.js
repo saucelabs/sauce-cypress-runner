@@ -27,10 +27,10 @@ context('Utilities', function () {
 
   it('Cypress.Blob - blob utilities and base64 string conversion', function () {
     // https://on.cypress.io/blob
-    cy.get('.utility-blob').then(($div) => {
+    cy.get('.utility-blob').then(($div) =>
       // https://github.com/nolanlawson/blob-util#imgSrcToDataURL
       // get the dataUrl string for the javascript-logo
-      return Cypress.Blob.imgSrcToDataURL('https://example.cypress.io/assets/img/javascript-logo.png', undefined, 'anonymous')
+      Cypress.Blob.imgSrcToDataURL('https://example.cypress.io/assets/img/javascript-logo.png', undefined, 'anonymous')
       .then((dataUrl) => {
         // create an <img> element and set its src to the dataUrl
         let img = Cypress.$('<img />', { src: dataUrl });
@@ -42,8 +42,8 @@ context('Utilities', function () {
 
         cy.get('.utility-blob img').click()
           .should('have.attr', 'src', dataUrl);
-      });
-    });
+      })
+    );
   });
 
   it('Cypress.minimatch - test out glob patterns against strings', function () {

@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`utils .installDependencies should call node + npm on Sauce VM 1`] = `
+Array [
+  Array [
+    "/fake/home/node",
+    Array [
+      "/fake/home/node_modules/npm/bin/npm-cli",
+      "install",
+      "--no-save",
+      "left-pad@1.3.0",
+      "jquery@2",
+    ],
+  ],
+]
+`;
+
+exports[`utils .installDependencies should call npm + install on non-Sauce VM 1`] = `
+Array [
+  Array [
+    "npm",
+    Array [
+      "install",
+      "--no-save",
+      "left-pad@1.3.0",
+      "jquery@2",
+    ],
+  ],
+]
+`;
