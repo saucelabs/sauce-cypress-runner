@@ -1,4 +1,5 @@
 jest.mock('child_process');
+const path = require('path');
 const childProcess = require('child_process');
 const { EventEmitter } = require('events');
 const { getAbsolutePath, shouldRecordVideo, installDependencies } = require('../../../src/utils');
@@ -33,7 +34,10 @@ describe('utils', function () {
       const installDeps = installDependencies(runCfg);
       mockSpawnEventEmitter.emit('exit', 0);
       await installDeps;
-      expect(childProcess.spawn.mock.calls).toMatchSnapshot();
+      const calls = childProcess.spawn.mock.calls;
+      calls[0][0] = calls[0][0].replace(path.join(__dirname, '..', '..', '..'), '/fake/home');
+      calls[0][1][0] = calls[0][1][0].replace(path.join(__dirname, '..', '..', '..'), '/fake/home');
+      expect(calls).toMatchSnapshot();
     });
     it('should call npm + install on non-Sauce VM', async function () {
       const installDeps = installDependencies(runCfg);
