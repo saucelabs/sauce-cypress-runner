@@ -64,25 +64,22 @@ SauceReporter.createJobShell = async (api, testName, tags, browserName) => {
 
 // TODO Tian: this method is a temporary solution for creating jobs via test-composer.
 // Once the global data store is ready, this method will be deprecated.
-SauceReporter.createJobWorkaround = async (api, testName, metadata, browserName, passed) => {
+SauceReporter.createJobWorkaround = async (api, testName, metadata, browserName, passed, startTime, endTime) => {
   const body = {
     name: testName,
     user: process.env.SAUCE_USERNAME,
-    //start_time: startTime,
-    //end_time: endTime,
-    app: 'devx', // need to find which column
-    framework: 'cypress', // automation_backend
-    frameworkVersion: '', // collect
+    startTime,
+    endTime,
+    framework: 'cypress',
+    frameworkVersion: '*', // collect
     status: 'complete',
-    createJob: true,
     errors: [],
     passed,
     tags: metadata.tags,
     build: metadata.build,
     browserName,
     browserVersion: '*',
-    platformName: 'test', // need collect, need confirm
-    public: 'team'
+    platformName: '*' // in docker, no specified platform
   };
 
   let sessionId;
@@ -90,7 +87,7 @@ SauceReporter.createJobWorkaround = async (api, testName, metadata, browserName,
     body
   ).then(
     (resp) => {
-      sessionId = resp.id;
+      sessionId = resp.ID;
     },
     (e) => console.error('Create job failed: ', e.stack)
   );
@@ -181,7 +178,7 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
   return assets;
 };
 
-SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, failures) => {
+SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, failures, startTime, endTime) => {
   const { sauce = {} } = runCfg;
   const { metadata = {} } = sauce;
   const baseTestName = metadata.name || `Test ${+new Date()}`;
@@ -198,7 +195,7 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
   if (process.env.ENABLE_DATA_STORE) {
     sessionId = await SauceReporter.createJobShell(api, testName, metadata.tags, browserName);
   } else {
-    sessionId = await SauceReporter.createJobLegacy(api, region, browserName, testName, metadata);
+    sessionId = await SauceReporter.createJobWorkaround(api, testName, metadata, browserName, failures === 0, startTime, endTime);
   }
 
   if (!sessionId) {
