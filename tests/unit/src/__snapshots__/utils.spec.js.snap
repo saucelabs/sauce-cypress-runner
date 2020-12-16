@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`utils .installDependencies should call node + npm on Sauce VM 1`] = `
+Array [
+  Array [
+    "/Users/danielgraham/sauce-cypress-runner/node",
+    Array [
+      "/Users/danielgraham/sauce-cypress-runner/node_modules/npm/bin/npm-cli",
+      "install",
+      "--no-save",
+      "left-pad@1.3.0",
+      "jquery@2",
+    ],
+  ],
+]
+`;
+
+exports[`utils .installDependencies should call npm plus install otherwise 1`] = `
+Array [
+  Array [
+    "/usr/local/Cellar/node/14.10.0/bin/npm",
+    Array [
+      "install",
+      "--no-save",
+      "left-pad@1.3.0",
+      "jquery@2",
+    ],
+  ],
+]
+`;
