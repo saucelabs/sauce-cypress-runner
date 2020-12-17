@@ -45,6 +45,8 @@ describe('SauceReporter', function () {
       createJobWorkaroundSpy.mockImplementation(async () => 'fake-session-id');
       webdriverio.remote.mockImplementation(function () {});
       prepareAssetsSpy = jest.spyOn(SauceReporter, 'prepareAssets');
+      createJobWorkaroundSpy = jest.spyOn(SauceReporter, 'createJobWorkaround');
+      createJobWorkaroundSpy.mockImplementation(async () => await 'fake-session-id');
       // eslint-disable-next-line require-await
       uploadJobAssetsSpy = jest.fn().mockImplementation(async () => ({errors: ['some fake error']}));
       createJobSpy = jest.fn().mockImplementation(async () => (await {sessionId: '123'}));
