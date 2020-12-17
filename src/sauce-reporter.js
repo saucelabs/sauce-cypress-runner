@@ -61,6 +61,41 @@ SauceReporter.createJobShell = async (api, testName, tags, browserName) => {
   return sessionId || 0;
 };
 
+
+// TODO Tian: this method is a temporary solution for creating jobs via test-composer.
+// Once the global data store is ready, this method will be deprecated.
+SauceReporter.createJobWorkaround = async (api, testName, metadata, browserName, passed, startTime, endTime) => {
+  const body = {
+    name: testName,
+    user: process.env.SAUCE_USERNAME,
+    startTime,
+    endTime,
+    framework: 'cypress',
+    frameworkVersion: '*', // collect
+    status: 'complete',
+    errors: [],
+    passed,
+    tags: metadata.tags,
+    build: metadata.build,
+    browserName,
+    browserVersion: '*',
+    platformName: '*' // in docker, no specified platform
+  };
+
+  let sessionId;
+  await api.createJob(
+    body
+  ).then(
+    (resp) => {
+      sessionId = resp.ID;
+    },
+    (e) => console.error('Create job failed: ', e.stack)
+  );
+
+  return sessionId || 0;
+};
+
+
 SauceReporter.createJobLegacy = async (api, region, tld, browserName, testName, metadata) => {
   try {
     const hostname = `ondemand.${region}.saucelabs.${tld}`;
@@ -147,7 +182,7 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
   return assets;
 };
 
-SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, failures) => {
+SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, failures, startTime, endTime) => {
   const { sauce = {} } = runCfg;
   const { metadata = {} } = sauce;
   const baseTestName = metadata.name || `Test ${+new Date()}`;
