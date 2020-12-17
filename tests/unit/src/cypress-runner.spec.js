@@ -41,7 +41,7 @@ describe('.cypressRunner', function () {
     // Mock the dates so that it's deterministic
     const isoDateSpy = jest.spyOn(Date.prototype, 'toISOString');
     let day = 0;
-    isoDateSpy.mockImplementation(() => (++day) + '');
+    isoDateSpy.mockImplementation(() => `Date: ${++day}`);
   });
   it('can call Cypress.run with basic args', async function () {
     process.env.SAUCE_USERNAME = 'fake-sauce-username';
