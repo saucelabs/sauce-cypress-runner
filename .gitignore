@@ -122,6 +122,7 @@ tests/*/cypress/plugins/
 tests/*/cypress/screenshots/
 tests/*/cypress/support/
 tests/*/cypress/videos/
+tests/kitchen-sink-tests/cypress/fixtures/profile.json
 
 node
 
