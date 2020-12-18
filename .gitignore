@@ -127,3 +127,6 @@ tests/kitchen-sink-tests/cypress/fixtures/profile.json
 node
 
 Cache/
+
+.DS_Store
+tests/.DS_Store

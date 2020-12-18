@@ -1,0 +1,22 @@
+{
+    "cypress": {
+        "configFile": "cypress.json"
+    },
+    "suites": [
+        {
+            "name": "cypress kitchen sink test",
+            "browser": "chrome",
+            "config": {
+                "testFiles": ["**/*.*"]
+            }
+        }
+    ],
+    "npm": {
+        "packages": {
+            "appium": "1.19.1",
+            "left-pad": "1.3.0",
+            "jquery": "2",
+            "mocha": "8"
+        }
+    }
+}
