@@ -10,6 +10,10 @@ const { remote } = require('webdriverio');
 
 const SauceReporter = {};
 
+const chromeVersion = '81.0.4044.138';
+const firefoxVersion = '74';
+const cypressVersion = '5.6.0';
+
 // NOTE: this function is not available currently.
 // It will be ready once data store API actually works.
 // Keep these pieces of code for future integration.
@@ -65,21 +69,36 @@ SauceReporter.createJobShell = async (api, testName, tags, browserName) => {
 // TODO Tian: this method is a temporary solution for creating jobs via test-composer.
 // Once the global data store is ready, this method will be deprecated.
 SauceReporter.createJobWorkaround = async (api, testName, metadata, browserName, passed, startTime, endTime) => {
+  let browserVersion;
+  switch (browserName.toLowerCase()) {
+    case 'firefox':
+      browserVersion = firefoxVersion;
+      break;
+    case 'chrome':
+      browserVersion = chromeVersion;
+      break;
+    case 'googlechrome':
+      browserVersion = chromeVersion;
+      break;
+    default:
+      browserVersion = '*';
+  }
+
   const body = {
     name: testName,
     user: process.env.SAUCE_USERNAME,
     startTime,
     endTime,
     framework: 'cypress',
-    frameworkVersion: '*', // collect
+    frameworkVersion: cypressVersion,
     status: 'complete',
     errors: [],
     passed,
     tags: metadata.tags,
     build: metadata.build,
     browserName,
-    browserVersion: '*',
-    platformName: '*' // in docker, no specified platform
+    browserVersion,
+    platformName: process.env.SAUCE_IMAGE_NAME
   };
 
   let sessionId;
