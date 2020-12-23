@@ -10,10 +10,6 @@ const { remote } = require('webdriverio');
 
 const SauceReporter = {};
 
-const chromeVersion = '81.0.4044.138';
-const firefoxVersion = '74';
-const cypressVersion = '5.6.0';
-
 // NOTE: this function is not available currently.
 // It will be ready once data store API actually works.
 // Keep these pieces of code for future integration.
@@ -72,13 +68,10 @@ SauceReporter.createJobWorkaround = async (api, testName, metadata, browserName,
   let browserVersion;
   switch (browserName.toLowerCase()) {
     case 'firefox':
-      browserVersion = firefoxVersion;
+      browserVersion = process.env.FF_VER;
       break;
     case 'chrome':
-      browserVersion = chromeVersion;
-      break;
-    case 'googlechrome':
-      browserVersion = chromeVersion;
+      browserVersion = process.env.CHROME_VER;
       break;
     default:
       browserVersion = '*';
@@ -90,7 +83,7 @@ SauceReporter.createJobWorkaround = async (api, testName, metadata, browserName,
     startTime,
     endTime,
     framework: 'cypress',
-    frameworkVersion: cypressVersion,
+    frameworkVersion: process.env.CYPRESS_VERSION,
     status: 'complete',
     errors: [],
     passed,
