@@ -65,7 +65,7 @@ SauceReporter.createJobShell = async (api, testName, tags, browserName) => {
 // TODO Tian: this method is a temporary solution for creating jobs via test-composer.
 // Once the global data store is ready, this method will be deprecated.
 SauceReporter.createJobWorkaround = async (api, testName, metadata, browserName, passed, startTime, endTime) => {
-  let browserVersion;
+  let browserVersion = '*';
   switch (browserName.toLowerCase()) {
     case 'firefox':
       browserVersion = process.env.FF_VER;
@@ -91,7 +91,7 @@ SauceReporter.createJobWorkaround = async (api, testName, metadata, browserName,
     build: metadata.build,
     browserName,
     browserVersion,
-    platformName: process.env.SAUCE_IMAGE_NAME
+    platformName: process.env.IMAGE_NAME + ':' + process.env.IMAGE_TAG
   };
 
   let sessionId;
