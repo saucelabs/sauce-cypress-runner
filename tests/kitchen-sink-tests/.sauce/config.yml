@@ -16,7 +16,11 @@ suites:
   - name: "cypress kitchen sink test"
     browser: "chrome"
     config:
-      testFiles: [ "**/*.*" ]
+      testFiles: [ "examples/*.*" ]
+  - name: "cypress kitchen sink failing test"
+    browser: "chrome"
+    config:
+      testFiles: [ "failing/*.*" ]
 
 docker:
   image:
