@@ -21,6 +21,8 @@ jobs:
           tag_with_ref: true
           cache_froms: saucelabs/stt-cypress-mocha-node:latest
           push: false
+          build-args: |
+            BUILD_TAG=pipeline-test
       
       # Checkout the latest saucectl
       - uses: actions/checkout@v2
