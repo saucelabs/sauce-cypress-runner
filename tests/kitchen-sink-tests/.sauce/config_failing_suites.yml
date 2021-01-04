@@ -2,7 +2,7 @@ apiVersion: v1alpha
 kind: Cypress
 sauce:
   metadata:
-    name: Testing Cypress Kitchen Sink
+    name: Testing Cypress Failing Suites
     tags:
       - e2e
       - release team
@@ -13,10 +13,10 @@ cypress:
   configFile: cypress.json
 
 suites:
-  - name: "cypress kitchen sink test"
+  - name: "cypress failing test"
     browser: "chrome"
     config:
-      testFiles: [ "examples/*.*" ]
+      testFiles: [ "failing/*.*" ]
 
 docker:
   image:
