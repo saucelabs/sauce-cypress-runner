@@ -61,12 +61,15 @@ SauceReporter.createJobShell = async (api, testName, tags, browserName) => {
   return sessionId || 0;
 };
 
-SauceReporter.createJobLegacy = async (api, region, browserName, testName, metadata) => {
+SauceReporter.createJobLegacy = async (api, region, tld, browserName, testName, metadata) => {
   try {
+    const hostname = `ondemand.${region}.saucelabs.${tld}`;
     await remote({
       user: process.env.SAUCE_USERNAME,
       key: process.env.SAUCE_ACCESS_KEY,
       region,
+      tld,
+      hostname,
       connectionRetryCount: 0,
       logLevel: 'silent',
       capabilities: {
@@ -150,18 +153,20 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
   const baseTestName = metadata.name || `Test ${+new Date()}`;
   const testName = baseTestName + ' - ' + suiteName;
   const region = sauce.region || 'us-west-1';
+  const tld = region === 'staging' ? 'net' : 'com';
 
   const api = new SauceLabs({
     user: process.env.SAUCE_USERNAME,
     key: process.env.SAUCE_ACCESS_KEY,
-    region
+    region,
+    tld
   });
 
   let sessionId;
   if (process.env.ENABLE_DATA_STORE) {
     sessionId = await SauceReporter.createJobShell(api, testName, metadata.tags, browserName);
   } else {
-    sessionId = await SauceReporter.createJobLegacy(api, region, browserName, testName, metadata);
+    sessionId = await SauceReporter.createJobLegacy(api, region, tld, browserName, testName, metadata);
   }
 
   if (!sessionId) {
@@ -202,7 +207,7 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
       domain = 'saucelabs.com';
       break;
     default:
-      domain = `${region}.saucelabs.com`;
+      domain = `${region}.saucelabs.${tld}`;
       break;
   }
 
