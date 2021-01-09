@@ -213,7 +213,7 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
   if (process.env.ENABLE_DATA_STORE) {
     sessionId = await SauceReporter.createJobShell(api, testName, metadata.tags, browserName);
   } else {
-    sessionId = await SauceReporter.createJobLegacy(api, region, tld, browserName, testName, metadata);
+    sessionId = await SauceReporter.createJobWorkaround(api, testName, metadata, browserName, failures === 0, startTime, endTime);
   }
 
   if (!sessionId) {
