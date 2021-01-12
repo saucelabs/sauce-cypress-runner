@@ -2,7 +2,7 @@ jest.mock('child_process');
 const path = require('path');
 const childProcess = require('child_process');
 const { EventEmitter } = require('events');
-const { getAbsolutePath, shouldRecordVideo, installDependencies } = require('../../../src/utils');
+const { getAbsolutePath, shouldRecordVideo, installDependencies, getArgs } = require('../../../src/utils');
 
 describe('utils', function () {
   describe('.installDependencies', function () {
@@ -94,6 +94,25 @@ describe('utils', function () {
     it('returns false when SAUCE_CYPRESS_VIDEO_RECORDING is false', function () {
       process.env.SAUCE_CYPRESS_VIDEO_RECORDING = false;
       expect(shouldRecordVideo()).toEqual(false);
+    });
+  });
+  describe('.getArgs', function () {
+    let backupArgv;
+    beforeEach(function () {
+      backupArgv = process.argv;
+      process.argv = [
+        '/path/to/node',
+        '/path/to/sauce-cypress-runner',
+        '--suiteName', 'kitchen-sink-1',
+        '--runCfgPath', './tests/kitchen-sink-tests/sauce-runner.json'
+      ];
+    });
+    afterEach(function () {
+      process.argv = backupArgv;
+    });
+    it('should parse the args', function () {
+      const commandLineArgs = getArgs();
+      expect(commandLineArgs).toMatchSnapshot();
     });
   });
 });

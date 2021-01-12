@@ -126,3 +126,4 @@ tests/*/cypress/videos/
 node
 
 Cache/
+.DS_Store

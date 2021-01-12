@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const childProcess = require('child_process');
+const yargs = require('yargs/yargs');
 
 function getAbsolutePath (pathToDir) {
   if (path.isAbsolute(pathToDir)) {
@@ -56,4 +57,24 @@ async function installDependencies (runCfg) {
   return await p;
 }
 
-module.exports = { getAbsolutePath, shouldRecordVideo, loadRunConfig, installDependencies };
+function getArgs () {
+  const argv = yargs(process.argv.slice(2))
+    .command('$0', 'the default command')
+    .option('runCfgPath', {
+      alias: 'r',
+      type: 'string',
+      description: 'Path to sauce runner json',
+    })
+    .option('suiteName', {
+      alias: 's',
+      type: 'string',
+      description: 'Select the suite to run'
+    })
+    .demandOption(['runCfgPath', 'suiteName'])
+    .argv;
+  const { runCfgPath, suiteName } = argv;
+  const nodeBin = process.argv[0];
+  return { nodeBin, runCfgPath, suiteName };
+}
+
+module.exports = { getAbsolutePath, shouldRecordVideo, loadRunConfig, installDependencies, getArgs };

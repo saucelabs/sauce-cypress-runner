@@ -30,7 +30,7 @@ describe('.cypressRunner', function () {
         configFile: 'fake-cypress.json',
       },
       suites: [
-        {name: 'fake-suite', config: {}}
+        {name: 'fake-suite', config: {env: {HELLO: 'WORLD'}}}
       ]
     };
     getAbsolutePath.mockImplementation((path) => path);
@@ -73,17 +73,25 @@ describe('.cypressRunner', function () {
     ));
   });
   describe('from SAUCE VM', function () {
-    it('returns false if there are test failures', async function () {
+    beforeEach(function () {
       process.env.SAUCE_VM = 'truthy';
+    });
+    it('returns false if there are test failures', async function () {
       cypressRunSpy.mockImplementation(() => ({failures: 100}));
       const status = await cypressRunner('/fake/runner/path', 'fake-suite');
       expect(status).toEqual(false);
     });
     it('returns true if there are no test failures', async function () {
-      process.env.SAUCE_VM = 'truthy';
       cypressRunSpy.mockImplementation(() => ({failures: 0}));
       const status = await cypressRunner('/fake/runner/path', 'fake-suite');
       expect(status).toEqual(false);
+    });
+    it('should take config.env as argument (DEVX-477)', async function () {
+      cypressRunSpy.mockImplementation(() => ({}));
+      await cypressRunner('/fake/runner/path', 'fake-suite');
+      const { calls } = cypressRunSpy.mock;
+      calls[0][0].config.reporter = path.basename(calls[0][0].config.reporter); // Rename to basename to remove home dir
+      expect(cypressRunSpy.mock.calls).toMatchSnapshot();
     });
   });
 });

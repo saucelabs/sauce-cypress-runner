@@ -1,9 +1,8 @@
 const { sauceReporter, prepareAssets } = require('./sauce-reporter');
 const path = require('path');
 const fs = require('fs');
-const { shouldRecordVideo, getAbsolutePath, loadRunConfig, installDependencies } = require('./utils');
+const { shouldRecordVideo, getAbsolutePath, loadRunConfig, installDependencies, getArgs } = require('./utils');
 const cypress = require('cypress');
-const yargs = require('yargs/yargs');
 const _ = require('lodash');
 
 const report = async (results, browserName, runCfg, suiteName) => {
@@ -21,8 +20,8 @@ const report = async (results, browserName, runCfg, suiteName) => {
   }
 
   let assets = await prepareAssets(
-      specFiles,
-      runCfg.resultsDir,
+    specFiles,
+    runCfg.resultsDir,
   );
 
   await sauceReporter(runCfg, suiteName, browserName, assets, failures);
@@ -85,22 +84,7 @@ const cypressRunner = async function (runCfgPath, suiteName) {
 // For dev and test purposes, this allows us to run our Cypress Runner from command line
 if (require.main === module) {
   console.log(`Sauce Cypress Runner ${require(path.join(__dirname, '..', 'package.json')).version}`);
-
-  const argv = yargs(process.argv.slice(2))
-      .command('$0', 'the default command')
-      .option('runCfgPath', {
-        alias: 'r',
-        type: 'string',
-        description: 'Path to sauce runner json',
-      })
-      .option('suiteName', {
-        alias: 's',
-        type: 'string',
-        description: 'Select the suite to run'
-      })
-      .demandOption(['runCfgPath', 'suiteName'])
-      .argv;
-  const { runCfgPath, suiteName } = argv;
+  const { runCfgPath, suiteName } = getArgs();
 
   cypressRunner(runCfgPath, suiteName)
       // eslint-disable-next-line promise/prefer-await-to-then

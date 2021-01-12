@@ -1,5 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`utils .getArgs should parse the args 1`] = `
+Object {
+  "nodeBin": "/path/to/node",
+  "runCfgPath": "./tests/kitchen-sink-tests/sauce-runner.json",
+  "suiteName": "kitchen-sink-1",
+}
+`;
+
 exports[`utils .installDependencies should call node + npm on Sauce VM 1`] = `
 Array [
   Array [
