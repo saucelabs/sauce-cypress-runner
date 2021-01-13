@@ -20,8 +20,9 @@ suites:
     testFiles:
     - '**/*.*'
     env:
-      hello: world
-      HOST_URL: https://training.staging.saucelabs.net/
+      VALUE: 'Some test value'
+      FOO: bar
+      host: https://training.staging.saucelabs.net/
 docker:
   fileTransfer: mount
   image:
