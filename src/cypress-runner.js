@@ -1,7 +1,7 @@
 const { sauceReporter, prepareAssets } = require('./sauce-reporter');
 const path = require('path');
 const fs = require('fs');
-const { shouldRecordVideo, getAbsolutePath, loadRunConfig, installDependencies, getArgs } = require('./utils');
+const { shouldRecordVideo, getAbsolutePath, loadRunConfig, installDependencies, getArgs, getEnv } = require('./utils');
 const cypress = require('cypress');
 const _ = require('lodash');
 
@@ -64,6 +64,10 @@ const getCypressOpts = function (runCfg, suiteName) {
   };
 
   _.defaultsDeep(opts.config, suite.config);
+
+  // Set the environment variables provided in config.yml
+  const env = getEnv(runCfg, suite);
+  _.defaultsDeep(opts.config.env, env);
 
   return opts;
 };

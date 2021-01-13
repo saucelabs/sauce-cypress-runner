@@ -2,7 +2,7 @@ jest.mock('child_process');
 const path = require('path');
 const childProcess = require('child_process');
 const { EventEmitter } = require('events');
-const { getAbsolutePath, shouldRecordVideo, installDependencies, getArgs } = require('../../../src/utils');
+const { getAbsolutePath, shouldRecordVideo, installDependencies, getArgs, getEnv } = require('../../../src/utils');
 
 describe('utils', function () {
   describe('.installDependencies', function () {
@@ -113,6 +113,39 @@ describe('utils', function () {
     it('should parse the args', function () {
       const commandLineArgs = getArgs();
       expect(commandLineArgs).toMatchSnapshot();
+      expect(getArgs()).toBe(commandLineArgs);
+    });
+  });
+  describe('.getEnv', function () {
+    let backupEnv;
+    beforeEach(function () {
+      backupEnv = process.env;
+      process.env = {
+        'HELLO': 'WORLD',
+        'FOO': 'BAR',
+      };
+    });
+    afterEach(function () {
+      process.env = backupEnv;
+    });
+    it('should parse env variables from runConfig', function () {
+      const runConfig = {
+        env: {
+          'A': '1',
+          'B': '2',
+          'HELLO': '$HELLO',
+        }
+      };
+      const suite = {
+        env: {
+          'A': '3'
+        }
+      };
+      expect(getEnv(runConfig, suite)).toEqual({
+        'A': '3',
+        'B': '2',
+        'HELLO': 'WORLD',
+      });
     });
   });
 });
