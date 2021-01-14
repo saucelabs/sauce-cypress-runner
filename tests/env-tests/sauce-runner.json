@@ -2,6 +2,8 @@
     "cypress": {
         "configFile": "cypress.json"
     },
+    "env": {
+    },
     "suites": [
         {
             "name": "default",
@@ -10,14 +12,14 @@
             "config": {
                 "testFiles": [
                     "**/*.*"
-                ]
+                ],
+                "env": {
+                    "FOO": "bar",
+                    "host": "https://training.staging.saucelabs.net/",
+                    "HELLO": "WORLD",
+                    "VALUE": "$TEST_VALUE"
+                }
             }
         }
-    ],
-    "npm": {
-        "packages": { 
-            "left-pad": "1.3.0",
-            "jquery": 2
-        }
-    }
+    ]
 }

@@ -1,0 +1,30 @@
+apiVersion: v1alpha
+kind: cypress
+sauce:
+  region: us-west-1
+  metadata:
+    name: Testing Cypress Support
+    tags:
+    - e2e
+    - release team
+    - other tag
+    build: Release $CI_COMMIT_SHORT_SHA
+cypress:
+  configFile: cypress.json
+  projectpath: cypress
+  envfile: cypress.env.json
+suites:
+- name: saucy test
+  browser: chrome
+  config:
+    testFiles:
+    - '**/*.*'
+    env:
+      VALUE: 'Some test value'
+      FOO: bar
+      host: https://training.staging.saucelabs.net/
+docker:
+  fileTransfer: mount
+  image:
+    name: saucelabs/stt-cypress-mocha-node
+    tag: v0.3.3
