@@ -2,7 +2,7 @@ jest.mock('child_process');
 const path = require('path');
 const childProcess = require('child_process');
 const { EventEmitter } = require('events');
-const { getAbsolutePath, shouldRecordVideo, installDependencies, getArgs, getEnv } = require('../../../src/utils');
+const { getAbsolutePath, shouldRecordVideo, installDependencies, getArgs, getEnv, getSuite } = require('../../../src/utils');
 
 describe('utils', function () {
   describe('.installDependencies', function () {
@@ -116,6 +116,17 @@ describe('utils', function () {
       expect(getArgs()).toBe(commandLineArgs);
     });
   });
+  describe('.getSuite', function () {
+    it('should get a suite from a list', function () {
+      const runCfg = {
+        suites: [
+          {name: 'hello', arg: 'world'}
+        ]
+      };
+      expect(getSuite(runCfg, 'hello').arg).toEqual('world');
+      expect(getSuite(runCfg, 'non-existent')).toBeUndefined();
+    });
+  });
   describe('.getEnv', function () {
     let backupEnv;
     beforeEach(function () {
@@ -129,23 +140,21 @@ describe('utils', function () {
       process.env = backupEnv;
     });
     it('should parse env variables from runConfig', function () {
-      const runConfig = {
+      const suite = {
         env: {
           'A': '1',
           'B': '2',
           'HELLO': '$HELLO',
+        },
+        config: {
+          env: {
+            'C': '3',
+          }
         }
       };
-      const suite = {
-        env: {
-          'A': '3'
-        }
-      };
-      expect(getEnv(runConfig, suite)).toEqual({
-        'A': '3',
-        'B': '2',
-        'HELLO': 'WORLD',
-      });
+      const env = getEnv(suite);
+      expect(env).toMatchSnapshot();
+      expect(env.FOO).toBeUndefined();
     });
   });
 });

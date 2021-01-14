@@ -60,15 +60,11 @@ const getCypressOpts = function (runCfg, suiteName) {
       },
       videoCompression: false,
       videoUploadOnPasses: false,
+      env: getEnv(suite),
     }
   };
 
   _.defaultsDeep(opts.config, suite.config);
-
-  // Set the environment variables provided in config.yml
-  const env = getEnv(runCfg, suite);
-  _.defaultsDeep(opts.config.env, env);
-
   return opts;
 };
 

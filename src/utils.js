@@ -90,13 +90,13 @@ function getArgs () {
   return args;
 }
 
-function getEnv (runConfig, suite) {
+function getEnv (suite) {
   let env = {};
-  if (_.isObject(runConfig.env)) {
-    env = {...runConfig.env};
-  }
   if (_.isObject(suite.env)) {
     env = {...env, ...suite.env};
+  }
+  if (_.isObject(suite.config) && _.isObject(suite.config.env)) {
+    env = {...env, ...suite.config.env};
   }
   // If the variable starts with $, pull that environment variable from the process
   for (const [name, value] of _.toPairs(env)) {

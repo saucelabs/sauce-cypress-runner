@@ -29,7 +29,7 @@
        },
        {
           "name": "kitchen-sink-2",
-          "browser": "microsoftedge",
+          "browser": "edge",
           "config": {
              "testFiles": [
                 "examples/*.*"

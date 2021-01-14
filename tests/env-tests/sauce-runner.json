@@ -3,8 +3,6 @@
         "configFile": "cypress.json"
     },
     "env": {
-        "HELLO": "WORLD",
-        "VALUE": "$TEST_VALUE"
     },
     "suites": [
         {
@@ -17,7 +15,9 @@
                 ],
                 "env": {
                     "FOO": "bar",
-                    "host": "https://training.staging.saucelabs.net/"
+                    "host": "https://training.staging.saucelabs.net/",
+                    "HELLO": "WORLD",
+                    "VALUE": "$TEST_VALUE"
                 }
             }
         }
