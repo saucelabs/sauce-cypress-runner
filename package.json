@@ -23,7 +23,7 @@
     "lodash": "^4.17.20",
     "mocha-junit-reporter": "^2.0.0",
     "npm": "^6.14.9",
-    "saucelabs": "^4.6.2",
+    "saucelabs": "^4.6.3",
     "typescript": "^3.9.7",
     "webdriverio": "^6.10.10",
     "yargs": "^16.2.0"

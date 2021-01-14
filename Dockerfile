@@ -1,4 +1,4 @@
-FROM saucelabs/testrunner-image:v0.1.0
+FROM saucelabs/testrunner-image:v0.1.1
 
 WORKDIR /home/seluser
 
@@ -6,6 +6,11 @@ USER seluser
 
 ENV NODE_VERSION=12.16.2
 ENV NVM_VERSION=0.35.3
+ENV CYPRESS_VERSION=5.6.0
+ENV IMAGE_NAME=saucelabs/stt-cypress-mocha-node
+ARG BUILD_TAG
+ENV IMAGE_TAG=${BUILD_TAG}
+
 RUN wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM_VERSION}/install.sh | bash \
   && export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")" \
   && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" \

@@ -51,9 +51,6 @@ Array [
 exports[`SauceReporter .sauceReporter should output err when upload failed 1`] = `
 Array [
   Array [
-    [TypeError: Cannot read property 'catch' of undefined],
-  ],
-  Array [
     "some fake error",
   ],
 ]

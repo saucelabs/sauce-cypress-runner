@@ -6,7 +6,7 @@ const cypress = require('cypress');
 const yargs = require('yargs/yargs');
 const _ = require('lodash');
 
-const report = async (results, browserName, runCfg, suiteName) => {
+const report = async (results, browserName, runCfg, suiteName, startTime, endTime) => {
   // Prepare the assets
   const runs = results.runs || [];
   let specFiles = runs.map((run) => run.spec.name);
@@ -25,7 +25,7 @@ const report = async (results, browserName, runCfg, suiteName) => {
       runCfg.resultsDir,
   );
 
-  await sauceReporter(runCfg, suiteName, browserName, assets, failures);
+  await sauceReporter(runCfg, suiteName, browserName, assets, failures, startTime, endTime);
 
   return failures === 0;
 };
@@ -77,9 +77,11 @@ const cypressRunner = async function (runCfgPath, suiteName) {
 
   await installDependencies(runCfg);
   let cypressOpts = getCypressOpts(runCfg, suiteName);
+  let startTime = new Date().toISOString();
   const results = await cypress.run(cypressOpts);
+  let endTime = new Date().toISOString();
 
-  return await report(results, cypressOpts.browser, runCfg, suiteName);
+  return await report(results, cypressOpts.browser, runCfg, suiteName, startTime, endTime);
 };
 
 // For dev and test purposes, this allows us to run our Cypress Runner from command line
