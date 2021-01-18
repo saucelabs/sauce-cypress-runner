@@ -24,7 +24,9 @@ const report = async (results, browserName, runCfg, suiteName, startTime, endTim
     runCfg.resultsDir,
   );
 
-  await sauceReporter(runCfg, suiteName, browserName, assets, failures, startTime, endTime);
+  if (process.env.SAUCE_USERNAME !== '' && process.env.SAUCE_ACCESS_KEY !== '') {
+    await sauceReporter(runCfg, suiteName, browserName, assets, failures, startTime, endTime);
+  }
 
   return failures === 0;
 };
