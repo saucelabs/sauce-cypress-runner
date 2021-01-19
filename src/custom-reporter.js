@@ -239,6 +239,7 @@ function MochaJUnitReporter (runner, options) {
   }.bind(this));
 
   this._runner.on('fail', function (test, err) {
+    console.error(test.err && test.err.message);
     sauceJson.push(this.getSauceTestcaseData(test));
     lastSuite().push(this.getTestcaseData(test, err));
   }.bind(this));
