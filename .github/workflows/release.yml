@@ -13,10 +13,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Check that cypress version is synced
-        shell: bash -x
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
           CYPRESS_VERSION=`< package.json  jq -r '.dependencies["cypress"]'`
+          echo Comparing "${CYPRESS_VERSION}" with "${VERSION}"
           test "${CYPRESS_VERSION}" = "${VERSION}"
   release-github:
     runs-on: ubuntu-latest
