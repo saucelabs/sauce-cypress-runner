@@ -19,7 +19,9 @@ jobs:
           echo ::set-output name=version::${VERSION}
       - name: Check that cypress version is sync'd
         run: |
+          < package.json  jq -r '.dependencies["cypress"]'
           CYPRESS_VERSION=`< package.json  jq -r '.dependencies["cypress"]'`
+          echo test "${CYPRESS_VERSION}" = "${VERSION}"
           test "${CYPRESS_VERSION}" = "${VERSION}"
   release-github:
     runs-on: ubuntu-latest
