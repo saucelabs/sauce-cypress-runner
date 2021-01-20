@@ -6,9 +6,22 @@ on:
   push:
     tags:
       - '*.*.*'
-jobs:  
+jobs:
+  version-consistency:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare
+        id: prep
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo ::set-output name=version::${VERSION}
+      - name: Check that cypress version is sync'd
+        run: |
+          CYPRESS_VERSION=`< package.json  jq -r '.dependencies["cypress"]'`
+          test "${CYPRESS_VERSION}" = "${VERSION}"
   release-github:
     runs-on: ubuntu-latest
+    needs: version-consistency
     steps:
       - name: Prepare
         id: prep
@@ -31,6 +44,7 @@ jobs:
           draft: false
   release-docker:
     runs-on: ubuntu-latest
+    needs: version-consistency
     steps:
       -
         name: Checkout
@@ -65,7 +79,7 @@ jobs:
             BUILD_TAG=${{ steps.prep.outputs.version }}
   release-windows-bundle:
     runs-on: windows-latest
-    needs: release-github
+    needs: [release-github, version-consistency]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
