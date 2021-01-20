@@ -16,8 +16,9 @@ jobs:
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
           CYPRESS_VERSION=`< package.json  jq -r '.dependencies["cypress"]'`
-          echo Comparing "v${CYPRESS_VERSION}" with "${VERSION}"
-          test "v${CYPRESS_VERSION}" = "${VERSION}"
+          CYPRESS_VERSION_LOCKED=`jq < package-lock.json -r '.dependencies["cypress"].version'`
+          echo Comparing "${VERSION}" with "v${CYPRESS_VERSION}"  and "v${CYPRESS_VERSION_LOCKED}"
+          test "v${CYPRESS_VERSION}" = "${VERSION}" && test "v${CYPRESS_VERSION_LOCKED}" = "${VERSION}"
   release-github:
     runs-on: ubuntu-latest
     needs: version-consistency
