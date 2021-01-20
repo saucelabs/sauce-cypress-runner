@@ -41,6 +41,7 @@ jobs:
           release_name: Release ${{ steps.prep.outputs.version }}
           body: Release ${{ steps.prep.outputs.version }}
           draft: false
+          prerelease: false
   release-docker:
     runs-on: ubuntu-latest
     needs: version-consistency
