@@ -241,7 +241,7 @@ function MochaJUnitReporter (runner, options) {
   this._runner.on('fail', function (test, err) {
     console.error('- expected: ', test.err.expected);
     console.error('+ actual: ', test.err.actual);
-    console.error('frame: ', test.err.codeFrame.frame);
+    console.error(test.err.codeFrame.frame);
     sauceJson.push(this.getSauceTestcaseData(test));
     lastSuite().push(this.getTestcaseData(test, err));
   }.bind(this));
