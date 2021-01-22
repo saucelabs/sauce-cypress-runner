@@ -138,8 +138,8 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          echo ::set-output name=version::${VERSION}
+          NUM_VERSION=${GITHUB_REF#refs/tags/v}
+          echo ::set-output name=num_version::${NUM_VERSION}
       - name: Get release ID
         id: get_release_id
         run: |
@@ -150,7 +150,7 @@ jobs:
       - name: Print release id
         run: echo ${{ steps.get_release_id.outputs.release_id }}
       - name: Update Release version
-        run: sed -i "s/##VERSION##/${{ steps.prep.outputs.version }}/g" .saucetpl/.sauce/config.yml
+        run: sed -i "s/##VERSION##/${{ steps.prep.outputs.num_version }}/g" .saucetpl/.sauce/config.yml
       - name: Archive template
         run: cd .saucetpl && tar -czf ../saucetpl.tar.gz .
       - name: Upload Template Asset
