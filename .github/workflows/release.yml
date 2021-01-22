@@ -6,9 +6,22 @@ on:
   push:
     tags:
       - 'v*.*.*'
-jobs:  
+jobs:
+  version-consistency:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Check that cypress version is synced
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          CYPRESS_VERSION=`< package.json  jq -r '.dependencies["cypress"]'`
+          CYPRESS_VERSION_LOCKED=`jq < package-lock.json -r '.dependencies["cypress"].version'`
+          echo Comparing "${VERSION}" with "v${CYPRESS_VERSION}"  and "v${CYPRESS_VERSION_LOCKED}"
+          test "v${CYPRESS_VERSION}" = "${VERSION}" && test "v${CYPRESS_VERSION_LOCKED}" = "${VERSION}"
   release-github:
     runs-on: ubuntu-latest
+    needs: version-consistency
     steps:
       - name: Prepare
         id: prep
@@ -17,7 +30,7 @@ jobs:
           echo ::set-output name=version::${VERSION}
       - name: Check if release exists
         id: check_release
-        run: echo ::set-output name=success::$(curl -s -o /dev/null -w "%{http_code}" https://api.github.com/repos/saucelabs/sauce-cypress-runner/releases/tags/${{ steps.prep.outputs.version }})
+        run: echo ::set-output name=success::$(curl -s -o /dev/null -w "%{http_code}" https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ steps.prep.outputs.version }})
       - name: Create Release
         if: steps.check_release.outputs.success != '200'
         id: create_release
@@ -29,8 +42,10 @@ jobs:
           release_name: Release ${{ steps.prep.outputs.version }}
           body: Release ${{ steps.prep.outputs.version }}
           draft: false
+          prerelease: false
   release-docker:
     runs-on: ubuntu-latest
+    needs: version-consistency
     steps:
       -
         name: Checkout
@@ -65,7 +80,7 @@ jobs:
             BUILD_TAG=${{ steps.prep.outputs.version }}
   release-windows-bundle:
     runs-on: windows-latest
-    needs: release-github
+    needs: [release-github, version-consistency]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -106,7 +121,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: https://uploads.github.com/repos/saucelabs/sauce-cypress-runner/releases/${{ steps.get_release_id.outputs.release_id }}/assets?name=sauce-cypress-runner.zip
+          upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.get_release_id.outputs.release_id }}/assets?name=sauce-cypress-runner.zip
           asset_path: ./sauce-cypress-win.zip
           asset_name: sauce-cypress-win.zip
           asset_content_type: application/zip
@@ -144,7 +159,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: https://uploads.github.com/repos/saucelabs/sauce-cypress-runner/releases/${{ steps.get_release_id.outputs.release_id }}/assets?name=saucetpl.tar.gz
+          upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.get_release_id.outputs.release_id }}/assets?name=saucetpl.tar.gz
           asset_path: ./saucetpl.tar.gz
           asset_name: saucetpl.tar.gz
           asset_content_type: application/tar+gzip
