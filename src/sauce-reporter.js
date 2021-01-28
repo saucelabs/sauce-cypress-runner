@@ -64,7 +64,7 @@ SauceReporter.createJobShell = async (api, testName, tags, browserName) => {
 
 // TODO Tian: this method is a temporary solution for creating jobs via test-composer.
 // Once the global data store is ready, this method will be deprecated.
-SauceReporter.createJobWorkaround = async (api, testName, metadata, browserName, passed, startTime, endTime) => {
+SauceReporter.createJobWorkaround = async (api, testName, suiteName, metadata, browserName, passed, startTime, endTime) => {
   let browserVersion = '*';
   switch (browserName.toLowerCase()) {
     case 'firefox':
@@ -85,6 +85,7 @@ SauceReporter.createJobWorkaround = async (api, testName, metadata, browserName,
     framework: 'cypress',
     frameworkVersion: process.env.CYPRESS_VERSION,
     status: 'complete',
+    suite: suiteName,
     errors: [],
     passed,
     tags: metadata.tags,
@@ -213,7 +214,7 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
   if (process.env.ENABLE_DATA_STORE) {
     sessionId = await SauceReporter.createJobShell(api, testName, metadata.tags, browserName);
   } else {
-    sessionId = await SauceReporter.createJobWorkaround(api, testName, metadata, browserName, failures === 0, startTime, endTime);
+    sessionId = await SauceReporter.createJobWorkaround(api, testName, suiteName, metadata, browserName, failures === 0, startTime, endTime);
   }
 
   if (!sessionId) {
