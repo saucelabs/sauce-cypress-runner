@@ -25,6 +25,4 @@ suites:
       testFiles: [ "examples/*.*" ]
 
 docker:
-  image:
-    name: saucelabs/stt-cypress-mocha-node
-    tag: local
+  image: saucelabs/stt-cypress-mocha-node:local
