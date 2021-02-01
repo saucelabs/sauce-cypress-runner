@@ -1,6 +1,7 @@
 apiVersion: v1alpha
 kind: Cypress
 sauce:
+  region: us-west-1
   metadata:
     name: Testing Cypress Failing Suites
     tags:
@@ -10,6 +11,7 @@ sauce:
     build: Release $CI_COMMIT_SHORT_SHA
 
 cypress:
+  version: 1
   configFile: cypress.json
 
 suites:
@@ -19,9 +21,4 @@ suites:
       testFiles: [ "failing/*.*" ]
 
 docker:
-  image:
-    name: saucelabs/stt-cypress-mocha-node
-    tag: local
-
-sauce:
-  region: us-west-1
+  image: saucelabs/stt-cypress-mocha-node:local
