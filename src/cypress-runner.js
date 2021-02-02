@@ -66,7 +66,7 @@ const getCypressOpts = function (runCfg, suiteName) {
     }
   };
 
-  if (runCfg.cypress.record !== undefined && runCfg.cypress.record && runCfg.cypress.key !== undefined) {
+  if (runCfg.cypress.record && runCfg.cypress.key !== undefined) {
     opts.record = runCfg.cypress.record;
     opts.key = runCfg.cypress.key;
     opts.config.videoUploadOnPasses = true;
