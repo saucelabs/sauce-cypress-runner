@@ -28,3 +28,8 @@ docker:
   image:
     name: saucelabs/stt-cypress-mocha-node
     tag: local
+
+npm:
+  packages:
+    appium: 1
+    jquery: 2

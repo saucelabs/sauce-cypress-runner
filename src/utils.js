@@ -45,14 +45,21 @@ async function installDependencies (runCfg) {
     const nodeBin = process.platform === 'win32' ? 'node.exe' : 'node';
     const nodePath = path.join(__dirname, '..', nodeBin);
     const npmCli = path.join(__dirname, '..', 'node_modules', 'npm', 'bin', 'npm-cli');
-    const npmArgs = ['install', '--no-save', ...packageList];
+
+    // Log out NPM output to a .log file
+    const npmOutput = path.join(process.cwd(), 'npm.log');
+    fs.writeFileSync(npmOutput);
+    const npmOutFileStream = fs.createWriteStream(npmOutput);
+    const npmArgs = ['install', '--no-save', ...packageList, '--json'];
     const procArgs = process.env.SAUCE_VM ?
       [nodePath, npmCli, ...npmArgs] :
       ['npm', ...npmArgs];
     console.log(`Running npm install on ${npmArgs.join(', ')}`);
     const child = childProcess.spawn(procArgs[0], procArgs.slice(1));
     child.stdout.pipe(process.stdout);
+    child.stdout.pipe(npmOutFileStream);
     child.stderr.pipe(process.stderr);
+    child.stderr.pipe(npmOutFileStream);
     child.on('exit', (exitCode) => {
       if (exitCode === 0) {
         resolve();
