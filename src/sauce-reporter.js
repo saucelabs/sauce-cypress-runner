@@ -170,7 +170,7 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
 
     const screenshotsFolder = path.join(resultsFolder, specFile);
     if (fs.existsSync(screenshotsFolder)) {
-      fs.readdirSync(screenshotsFolder).forEach(file => {
+      fs.readdirSync(screenshotsFolder).forEach((file) => {
         let screenshot = path.join(screenshotsFolder, file);
         assets.push(screenshot);
       });
