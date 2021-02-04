@@ -27,6 +27,7 @@ Array [
       "--no-save",
       "left-pad@1.3.0",
       "jquery@2",
+      "--json",
     ],
   ],
 ]
@@ -41,6 +42,7 @@ Array [
       "--no-save",
       "left-pad@1.3.0",
       "jquery@2",
+      "--json",
     ],
   ],
 ]
