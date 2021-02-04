@@ -168,6 +168,14 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
       { name: `${specFile}.xml`},
     ];
 
+    const screenshotsFolder = path.join(resultsFolder, specFile);
+    if (fs.existsSync(screenshotsFolder)) {
+      fs.readdirSync(screenshotsFolder).forEach(file => {
+        let screenshot = path.join(screenshotsFolder, file);
+        assets.push(screenshot);
+      });
+    }
+
     for (let asset of sauceAssets) {
       const assetFile = path.join(resultsFolder, asset.name);
       if (!fs.existsSync(assetFile)) {
@@ -191,6 +199,9 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
       console.error('Failed to merge videos: ', e);
     }
   }
+
+  console.log(assets);
+  console.log(resultsFolder);
 
   return assets;
 };
