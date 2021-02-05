@@ -39,9 +39,6 @@ jobs:
 
       - name: Run kitchen sink test
         working-directory: ./tests/kitchen-sink-tests
-        env:
-          SAUCE_USERNAME: ''
-          SAUCE_ACCESS_KEY: ''
         run: |
           sudo chown -R 1000:1000 ./cypress
           saucectl run
