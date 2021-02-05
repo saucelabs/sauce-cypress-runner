@@ -25,6 +25,7 @@ describe('SauceReporter', function () {
     it('should return a list of assets', async function () {
       fs.existsSync.mockReturnValue(true);
       fs.copyFileSync.mockReturnValue(true);
+      fs.readdirSync.mockReturnValue({forEach: () => {}});
       SauceReporter.mergeVideos = jest.fn().mockImplementation(async function () {});
       const res = await SauceReporter.prepareAssets(['spec/file.test.js'], 'results/');
       expect(res).toMatchSnapshot();

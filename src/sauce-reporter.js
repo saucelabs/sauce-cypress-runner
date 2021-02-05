@@ -200,9 +200,6 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
     }
   }
 
-  console.log(assets);
-  console.log(resultsFolder);
-
   return assets;
 };
 
