@@ -3,6 +3,7 @@
 exports[`SauceReporter .prepareAssets should return a list of assets 1`] = `
 Array [
   "console.log",
+  "npm.log",
   "results/spec/file.test.js.mp4",
   "results/spec/file.test.js.json",
   "results/spec/file.test.js.xml",
