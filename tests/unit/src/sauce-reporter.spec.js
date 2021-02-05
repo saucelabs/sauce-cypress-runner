@@ -28,6 +28,7 @@ describe('SauceReporter', function () {
       fs.readdirSync.mockReturnValue(['fake/path/to/screenshot-1.png', 'fake/path/to/screenshot-2.png']);
       SauceReporter.mergeVideos = jest.fn().mockImplementation(async function () {});
       const res = await SauceReporter.prepareAssets(['spec/file.test.js'], 'results/');
+      expect(fs.readdirSync.mock.calls).toMatchSnapshot();
       expect(res).toMatchSnapshot();
     });
     it('should return an empty list of assets if files not found (addresses DEVX-273)', async function () {
