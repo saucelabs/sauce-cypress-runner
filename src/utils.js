@@ -47,7 +47,7 @@ async function installDependencies (runCfg) {
     const npmCli = path.join(__dirname, '..', 'node_modules', 'npm', 'bin', 'npm-cli');
 
     // Log out NPM output to a .log file
-    const npmOutput = path.join(process.cwd(), 'npm.log');
+    const npmOutput = path.join('npm.log');
     fs.writeFileSync(npmOutput);
     const npmOutFileStream = fs.createWriteStream(npmOutput);
     const npmArgs = ['install', '--no-save', ...packageList, '--json'];

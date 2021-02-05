@@ -160,6 +160,9 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
   if (fs.existsSync(clog)) {
     assets.push(clog);
   }
+  if (fs.existsSync('npm.log')) {
+    assets.push('npm.log');
+  }
 
   for (let specFile of specFiles) {
     const sauceAssets = [
