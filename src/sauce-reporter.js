@@ -5,6 +5,7 @@ const SauceLabs = require('saucelabs').default;
 const ffmpeg = require('fluent-ffmpeg');
 const { promisify } = require('util');
 const ffprobe = promisify(ffmpeg.ffprobe);
+const utils = require('./utils');
 
 const { remote } = require('webdriverio');
 
@@ -173,15 +174,22 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
       const screenshotPaths = fs.readdirSync(screenshotsFolder);
       screenshotPaths.forEach((file) => {
         let screenshot = path.join(screenshotsFolder, file);
+        // rename screenshots to allow uploading screenshots with the same name but different folders
+        screenshot = utils.renameScreenshot(specFile, screenshot, screenshotsFolder, file);
         assets.push(screenshot);
       });
     }
 
+    // get from root folder
     for (let asset of sauceAssets) {
-      const assetFile = path.join(resultsFolder, asset.name);
+      let assetFile = path.join(resultsFolder, asset.name);
       if (!fs.existsSync(assetFile)) {
         console.warn(`Failed to prepare asset. Could not find: '${assetFile}'`);
         continue;
+      }
+      // TODO .mp4
+      if (!asset.name.endsWith('.mp4')) {
+        assetFile = utils.renameAsset(asset.name, assetFile, resultsFolder);
       }
       assets.push(assetFile);
 
@@ -200,6 +208,8 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
       console.error('Failed to merge videos: ', e);
     }
   }
+
+  console.log(assets);
 
   return assets;
 };

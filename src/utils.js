@@ -111,7 +111,31 @@ function getSuite (runConfig, suiteName) {
   return runConfig.suites.find((testSuite) => testSuite.name === suiteName);
 }
 
+function renameScreenshot (specFile, oldFilePath, folderName, fileName) {
+  const splittedSpecFile = specFile.split('/');
+  if (splittedSpecFile.length < 2) {
+    return oldFilePath;
+  }
+  let prefix = splittedSpecFile.slice(0, splittedSpecFile.length - 1).join('-');
+  let newName = path.join(folderName, prefix + '-' + fileName);
+  fs.renameSync(oldFilePath, newName);
+  return newName;
+}
+
+function renameAsset (specFile, oldFilePath, resultsFolder) {
+  const splittedSpecFile = specFile.split('/');
+  if (splittedSpecFile.length < 2) {
+    return oldFilePath;
+  }
+  // create new file name
+  let newFile = splittedSpecFile.slice(0, splittedSpecFile.length).join('-');
+  let nestedPath = splittedSpecFile.slice(0, splittedSpecFile.length - 1).join('/');
+  let newFilePath = path.join(resultsFolder, nestedPath, newFile);
+  fs.renameSync(oldFilePath, newFilePath);
+  return newFilePath;
+}
+
 module.exports = {
   getAbsolutePath, shouldRecordVideo, loadRunConfig,
-  installDependencies, getArgs, getEnv, getSuite
+  installDependencies, getArgs, getEnv, getSuite, renameScreenshot, renameAsset
 };
