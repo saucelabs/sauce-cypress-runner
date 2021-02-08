@@ -169,6 +169,7 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
       { name: `${specFile}.xml`},
     ];
 
+    // screenshotsFolder has the same name as spec file name
     const screenshotsFolder = path.join(resultsFolder, specFile);
     if (fs.existsSync(screenshotsFolder)) {
       const screenshotPaths = fs.readdirSync(screenshotsFolder);
@@ -180,17 +181,14 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
       });
     }
 
-    // get from root folder
     for (let asset of sauceAssets) {
       let assetFile = path.join(resultsFolder, asset.name);
       if (!fs.existsSync(assetFile)) {
         console.warn(`Failed to prepare asset. Could not find: '${assetFile}'`);
         continue;
       }
-      // TODO .mp4
-      if (!asset.name.endsWith('.mp4')) {
-        assetFile = utils.renameAsset(asset.name, assetFile, resultsFolder);
-      }
+      // rename assets to allow uploading assets with the same name but different folders
+      assetFile = utils.renameAsset(asset.name, assetFile, resultsFolder);
       assets.push(assetFile);
 
       if (asset.name.endsWith('.mp4')) {
@@ -208,8 +206,6 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
       console.error('Failed to merge videos: ', e);
     }
   }
-
-  console.log(assets);
 
   return assets;
 };

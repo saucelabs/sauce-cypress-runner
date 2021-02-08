@@ -11,11 +11,11 @@ Array [
 exports[`SauceReporter .prepareAssets should return a list of assets 2`] = `
 Array [
   "console.log",
-  "results/spec/file.test.js/fake/path/to/screenshot-1.png",
-  "results/spec/file.test.js/fake/path/to/screenshot-2.png",
-  "results/spec/file.test.js.mp4",
-  "results/spec/file.test.js.json",
-  "results/spec/file.test.js.xml",
+  "results/spec/file.test.js/spec-fake/path/to/screenshot-1.png",
+  "results/spec/file.test.js/spec-fake/path/to/screenshot-2.png",
+  "results/spec/spec-file.test.js.mp4",
+  "results/spec/spec-file.test.js.json",
+  "results/spec/spec-file.test.js.xml",
   "results/video.mp4",
 ]
 `;
