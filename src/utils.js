@@ -116,8 +116,8 @@ function renameScreenshot (specFile, oldFilePath, folderName, fileName) {
   if (splittedSpecFile.length < 2) {
     return oldFilePath;
   }
-  let prefix = splittedSpecFile.slice(0, splittedSpecFile.length - 1).join('-');
-  let newName = path.join(folderName, prefix + '-' + fileName);
+  let prefix = splittedSpecFile.slice(0, splittedSpecFile.length - 1).join('__');
+  let newName = path.join(folderName, prefix + '__' + fileName);
   fs.renameSync(oldFilePath, newName);
   return newName;
 }
@@ -128,7 +128,7 @@ function renameAsset (specFile, oldFilePath, resultsFolder) {
     return oldFilePath;
   }
   // create new file name
-  let newFile = splittedSpecFile.slice(0, splittedSpecFile.length).join('-');
+  let newFile = splittedSpecFile.slice(0, splittedSpecFile.length).join('__');
   let nestedPath = splittedSpecFile.slice(0, splittedSpecFile.length - 1).join('/');
   let newFilePath = path.join(resultsFolder, nestedPath, newFile);
   fs.renameSync(oldFilePath, newFilePath);
