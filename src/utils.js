@@ -111,6 +111,9 @@ function getSuite (runConfig, suiteName) {
   return runConfig.suites.find((testSuite) => testSuite.name === suiteName);
 }
 
+// renameScreenshot renames screenshot.
+// nested/example.test.js/screenshot.png will be renamed to nested__screenshot.png
+// screenshot.png will not be renamed and stay screenshot.png
 function renameScreenshot (specFile, oldFilePath, folderName, fileName) {
   const splittedSpecFile = specFile.split('/');
   if (splittedSpecFile.length < 2) {
@@ -122,6 +125,9 @@ function renameScreenshot (specFile, oldFilePath, folderName, fileName) {
   return newName;
 }
 
+// renameAsset renames asset.
+// nested/example.test.js.xml will be renamed to nested__example.test.js.xml
+// example.test.js.xml will not be renamed and stay example.test.js.xml
 function renameAsset (specFile, oldFilePath, resultsFolder) {
   const splittedSpecFile = specFile.split('/');
   if (splittedSpecFile.length < 2) {
