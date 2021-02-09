@@ -112,15 +112,10 @@ function getSuite (runConfig, suiteName) {
 }
 
 // renameScreenshot renames screenshot.
-// nested/example.test.js/screenshot.png will be renamed to nested__screenshot.png
-// screenshot.png will not be renamed and stay screenshot.png
+// nested/example.test.js/screenshot.png will be renamed to nested__example.test.js__screenshot.png
+// example.test.js/screenshot.png will be renamed to example.test.js__screenshot.png
 function renameScreenshot (specFile, oldFilePath, folderName, fileName) {
-  const splittedSpecFile = specFile.split('/');
-  if (splittedSpecFile.length < 2) {
-    return oldFilePath;
-  }
-  let prefix = splittedSpecFile.slice(0, splittedSpecFile.length - 1).join('__');
-  let newName = path.join(folderName, prefix + '__' + fileName);
+  let newName = path.join(folderName, specFile.replace('/', '__') + '__' + fileName);
   fs.renameSync(oldFilePath, newName);
   return newName;
 }
