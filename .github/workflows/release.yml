@@ -9,7 +9,6 @@ on:
 jobs:
   release-github:
     runs-on: ubuntu-latest
-    needs: version-consistency
     steps:
       - name: Prepare
         id: prep
@@ -33,7 +32,6 @@ jobs:
           prerelease: false
   release-docker:
     runs-on: ubuntu-latest
-    needs: version-consistency
     steps:
       -
         name: Checkout
@@ -68,7 +66,7 @@ jobs:
             BUILD_TAG=${{ steps.prep.outputs.version }}
   release-windows-bundle:
     runs-on: windows-latest
-    needs: [release-github, version-consistency]
+    needs: release-github
     steps:
       - name: Checkout
         uses: actions/checkout@v2
