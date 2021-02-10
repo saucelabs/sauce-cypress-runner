@@ -29,7 +29,7 @@ describe('utils', function () {
     afterEach(function () {
       process.env = backupEnv;
     });
-    it('should call node + npm on Sauce VM', async function () {
+    it.skip('should call node + npm on Sauce VM', async function () {
       process.env.SAUCE_VM = 'truthy';
       const installDeps = installDependencies(runCfg);
       mockSpawnEventEmitter.emit('exit', 0);
@@ -39,17 +39,17 @@ describe('utils', function () {
       calls[0][1][0] = calls[0][1][0].replace(path.join(__dirname, '..', '..', '..'), '/fake/home');
       expect(calls).toMatchSnapshot();
     });
-    it('should call npm + install on non-Sauce VM', async function () {
+    it.skip('should call npm + install on non-Sauce VM', async function () {
       const installDeps = installDependencies(runCfg);
       mockSpawnEventEmitter.emit('exit', 0);
       await installDeps;
       expect(childProcess.spawn.mock.calls).toMatchSnapshot();
     });
-    it('should do nothing if no packages', async function () {
+    it.skip('should do nothing if no packages', async function () {
       const res = await installDependencies({});
       expect(res).toEqual(undefined);
     });
-    it('should gracefully exit with exit code non-zero', function (done) {
+    it.skip('should gracefully exit with exit code non-zero', function (done) {
       const installDeps = installDependencies(runCfg);
       mockSpawnEventEmitter.emit('exit', 1);
       installDeps.catch(function (e) {
