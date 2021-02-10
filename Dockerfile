@@ -32,6 +32,6 @@ ENV CYPRESS_CACHE_FOLDER=/home/seluser/.cache/Cypress
 LABEL com.saucelabs.project-dir=/home/seluser/
 
 # Workaround for permissions in CI if run with a different user
-RUN chmod 777 -R /home/seluser/
+# RUN chmod 777 -R /home/seluser/
 
 CMD ["./entry.sh"]
