@@ -124,8 +124,8 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          NUM_VERSION=${GITHUB_REF#refs/tags/v}
-          echo ::set-output name=num_version::${NUM_VERSION}
+          CYPRESS_VERSION=`< package.json  jq -r '.dependencies["cypress"]'`
+          echo ::set-output name=num_version::${CYPRESS_VERSION}
       - name: Get release ID
         id: get_release_id
         run: |
