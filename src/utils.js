@@ -1,8 +1,11 @@
 const path = require('path');
 const fs = require('fs');
 const _ = require('lodash');
-const childProcess = require('child_process');
 const yargs = require('yargs/yargs');
+const util = require('util');
+const npm = require('npm');
+
+const DefaultRegistry = process.env.SAUCE_NPM_CACHE || 'https://registry.npmjs.org';
 
 function getAbsolutePath (pathToDir) {
   if (path.isAbsolute(pathToDir)) {
@@ -33,6 +36,17 @@ function loadRunConfig (cfgPath) {
   throw new Error(`Runner config (${cfgPath}) unavailable.`);
 }
 
+
+async function setUpRegistry (registry) {
+  const npmLoad = util.promisify(npm.load);
+  await npmLoad({
+    registry,
+    retry: {
+      retries: 3
+    }
+  });
+}
+
 async function installDependencies (runCfg) {
   const npmConfig = runCfg && runCfg.npm && runCfg.npm.packages || {};
   const packageList = Object.entries(npmConfig).map(([pkg, version]) => `${pkg}@${version}`);
@@ -40,28 +54,13 @@ async function installDependencies (runCfg) {
   if (packageList.length === 0) {
     return;
   }
-
-  const p = new Promise((resolve, reject) => {
-    const nodeBin = process.platform === 'win32' ? 'node.exe' : 'node';
-    const nodePath = path.join(__dirname, '..', nodeBin);
-    const npmCli = path.join(__dirname, '..', 'node_modules', 'npm', 'bin', 'npm-cli');
-    const npmArgs = ['install', '--no-save', ...packageList];
-    const procArgs = process.env.SAUCE_VM ?
-      [nodePath, npmCli, ...npmArgs] :
-      ['npm', ...npmArgs];
-    console.log(`Running npm install on ${npmArgs.join(', ')}`);
-    const child = childProcess.spawn(procArgs[0], procArgs.slice(1));
-    child.stdout.pipe(process.stdout);
-    child.stderr.pipe(process.stderr);
-    child.on('exit', (exitCode) => {
-      if (exitCode === 0) {
-        resolve();
-      } else {
-        reject(`Could not install NPM dependencies`);
-      }
-    });
-  });
-  return await p;
+  const registry = runCfg.npm.registry || DefaultRegistry;
+  await setUpRegistry(registry);
+  const npmInstall = util.promisify(npm.install);
+  for (let pkg of packageList) {
+    console.log(`Installing package: ${pkg}`);
+    await npmInstall(pkg);
+  }
 }
 
 let args = null;
