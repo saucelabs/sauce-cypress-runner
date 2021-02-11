@@ -38,6 +38,7 @@ function loadRunConfig (cfgPath) {
 
 
 async function setUpNpmConfig (registry) {
+  console.log('here');
   const npmLoad = util.promisify(npm.load);
   await npmLoad({
     registry,
