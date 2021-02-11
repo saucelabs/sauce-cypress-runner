@@ -5,6 +5,7 @@ const SauceLabs = require('saucelabs').default;
 const ffmpeg = require('fluent-ffmpeg');
 const { promisify } = require('util');
 const ffprobe = promisify(ffmpeg.ffprobe);
+const utils = require('./utils');
 
 const { remote } = require('webdriverio');
 
@@ -168,12 +169,26 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
       { name: `${specFile}.xml`},
     ];
 
+    // screenshotsFolder has the same name as spec file name
+    const screenshotsFolder = path.join(resultsFolder, specFile);
+    if (fs.existsSync(screenshotsFolder)) {
+      const screenshotPaths = fs.readdirSync(screenshotsFolder);
+      screenshotPaths.forEach((file) => {
+        let screenshot = path.join(screenshotsFolder, file);
+        // rename screenshots to allow uploading screenshots with the same name but different folders
+        screenshot = utils.renameScreenshot(specFile, screenshot, screenshotsFolder, file);
+        assets.push(screenshot);
+      });
+    }
+
     for (let asset of sauceAssets) {
-      const assetFile = path.join(resultsFolder, asset.name);
+      let assetFile = path.join(resultsFolder, asset.name);
       if (!fs.existsSync(assetFile)) {
         console.warn(`Failed to prepare asset. Could not find: '${assetFile}'`);
         continue;
       }
+      // rename assets to allow uploading assets with the same name but different folders
+      assetFile = utils.renameAsset(asset.name, assetFile, resultsFolder);
       assets.push(assetFile);
 
       if (asset.name.endsWith('.mp4')) {
