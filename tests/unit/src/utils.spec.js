@@ -1,6 +1,5 @@
 jest.mock('npm');
-const npm = require('npm');
-npm.install
+
 const path = require('path');
 const util = require('util');
 const { EventEmitter } = require('events');
