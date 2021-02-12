@@ -1,0 +1,16 @@
+{
+    "git": {
+        "commitMessage": "Release v${version}",
+        "requireBranch": "master",
+        "tag": true,
+        "tagName": "v${version}"
+    },
+    "npm": {
+        "publish": false
+    },
+    "github": {
+        "release": true,
+        "releaseName": "v${version}",
+        "releaseNotes": "./scripts/generate-release-notes.sh ${latestVersion} ${version}"
+    }
+}
