@@ -1,10 +1,10 @@
 jest.mock('fs');
-jest.mock('npm');
 jest.mock('webdriverio');
 jest.mock('saucelabs');
+jest.mock('../../../src/npm');
 jest.mock('../../../src/utils');
 const fs = require('fs');
-const npm = require('npm');
+require('../../../src/npm');
 const webdriverio = require('webdriverio');
 const SauceLabs = require('saucelabs');
 const SauceReporter = require('../../../src/sauce-reporter');
@@ -22,8 +22,6 @@ describe('SauceReporter', function () {
 
   describe('.prepareAssets', function () {
     beforeEach(function () {
-      npm.install = jest.fn((pkg, resolve) => resolve(null));
-      npm.load.mockImplementation((config, resolve) => resolve(null));
       fs.existsSync.mockClear();
       fs.copyFileSync.mockClear();
     });

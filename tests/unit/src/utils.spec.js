@@ -1,5 +1,5 @@
-jest.mock('npm');
-const npm = require('npm');
+jest.mock('../../../src/npm');
+const npm = require('../../../src/npm');
 const { getAbsolutePath, shouldRecordVideo, getArgs, getEnv, getSuite, setUpNpmConfig, installNpmDependency } = require('../../../src/utils');
 
 describe('utils', function () {
@@ -16,8 +16,6 @@ describe('utils', function () {
     console.log(runCfg);
     beforeEach(function () {
       backupEnv = {...process.env};
-      npm.install = jest.fn((pkg, resolve) => resolve(null));
-      npm.load.mockImplementation((config, resolve) => resolve(null));
     });
     afterEach(function () {
       process.env = backupEnv;

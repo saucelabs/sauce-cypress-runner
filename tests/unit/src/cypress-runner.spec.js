@@ -1,8 +1,11 @@
 jest.mock('cypress');
 jest.mock('fs');
 jest.mock('../../../src/sauce-reporter');
+jest.mock('../../../src/npm');
 jest.mock('../../../src/utils');
 
+require('../../../src/npm');
+const utils = require('../../../src/utils');
 const cypress = require('cypress');
 const path = require('path');
 const fs = require('fs');
@@ -15,7 +18,6 @@ describe('.cypressRunner', function () {
   let cypressRunSpy;
   cypressRunSpy = jest.spyOn(cypress, 'run');
   beforeEach(function () {
-    jest.resetModules();
     process.env = { ...oldEnv };
     cypressRunSpy.mockClear();
     const cypressRunResults = {
@@ -37,6 +39,8 @@ describe('.cypressRunner', function () {
     loadRunConfig.mockImplementation(() => fakeRunnerJson);
     fs.existsSync.mockImplementation(() => true);
     fs.readFileSync.mockImplementation(() => JSON.stringify(fakeRunnerJson));
+    fs.mkdir.mockImplementation((obj, resolver) => resolver(null));
+    utils.prepareNpmEnv.mockImplementation(() => 'some metricz');
 
     // Mock the dates so that it's deterministic
     const isoDateSpy = jest.spyOn(Date.prototype, 'toISOString');
@@ -51,11 +55,7 @@ describe('.cypressRunner', function () {
     const {reporter} = cypressRunSpy.mock.calls[0][0].config;
     cypressRunSpy.mock.calls[0][0].config.reporter = path.basename(reporter);
     expect(cypressRunSpy.mock.calls).toMatchSnapshot();
-    expect(SauceReporter.prepareAssets.mock.calls).toEqual([
-      [
-        ['spec-a', 'spec-b'], '/fake/runner/__assets__'
-      ]
-    ]);
+    expect(SauceReporter.prepareAssets.mock.calls).toMatchSnapshot();
   });
   it('can hardcode the browser path', async function () {
     process.env.SAUCE_BROWSER = 'C:/User/App/browser.exe:chrome';

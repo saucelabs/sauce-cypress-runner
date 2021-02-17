@@ -17,6 +17,19 @@ Object {
 }
 `;
 
+exports[`utils .prepareNpmEnv should call npm install 1`] = `
+Array [
+  Array [
+    Object {
+      "registry": "my.registry",
+      "retry": Object {
+        "retries": 3,
+      },
+    },
+  ],
+]
+`;
+
 exports[`utils .prepareNpmEnv should set right registry for npm 1`] = `
 Array [
   Array [
@@ -26,7 +39,6 @@ Array [
         "retries": 3,
       },
     },
-    [Function],
   ],
 ]
 `;

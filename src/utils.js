@@ -2,8 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const _ = require('lodash');
 const yargs = require('yargs/yargs');
-const util = require('util');
-const npm = require('npm');
+const npm = require('./npm');
 
 const DEFAULT_REGISTRY = process.env.SAUCE_NPM_CACHE || 'https://registry.npmjs.org';
 
@@ -39,17 +38,15 @@ function loadRunConfig (cfgPath) {
 
 async function setUpNpmConfig (registry) {
   console.log('here');
-  const npmLoad = util.promisify(npm.load);
-  await npmLoad({
+  await npm.load({
     registry,
     retry: { retries: 3 }
   });
 }
 
 async function installNpmDependency (pkg) {
-  const npmInstall = util.promisify(npm.install);
   console.log(`Installing package: ${pkg}`);
-  await npmInstall(pkg);
+  await npm.install(pkg);
 }
 
 async function prepareNpmEnv (runCfg) {

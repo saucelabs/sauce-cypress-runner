@@ -117,6 +117,21 @@ Array [
 ]
 `;
 
+exports[`.cypressRunner can call Cypress.run with basic args 2`] = `
+Array [
+  Array [
+    Array [
+      "spec-a",
+      "spec-b",
+    ],
+    "/fake/runner/__assets__",
+    Array [
+      "some metricz",
+    ],
+  ],
+]
+`;
+
 exports[`.cypressRunner from SAUCE VM should take config.env as argument (DEVX-477) 1`] = `
 Array [
   Array [
