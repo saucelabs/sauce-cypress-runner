@@ -1,8 +1,10 @@
 jest.mock('fs');
+jest.mock('npm');
 jest.mock('webdriverio');
 jest.mock('saucelabs');
-jest.mock('npm');
+jest.mock('../../../src/utils');
 const fs = require('fs');
+const npm = require('npm');
 const webdriverio = require('webdriverio');
 const SauceLabs = require('saucelabs');
 const SauceReporter = require('../../../src/sauce-reporter');
@@ -20,6 +22,8 @@ describe('SauceReporter', function () {
 
   describe('.prepareAssets', function () {
     beforeEach(function () {
+      npm.install = jest.fn((pkg, resolve) => resolve(null));
+      npm.load.mockImplementation((config, resolve) => resolve(null));
       fs.existsSync.mockClear();
       fs.copyFileSync.mockClear();
     });
@@ -27,14 +31,14 @@ describe('SauceReporter', function () {
       fs.existsSync.mockReturnValue(true);
       fs.copyFileSync.mockReturnValue(true);
       SauceReporter.mergeVideos = jest.fn().mockImplementation(async function () {});
-      const res = await SauceReporter.prepareAssets(['spec/file.test.js'], 'results/');
+      const res = await SauceReporter.prepareAssets(['spec/file.test.js'], 'results/', []);
       expect(res).toMatchSnapshot();
     });
     it('should return an empty list of assets if files not found (addresses DEVX-273)', async function () {
       fs.existsSync.mockReturnValue(false);
       fs.copyFileSync.mockReturnValue(true);
       fs.mkdtempSync.mockReturnValue('tmp/folder');
-      const res = await SauceReporter.prepareAssets('spec/file', 'results/');
+      const res = await SauceReporter.prepareAssets('spec/file', 'results/', []);
       expect(res).toEqual([]);
     });
   });

@@ -2,7 +2,6 @@ jest.mock('cypress');
 jest.mock('fs');
 jest.mock('../../../src/sauce-reporter');
 jest.mock('../../../src/utils');
-jest.mock('npm');
 
 const cypress = require('cypress');
 const path = require('path');

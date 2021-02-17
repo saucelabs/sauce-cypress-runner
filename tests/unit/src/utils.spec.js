@@ -1,9 +1,6 @@
 jest.mock('npm');
-
-const path = require('path');
-const util = require('util');
-const { EventEmitter } = require('events');
-const { getAbsolutePath, shouldRecordVideo, getArgs, getEnv, getSuite } = require('../../../src/utils');
+const npm = require('npm');
+const { getAbsolutePath, shouldRecordVideo, getArgs, getEnv, getSuite, setUpNpmConfig, installNpmDependency } = require('../../../src/utils');
 
 describe('utils', function () {
   describe('.prepareNpmEnv', function () {
@@ -16,23 +13,23 @@ describe('utils', function () {
         }
       }
     };
+    console.log(runCfg);
     beforeEach(function () {
-      // util.promisify.mockClear();
+      backupEnv = {...process.env};
+      npm.install = jest.fn((pkg, resolve) => resolve(null));
+      npm.load.mockImplementation((config, resolve) => resolve(null));
     });
     afterEach(function () {
       process.env = backupEnv;
     });
-    /*
-    it('should set right registry for npm', async function(){
-      /*
-      util.promisify = jest.fn(() => {
-        return function (config) {
-        }
-      })
-*
-      // await setUpNpmConfig('my.registry'); 
+    it('should set right registry for npm', async function () {
+      await setUpNpmConfig('my.registry');
+      expect(npm.load.mock.calls).toMatchSnapshot();
     });
-    */
+    it('should call npm install', async function () {
+      await installNpmDependency('mypackage@1.2.3');
+      expect(npm.load.mock.calls).toMatchSnapshot();
+    });
   });
   describe('.getAbsolutePath', function () {
     it('returns absolute path unmodified', function () {
