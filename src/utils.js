@@ -129,5 +129,5 @@ function getSuite (runConfig, suiteName) {
 
 module.exports = {
   getAbsolutePath, shouldRecordVideo, loadRunConfig,
-  prepareNpmEnv, getArgs, getEnv, getSuite
+  prepareNpmEnv, getArgs, getEnv, getSuite, setUpNpmConfig, installNpmDependency
 };
