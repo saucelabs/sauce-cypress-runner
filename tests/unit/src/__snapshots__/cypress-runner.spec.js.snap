@@ -21,6 +21,62 @@ Array [
       ],
     },
     "fake-suite",
+    "chrome",
+    Array [
+      "spec-a",
+      "spec-b",
+    ],
+    Array [],
+    "Date: 1",
+    "Date: 2",
+  ],
+  Array [
+    Object {
+      "cypress": Object {
+        "configFile": "fake-cypress.json",
+      },
+      "path": "/fake/runner/path",
+      "resultsDir": "/fake/runner/__assets__",
+      "suites": Array [
+        Object {
+          "config": Object {
+            "env": Object {
+              "HELLO": "WORLD",
+            },
+          },
+          "name": "fake-suite",
+        },
+      ],
+    },
+    "fake-suite",
+    "C:/User/App/browser.exe:chrome",
+    Array [
+      "spec-a",
+      "spec-b",
+    ],
+    Array [],
+    "Date: 1",
+    "Date: 2",
+  ],
+  Array [
+    Object {
+      "cypress": Object {
+        "configFile": "fake-cypress.json",
+      },
+      "path": "/fake/runner/path",
+      "resultsDir": "/fake/runner/__assets__",
+      "suites": Array [
+        Object {
+          "config": Object {
+            "env": Object {
+              "HELLO": "WORLD",
+            },
+          },
+          "name": "fake-suite",
+        },
+      ],
+    },
+    "fake-suite",
     "firefox",
     Array [
       "spec-a",

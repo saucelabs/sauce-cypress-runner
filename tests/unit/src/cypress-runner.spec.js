@@ -6,7 +6,7 @@ jest.mock('../../../src/utils');
 const cypress = require('cypress');
 const path = require('path');
 const fs = require('fs');
-const { sauceReporter, prepareAssets } = require('../../../src/sauce-reporter');
+const SauceReporter = require('../../../src/sauce-reporter');
 const { cypressRunner } = require('../../../src/cypress-runner');
 const { loadRunConfig, getAbsolutePath } = require('../../../src/utils');
 
@@ -23,8 +23,8 @@ describe('.cypressRunner', function () {
       failures: [],
     };
     cypress.run.mockImplementation(() => cypressRunResults);
-    prepareAssets.mockClear();
-    prepareAssets.mockImplementation(() => (['spec-a', 'spec-b']));
+    SauceReporter.prepareAssets.mockClear();
+    SauceReporter.prepareAssets.mockImplementation(() => (['spec-a', 'spec-b']));
     const fakeRunnerJson = {
       cypress: {
         configFile: 'fake-cypress.json',
@@ -51,7 +51,7 @@ describe('.cypressRunner', function () {
     const {reporter} = cypressRunSpy.mock.calls[0][0].config;
     cypressRunSpy.mock.calls[0][0].config.reporter = path.basename(reporter);
     expect(cypressRunSpy.mock.calls).toMatchSnapshot();
-    expect(prepareAssets.mock.calls).toEqual([
+    expect(SauceReporter.prepareAssets.mock.calls).toEqual([
       [
         ['spec-a', 'spec-b'], '/fake/runner/__assets__'
       ]
@@ -67,9 +67,9 @@ describe('.cypressRunner', function () {
     process.env.SAUCE_USERNAME = 'bruno.alassia';
     process.env.SAUCE_ACCESS_KEY = 'i_l0ve_mayonnaise';
     process.env.SAUCE_BROWSER = 'firefox';
-    sauceReporter.mockClear();
+    //SauceReporter.sauceReporter.mockClear();
     await cypressRunner('/fake/runner/path', 'fake-suite');
-    expect(sauceReporter.mock.calls).toMatchSnapshot();
+    expect(SauceReporter.sauceReporter.mock.calls).toMatchSnapshot();
   });
   it('throws error if browser is unsupported', function () {
     process.env.BROWSER_NAME = 'lynx';
