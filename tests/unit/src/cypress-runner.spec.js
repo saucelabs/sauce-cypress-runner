@@ -47,6 +47,9 @@ describe('.cypressRunner', function () {
     let day = 0;
     isoDateSpy.mockImplementation(() => `Date: ${++day}`);
   });
+  afterEach(function () {
+    SauceReporter.sauceReporter.mockReset();
+  });
   it('can call Cypress.run with basic args', async function () {
     process.env.SAUCE_USERNAME = 'fake-sauce-username';
     process.env.SAUCE_ACCESS_KEY = 'fake-sauce-accesskey';
