@@ -1,12 +1,9 @@
-jest.mock('child_process');
-const path = require('path');
-const childProcess = require('child_process');
-const { EventEmitter } = require('events');
-const { getAbsolutePath, shouldRecordVideo, installDependencies, getArgs, getEnv, getSuite } = require('../../../src/utils');
+jest.mock('npm');
+const npm = require('npm');
+const { getAbsolutePath, shouldRecordVideo, getArgs, getEnv, getSuite, setUpNpmConfig, installNpmDependency } = require('../../../src/utils');
 
 describe('utils', function () {
-  describe('.installDependencies', function () {
-    let mockSpawnEventEmitter;
+  describe('.prepareNpmEnv', function () {
     let backupEnv;
     const runCfg = {
       npm: {
@@ -16,48 +13,22 @@ describe('utils', function () {
         }
       }
     };
+    console.log(runCfg);
     beforeEach(function () {
       backupEnv = {...process.env};
-      childProcess.spawn.mockClear();
-      childProcess.spawn.mockImplementation(() => {
-        mockSpawnEventEmitter = new EventEmitter();
-        mockSpawnEventEmitter.stdout = {pipe () {}};
-        mockSpawnEventEmitter.stderr = {pipe () {}};
-        return mockSpawnEventEmitter;
-      });
+      npm.install = jest.fn((pkg, resolve) => resolve(null));
+      npm.load.mockImplementation((config, resolve) => resolve(null));
     });
     afterEach(function () {
       process.env = backupEnv;
     });
-    it.skip('should call node + npm on Sauce VM', async function () {
-      process.env.SAUCE_VM = 'truthy';
-      const installDeps = installDependencies(runCfg);
-      mockSpawnEventEmitter.emit('exit', 0);
-      await installDeps;
-      const calls = childProcess.spawn.mock.calls;
-      calls[0][0] = calls[0][0].replace(path.join(__dirname, '..', '..', '..'), '/fake/home');
-      calls[0][1][0] = calls[0][1][0].replace(path.join(__dirname, '..', '..', '..'), '/fake/home');
-      expect(calls).toMatchSnapshot();
+    it('should set right registry for npm', async function () {
+      await setUpNpmConfig('my.registry');
+      expect(npm.load.mock.calls).toMatchSnapshot();
     });
-    it.skip('should call npm + install on non-Sauce VM', async function () {
-      const installDeps = installDependencies(runCfg);
-      mockSpawnEventEmitter.emit('exit', 0);
-      await installDeps;
-      expect(childProcess.spawn.mock.calls).toMatchSnapshot();
-    });
-    it.skip('should do nothing if no packages', async function () {
-      const res = await installDependencies({});
-      expect(res).toEqual(undefined);
-    });
-    it.skip('should gracefully exit with exit code non-zero', function (done) {
-      const installDeps = installDependencies(runCfg);
-      mockSpawnEventEmitter.emit('exit', 1);
-      installDeps.catch(function (e) {
-        expect(e).toMatch(/Could not install NPM dependencies/);
-        done();
-      }).finally(function () {
-        throw new Error('Should not reach this statement');
-      });
+    it('should call npm install', async function () {
+      await installNpmDependency('mypackage@1.2.3');
+      expect(npm.load.mock.calls).toMatchSnapshot();
     });
   });
   describe('.getAbsolutePath', function () {

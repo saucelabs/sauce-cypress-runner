@@ -5,7 +5,7 @@ const yargs = require('yargs/yargs');
 const util = require('util');
 const npm = require('npm');
 
-const DefaultRegistry = process.env.SAUCE_NPM_CACHE || 'https://registry.npmjs.org';
+const DEFAULT_REGISTRY = process.env.SAUCE_NPM_CACHE || 'https://registry.npmjs.org';
 
 function getAbsolutePath (pathToDir) {
   if (path.isAbsolute(pathToDir)) {
@@ -37,30 +37,47 @@ function loadRunConfig (cfgPath) {
 }
 
 
-async function setUpRegistry (registry) {
+async function setUpNpmConfig (registry) {
+  console.log('here');
   const npmLoad = util.promisify(npm.load);
   await npmLoad({
     registry,
-    retry: {
-      retries: 3
-    }
+    retry: { retries: 3 }
   });
 }
 
-async function installDependencies (runCfg) {
+async function installNpmDependency (pkg) {
+  const npmInstall = util.promisify(npm.install);
+  console.log(`Installing package: ${pkg}`);
+  await npmInstall(pkg);
+}
+
+async function prepareNpmEnv (runCfg) {
+  const npmMetrics = {
+    name: 'npm_metrics.json', data: {}
+  };
   const npmConfig = runCfg && runCfg.npm && runCfg.npm.packages || {};
   const packageList = Object.entries(npmConfig).map(([pkg, version]) => `${pkg}@${version}`);
-
   if (packageList.length === 0) {
-    return;
+    return npmMetrics;
   }
-  const registry = runCfg.npm.registry || DefaultRegistry;
-  await setUpRegistry(registry);
-  const npmInstall = util.promisify(npm.install);
+  // prepares npm config
+  const registry = runCfg.npm.registry || DEFAULT_REGISTRY;
+  const startTime = (new Date()).getTime();
+  await setUpNpmConfig(registry);
+  const endTime = (new Date()).getTime();
+  npmMetrics.data.setup = {duration: endTime - startTime};
+  // install npm packages
+  npmMetrics.data.install = {};
   for (let pkg of packageList) {
-    console.log(`Installing package: ${pkg}`);
-    await npmInstall(pkg);
+    const startTime = (new Date()).getTime();
+    await installNpmDependency(pkg);
+    const endTime = (new Date()).getTime();
+    npmMetrics.data.install[pkg] = {
+      duration: endTime - startTime
+    };
   }
+  return npmMetrics;
 }
 
 let args = null;
@@ -112,5 +129,5 @@ function getSuite (runConfig, suiteName) {
 
 module.exports = {
   getAbsolutePath, shouldRecordVideo, loadRunConfig,
-  installDependencies, getArgs, getEnv, getSuite
+  prepareNpmEnv, getArgs, getEnv, getSuite, setUpNpmConfig, installNpmDependency
 };
