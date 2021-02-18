@@ -1,6 +1,6 @@
 jest.mock('../../../src/npm');
 const npm = require('../../../src/npm');
-const { getAbsolutePath, shouldRecordVideo, getArgs, getEnv, getSuite, setUpNpmConfig, installNpmDependency } = require('../../../src/utils');
+const { getAbsolutePath, shouldRecordVideo, getArgs, getEnv, getSuite, setUpNpmConfig, installNpmDependencies } = require('../../../src/utils');
 
 describe('utils', function () {
   describe('.prepareNpmEnv', function () {
@@ -25,8 +25,8 @@ describe('utils', function () {
       expect(npm.load.mock.calls).toMatchSnapshot();
     });
     it('should call npm install', async function () {
-      await installNpmDependency('mypackage@1.2.3');
-      expect(npm.load.mock.calls).toMatchSnapshot();
+      await installNpmDependencies(['mypackage@1.2.3']);
+      expect(npm.install.mock.calls).toMatchSnapshot();
     });
   });
   describe('.getAbsolutePath', function () {
