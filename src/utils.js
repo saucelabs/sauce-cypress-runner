@@ -37,16 +37,21 @@ function loadRunConfig (cfgPath) {
 
 
 async function setUpNpmConfig (registry) {
-  console.log('here');
+  console.log('Preparing npm environment');
   await npm.load({
     registry,
-    retry: { retries: 3 }
+    retry: { retries: 3 },
+    json: false,
+    save: false,
+    audit: false,
+    rollback: false,
+    fund: false
   });
 }
 
-async function installNpmDependency (pkg) {
-  console.log(`Installing package: ${pkg}`);
-  await npm.install(pkg);
+async function installNpmDependencies (packageList) {
+  console.log(`\nInstalling packages: ${packageList.join(' ')}`);
+  await npm.install(...packageList);
 }
 
 async function prepareNpmEnv (runCfg) {
@@ -60,20 +65,17 @@ async function prepareNpmEnv (runCfg) {
   }
   // prepares npm config
   const registry = runCfg.npm.registry || DEFAULT_REGISTRY;
-  const startTime = (new Date()).getTime();
+  let startTime = (new Date()).getTime();
   await setUpNpmConfig(registry);
-  const endTime = (new Date()).getTime();
+  let endTime = (new Date()).getTime();
   npmMetrics.data.setup = {duration: endTime - startTime};
+
   // install npm packages
   npmMetrics.data.install = {};
-  for (let pkg of packageList) {
-    const startTime = (new Date()).getTime();
-    await installNpmDependency(pkg);
-    const endTime = (new Date()).getTime();
-    npmMetrics.data.install[pkg] = {
-      duration: endTime - startTime
-    };
-  }
+  startTime = (new Date()).getTime();
+  await installNpmDependencies(packageList);
+  endTime = (new Date()).getTime();
+  npmMetrics.data.install = {duration: endTime - startTime};
   return npmMetrics;
 }
 
@@ -151,6 +153,6 @@ function renameAsset (specFile, oldFilePath, resultsFolder) {
 
 module.exports = {
   getAbsolutePath, shouldRecordVideo, loadRunConfig,
-  prepareNpmEnv, setUpNpmConfig, installNpmDependency,
+  prepareNpmEnv, setUpNpmConfig, installNpmDependencies,
   getArgs, getEnv, getSuite, renameScreenshot, renameAsset
 };
