@@ -4,7 +4,7 @@ const _ = require('lodash');
 const yargs = require('yargs/yargs');
 const npm = require('./npm');
 
-const DEFAULT_REGISTRY = process.env.SAUCE_NPM_CACHE || 'https://registry.npmjs.org';
+const DEFAULT_REGISTRY = 'https://registry.npmjs.org';
 
 function getAbsolutePath (pathToDir) {
   if (path.isAbsolute(pathToDir)) {
@@ -35,6 +35,9 @@ function loadRunConfig (cfgPath) {
   throw new Error(`Runner config (${cfgPath}) unavailable.`);
 }
 
+function getDefaultRegistry () {
+  return process.env.SAUCE_NPM_CACHE || DEFAULT_REGISTRY;
+}
 
 async function setUpNpmConfig (registry) {
   console.log('Preparing npm environment');
@@ -64,7 +67,7 @@ async function prepareNpmEnv (runCfg) {
     return npmMetrics;
   }
   // prepares npm config
-  const registry = runCfg.npm.registry || DEFAULT_REGISTRY;
+  const registry = runCfg.npm.registry || getDefaultRegistry();
   let startTime = (new Date()).getTime();
   await setUpNpmConfig(registry);
   let endTime = (new Date()).getTime();

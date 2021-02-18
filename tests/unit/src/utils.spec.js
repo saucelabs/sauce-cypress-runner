@@ -1,6 +1,7 @@
 jest.mock('../../../src/npm');
+const _ = require('lodash');
 const npm = require('../../../src/npm');
-const { getAbsolutePath, shouldRecordVideo, getArgs, getEnv, getSuite, setUpNpmConfig, installNpmDependencies } = require('../../../src/utils');
+const { getAbsolutePath, shouldRecordVideo, getArgs, getEnv, getSuite, prepareNpmEnv, setUpNpmConfig, installNpmDependencies } = require('../../../src/utils');
 
 describe('utils', function () {
   describe('.prepareNpmEnv', function () {
@@ -13,7 +14,6 @@ describe('utils', function () {
         }
       }
     };
-    console.log(runCfg);
     beforeEach(function () {
       backupEnv = {...process.env};
     });
@@ -27,6 +27,21 @@ describe('utils', function () {
     it('should call npm install', async function () {
       await installNpmDependencies(['mypackage@1.2.3']);
       expect(npm.install.mock.calls).toMatchSnapshot();
+    });
+    it('should use env var for registry', async function () {
+      process.env.SAUCE_NPM_CACHE = 'npmland.io';
+      await prepareNpmEnv(runCfg);
+      expect(npm.load.mock.calls).toMatchSnapshot();
+    });
+    it('should use user registry', async function () {
+      let cfg = _.clone(runCfg);
+      cfg.npm.registry = 'registryland.io';
+      await prepareNpmEnv(cfg);
+      expect(npm.load.mock.calls).toMatchSnapshot();
+    });
+    it('should use default registry', async function () {
+      await prepareNpmEnv(runCfg);
+      expect(npm.load.mock.calls).toMatchSnapshot();
     });
   });
   describe('.getAbsolutePath', function () {

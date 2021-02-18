@@ -42,3 +42,135 @@ Array [
   ],
 ]
 `;
+
+exports[`utils .prepareNpmEnv should use default registry 1`] = `
+Array [
+  Array [
+    Object {
+      "audit": false,
+      "fund": false,
+      "json": false,
+      "registry": "my.registry",
+      "retry": Object {
+        "retries": 3,
+      },
+      "rollback": false,
+      "save": false,
+    },
+  ],
+  Array [
+    Object {
+      "audit": false,
+      "fund": false,
+      "json": false,
+      "registry": "npmland.io",
+      "retry": Object {
+        "retries": 3,
+      },
+      "rollback": false,
+      "save": false,
+    },
+  ],
+  Array [
+    Object {
+      "audit": false,
+      "fund": false,
+      "json": false,
+      "registry": "registryland.io",
+      "retry": Object {
+        "retries": 3,
+      },
+      "rollback": false,
+      "save": false,
+    },
+  ],
+  Array [
+    Object {
+      "audit": false,
+      "fund": false,
+      "json": false,
+      "registry": "registryland.io",
+      "retry": Object {
+        "retries": 3,
+      },
+      "rollback": false,
+      "save": false,
+    },
+  ],
+]
+`;
+
+exports[`utils .prepareNpmEnv should use env var for registry 1`] = `
+Array [
+  Array [
+    Object {
+      "audit": false,
+      "fund": false,
+      "json": false,
+      "registry": "my.registry",
+      "retry": Object {
+        "retries": 3,
+      },
+      "rollback": false,
+      "save": false,
+    },
+  ],
+  Array [
+    Object {
+      "audit": false,
+      "fund": false,
+      "json": false,
+      "registry": "npmland.io",
+      "retry": Object {
+        "retries": 3,
+      },
+      "rollback": false,
+      "save": false,
+    },
+  ],
+]
+`;
+
+exports[`utils .prepareNpmEnv should use user registry 1`] = `
+Array [
+  Array [
+    Object {
+      "audit": false,
+      "fund": false,
+      "json": false,
+      "registry": "my.registry",
+      "retry": Object {
+        "retries": 3,
+      },
+      "rollback": false,
+      "save": false,
+    },
+  ],
+  Array [
+    Object {
+      "audit": false,
+      "fund": false,
+      "json": false,
+      "registry": "npmland.io",
+      "retry": Object {
+        "retries": 3,
+      },
+      "rollback": false,
+      "save": false,
+    },
+  ],
+  Array [
+    Object {
+      "audit": false,
+      "fund": false,
+      "json": false,
+      "registry": "registryland.io",
+      "retry": Object {
+        "retries": 3,
+      },
+      "rollback": false,
+      "save": false,
+    },
+  ],
+]
+`;
