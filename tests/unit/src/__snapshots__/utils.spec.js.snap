@@ -20,12 +20,7 @@ Object {
 exports[`utils .prepareNpmEnv should call npm install 1`] = `
 Array [
   Array [
-    Object {
-      "registry": "my.registry",
-      "retry": Object {
-        "retries": 3,
-      },
-    },
+    "mypackage@1.2.3",
   ],
 ]
 `;
@@ -34,10 +29,15 @@ exports[`utils .prepareNpmEnv should set right registry for npm 1`] = `
 Array [
   Array [
     Object {
+      "audit": false,
+      "fund": false,
+      "json": false,
       "registry": "my.registry",
       "retry": Object {
         "retries": 3,
       },
+      "rollback": false,
+      "save": false,
     },
   ],
 ]
