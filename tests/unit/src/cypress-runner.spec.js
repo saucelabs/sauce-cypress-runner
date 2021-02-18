@@ -70,7 +70,6 @@ describe('.cypressRunner', function () {
     process.env.SAUCE_USERNAME = 'bruno.alassia';
     process.env.SAUCE_ACCESS_KEY = 'i_l0ve_mayonnaise';
     process.env.SAUCE_BROWSER = 'firefox';
-    //SauceReporter.sauceReporter.mockClear();
     await cypressRunner('/fake/runner/path', 'fake-suite');
     expect(SauceReporter.sauceReporter.mock.calls).toMatchSnapshot();
   });
