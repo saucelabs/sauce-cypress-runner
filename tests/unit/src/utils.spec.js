@@ -1,8 +1,10 @@
 jest.mock('child_process');
+
 const path = require('path');
+const fs = require('fs');
 const childProcess = require('child_process');
 const { EventEmitter } = require('events');
-const { getAbsolutePath, shouldRecordVideo, installDependencies, getArgs, getEnv, getSuite } = require('../../../src/utils');
+const { getAbsolutePath, shouldRecordVideo, installDependencies, getArgs, getEnv, getSuite, renameScreenshot, renameAsset } = require('../../../src/utils');
 
 describe('utils', function () {
   describe('.installDependencies', function () {
@@ -60,8 +62,39 @@ describe('utils', function () {
       });
     });
   });
+  describe('.renameScreenshot', function () {
+    it('replace forward slash', function () {
+      const spy = jest.spyOn(fs, 'renameSync').mockImplementation(function () {});
+      expect(renameScreenshot('nested/example.test.js', 'old_path', 'new_path', 'screenshot.png')).toEqual('new_path/nested__example.test.js__screenshot.png');
+      expect(spy).toHaveBeenCalled();
+    });
+    it('replace backward slash', function () {
+      const spy = jest.spyOn(fs, 'renameSync').mockImplementation(function () {});
+      expect(renameScreenshot('C:\\path\\to\\asset\\example.test.js', 'old_path', 'new_path', 'screenshot.png')).toEqual('new_path/C:__path__to__asset__example.test.js__screenshot.png');
+      expect(spy).toHaveBeenCalled();
+    });
+  });
+  describe('.renameAsset', function () {
+    it('root folder no need to rename asset with forward slash', function () {
+      expect(renameAsset('example.test.js.xml', '/assets/example.test.js.xml', '/new_path')).toEqual('/assets/example.test.js.xml');
+    });
+    it('asset is in nested folder and replacing forward slash', function () {
+      const spy = jest.spyOn(fs, 'renameSync').mockImplementation(function () {});
+      expect(renameAsset('nested/example.test.js.xml', '/assets/example.test.js.xml', '/new_path')).toEqual('/new_path/nested/nested__example.test.js.xml');
+      expect(spy).toHaveBeenCalled();
+    });
+    it('root folder no need to rename asset with backward slash', function () {
+      expect(renameAsset('example.test.js.xml', '\\assets\\example.test.js.xml', '\\new_path')).toEqual('\\assets\\example.test.js.xml');
+    });
+    it('asset is in nested folder and replacing backward slash', function () {
+      const spy = jest.spyOn(fs, 'renameSync').mockImplementation(function () {});
+      expect(renameAsset('C:\\path\\to\\asset\\example.test.js.xml', '\\asset\\example.test.js.xml', 'new_path')).toEqual('new_path/C:/path/to/asset/C:__path__to__asset__example.test.js.xml');
+      expect(spy).toHaveBeenCalled();
+    });
+  });
   describe('.getAbsolutePath', function () {
     it('returns absolute path unmodified', function () {
+      jest.mock('fs');
       expect(getAbsolutePath('/absolute/path/to/asset/')).toEqual('/absolute/path/to/asset/');
     });
     it('translates relative path to absolute', function () {
