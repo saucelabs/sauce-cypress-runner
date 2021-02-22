@@ -86,7 +86,7 @@ describe('utils', function () {
         specFile: nestedExampleTest,
         oldFilePath: '/assets/example.test.js.xml',
         resultsFolder: '/new_path'
-      })).toEqual(path.join('new_path', 'nested', 'nested__example.test.js.xml'));
+      })).toEqual(path.join(path.sep, 'new_path', 'nested__example.test.js.xml'));
       expect(spy).toHaveBeenCalled();
     });
   });

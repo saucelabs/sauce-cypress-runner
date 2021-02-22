@@ -130,8 +130,7 @@ function renameAsset ({specFile, oldFilePath, resultsFolder}) {
   }
   // create new file name
   let newFile = splittedSpecFile.slice(0, splittedSpecFile.length).join('__');
-  let nestedPath = splittedSpecFile.slice(0, splittedSpecFile.length - 1);
-  let newFilePath = path.join(resultsFolder, ...nestedPath, newFile);
+  let newFilePath = path.join(resultsFolder, newFile);
   fs.renameSync(oldFilePath, newFilePath);
   return newFilePath;
 }
