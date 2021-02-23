@@ -38,7 +38,7 @@ jobs:
       # Generate PreRelease if there is a flavour
       - name: PreRelease
         if: ${{ github.event.inputs.preRelease != '' }}
-        run: npx release-it pre${{ github.event.inputs.releaseType }} --preReleaseId=${{ github.event.inputs.preRelease }} --github.preRelease --git.pushArgs="--tags" --no-git.pushRepo
+        run: npx release-it pre${{ github.event.inputs.releaseType }} --preReleaseId=${{ github.event.inputs.preRelease }} --github.preRelease
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
