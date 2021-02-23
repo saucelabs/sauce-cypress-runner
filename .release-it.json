@@ -1,6 +1,6 @@
 {
     "hooks": {
-        "after:bump": "./.github/workflows/helpers/update-saucectl-template.sh"
+        "after:bump": "./.github/helpers/update-saucectl-template.sh"
     },
     "git": {
         "commitMessage": "Release v${version}",
@@ -14,6 +14,6 @@
     "github": {
         "draft": true,
         "releaseName": "v${version}",
-        "releaseNotes": "./.github/workflows/helpers/generate-release-notes.sh ${latestVersion} ${version}"
+        "releaseNotes": "./.github/helpers/generate-release-notes.sh ${latestVersion} ${version}"
     }
 }

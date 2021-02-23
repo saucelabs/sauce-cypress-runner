@@ -63,7 +63,7 @@ jobs:
       -
         name: Find Draft tag
         id: prep
-        run: ./.github/workflows/helpers/find-draft-tag.sh
+        run: ./.github/helpers/find-draft-tag.sh
         env:
           GITHUB_TOKEN: ${{ secrets.token }}
       -
@@ -100,7 +100,7 @@ jobs:
       -
         name: Find draft tag
         id: prep
-        run: ./.github/workflows/helpers/find-draft-tag.ps1
+        run: ./.github/helpers/find-draft-tag.ps1
         env:
           GITHUB_TOKEN: ${{ secrets.token }}
       - name: Checkout
@@ -140,7 +140,7 @@ jobs:
       -
         name: Find Draft tag
         id: prep
-        run: ./.github/workflows/helpers/find-draft-tag.sh
+        run: ./.github/helpers/find-draft-tag.sh
         env:
           GITHUB_TOKEN: ${{ secrets.token }}
       - name: Checkout
@@ -173,7 +173,7 @@ jobs:
       -
         name: Find Draft tag
         id: prep
-        run: ./.github/workflows/helpers/find-draft-tag.sh
+        run: ./.github/helpers/find-draft-tag.sh
         env:
           GITHUB_TOKEN: ${{ secrets.token }}
       -
