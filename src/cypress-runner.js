@@ -84,7 +84,11 @@ const cypressRunner = async function (runCfgPath, suiteName) {
   runCfg.path = runCfgPath;
   runCfg.resultsDir = path.join(path.dirname(runCfgPath), '__assets__');
   const fsMkdir = util.promisify(fs.mkdir);
-  await fsMkdir(runCfg.resultsDir);
+  try {
+  	await fsMkdir(runCfg.resultsDir);
+  } catch (err) {
+	console.error(`Failed to create resultsDir: ${runCfg.resultsDir}`);
+  }
 
   let metrics = [];
   let npmMetrics = await prepareNpmEnv(runCfg);
