@@ -20,59 +20,72 @@ jobs:
   create-release-draft:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Clone Repository
+      - name: fetch tools
         uses: actions/checkout@v2
         with:
-          ref: ${{github.event.inputs.branch}}
+          ref: ${{ github.ref }}
+          path: tools
+
+      - name: fetch code
+        uses: actions/checkout@v2
+        with:
+          path: main
+          ref: ${{ github.event.inputs.branch }}
           fetch-depth: 0
-      -
-        name: Setup Node version
+
+      - name: Setup Node version
         uses: actions/setup-node@v1
         with:
           node-version: 14.x
-      -
-        name: Setup Git
+
+      - name: Setup Git
         run: |
           git config --global user.name "devx-sauce-bot"
           git config --global user.email "devx.bot@saucelabs.com"
-      -
-        name: Install dependencies
+
+      - name: Install dependencies
+        working-directory: main
         run: npm ci
 
       # Generate PreRelease if there is a flavour
-      -
-        name: PreRelease
+      - name: PreRelease
+        working-directory: main
         if: ${{ github.event.inputs.preRelease != '' }}
-        run: npx release-it pre${{github.event.inputs.releaseType}} --preReleaseId=${{github.event.inputs.preRelease}} --github.preRelease
+        run: npx release-it pre${{ github.event.inputs.releaseType }} --preReleaseId=${{ github.event.inputs.preRelease }} --github.preRelease
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
 
       # Generate Release if there is no flavour
-      -
-        name: Release
+      - name: Release
+        working-directory: main
         if: ${{ github.event.inputs.preRelease == '' }}
         run: npx release-it ${{github.event.inputs.releaseType}} --github.release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
 
   release-docker:
     runs-on: ubuntu-latest
     needs: [create-release-draft]
     steps:
-      -
-        name: Find Draft tag
-        id: prep
-        run: ./.github/helpers/find-draft-tag.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.token }}
-      -
-        name: Checkout
+      - name: fetch tools
         uses: actions/checkout@v2
         with:
+          ref: ${{ github.ref }}
+          path: tools
+
+      - name: Find matching draft tag
+        id: prep
+        run: ./tools/.github/helps/find-draft-tag.sh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: fetch code
+        uses: actions/checkout@v2
+        with:
+          path: main
           ref: ${{ steps.prep.output.version }}
-      -
-        name: Set up Docker Buildx
+
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1      
       # -
       #   name: Login to DockerHub
@@ -97,36 +110,49 @@ jobs:
     runs-on: windows-latest
     needs: [create-release-draft]
     steps:
-      -
-        name: Find draft tag
-        id: prep
-        run: ./.github/helpers/find-draft-tag.ps1
-        env:
-          GITHUB_TOKEN: ${{ secrets.token }}
-      - name: Checkout
+      - name: fetch tools
         uses: actions/checkout@v2
         with:
+          ref: ${{ github.ref }}
+          path: tools
+
+      - name: Find matching draft tag
+        id: prep
+        run: ./tools/.github/helps/find-draft-tag.ps1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: fetch code
+        uses: actions/checkout@v2
+        with:
+          path: main
           ref: ${{ steps.prep.output.version }}
+
       - name: Use Node.js v14.x
         uses: actions/setup-node@v1
         with:
           node-version: 14.x
+
       - run: npm ci --production
+
       - name: Bundle Directory
         run: bash ./scripts/bundle.sh
+
       - name: List bundle contents
         run: ls -R bundle/
+
       - name: Archive bundle
         uses: azure/powershell@v1
         with:
           inlineScript: |
             Compress-Archive bundle/ sauce-cypress-win.zip
           azPSVersion: '3.1.0'
+
       - name: Upload Release Asset
         id: upload-release-asset 
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.prep.outputs.release_id }}/assets?name=sauce-cypress-runner.zip
           asset_path: ./sauce-cypress-win.zip
@@ -137,29 +163,37 @@ jobs:
     runs-on: ubuntu-latest
     needs: [create-release-draft]
     steps:
-      -
-        name: Find Draft tag
-        id: prep
-        run: ./.github/helpers/find-draft-tag.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.token }}
-      - name: Checkout
+      - name: fetch tools
         uses: actions/checkout@v2
         with:
+          ref: ${{ github.ref }}
+          path: tools
+
+      - name: Find matching draft tag
+        id: prep
+        run: ./tools/.github/helps/find-draft-tag.ps1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: fetch code
+        uses: actions/checkout@v2
+        with:
+          path: main
           ref: ${{ steps.prep.output.version }}
+
       - name: Use Node.js v14.x
         uses: actions/setup-node@v1
         with:
           node-version: 14.x
-      - name: Print release id
-        run: echo ${{ steps.prep.outputs.release_id }}
+
       - name: Archive template
         run: cd .saucetpl && tar -czf ../saucetpl.tar.gz .
+
       - name: Upload Template Asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.prep.outputs.release_id }}/assets?name=saucetpl.tar.gz
           asset_path: ./saucetpl.tar.gz
@@ -170,15 +204,26 @@ jobs:
     runs-on: ubuntu-latest
     needs: [release-docker, release-windows-bundle, release-template-bundle]
     steps:
-      -
-        name: Find Draft tag
+      - name: fetch tools
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+          path: tools
+
+      - name: Find matching draft tag
+        id: prep
+        run: ./tools/.github/helps/find-draft-tag.ps1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Find Draft tag
         id: prep
         run: ./.github/helpers/find-draft-tag.sh
         env:
-          GITHUB_TOKEN: ${{ secrets.token }}
-      -
-        name: Publish release
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Publish release
         run: |
-          curl -f -X PATCH -H "Authorization: token ${{ secrets.token }}" \
+          curl -f -X PATCH -H "Authorization: token ${{ github.token }}" \
             https://api.github.com/repos/${{ github.repository }}/releases/${{ steps.prep.outputs.release_id }} \
             -d '{"draft":"false"}'
