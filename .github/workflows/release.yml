@@ -20,16 +20,9 @@ jobs:
   create-release-draft:
     runs-on: ubuntu-latest
     steps:
-      - name: fetch tools
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.ref }}
-          path: tools
-
       - name: fetch code
         uses: actions/checkout@v2
         with:
-          path: main
           ref: ${{ github.event.inputs.branch }}
           fetch-depth: 0
 
@@ -44,12 +37,10 @@ jobs:
           git config --global user.email "devx.bot@saucelabs.com"
 
       - name: Install dependencies
-        working-directory: main
         run: npm ci
 
       # Generate PreRelease if there is a flavour
       - name: PreRelease
-        working-directory: main
         if: ${{ github.event.inputs.preRelease != '' }}
         run: npx release-it pre${{ github.event.inputs.releaseType }} --preReleaseId=${{ github.event.inputs.preRelease }} --github.preRelease
         env:
@@ -57,7 +48,6 @@ jobs:
 
       # Generate Release if there is no flavour
       - name: Release
-        working-directory: main
         if: ${{ github.event.inputs.preRelease == '' }}
         run: npx release-it ${{github.event.inputs.releaseType}} --github.release
         env:
@@ -67,22 +57,26 @@ jobs:
     runs-on: ubuntu-latest
     needs: [create-release-draft]
     steps:
-      - name: fetch tools
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.ref }}
-          path: tools
-
       - name: Find matching draft tag
         id: prep
-        run: ./tools/.github/helpers/find-draft-tag.sh
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(curl -s -H "Authorization: token ${{ github.token }}" \
+                      https://api.github.com/repos/${{ github.repository }}/releases | \
+                      jq -r "[.[] | select(.draft == true) | select(.body | contains(\"- jobId: ${{ github.run_id }}\\r\\n\"))] | first | .tag_name")
+          RELEASE_ID=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
+                      https://api.github.com/repos/${{ github.repository }}/releases | \
+                      jq -r "[.[] | select(.draft == true) | select(.body | contains(\"- jobId: ${{ github.run_id }}\\r\\n\"))] | first | .id")
+
+          if [ "${VERSION}" = "" ];then
+              echo "No draft version found"
+              exit 1
+          fi
+          echo ::set-output name=version::${VERSION}
+          echo ::set-output name=release_id::${RELEASE_ID}
 
       - name: fetch code
         uses: actions/checkout@v2
         with:
-          path: main
           ref: ${{ steps.prep.output.version }}
 
       - name: Set up Docker Buildx
@@ -98,7 +92,7 @@ jobs:
       #   uses: docker/build-push-action@v2
       #   with:
       #     push: true
-      #     context: main
+      #     context: .
       #     file: ./Dockerfile
       #     tags: |
       #       saucelabs/stt-cypress-mocha-node:latest
@@ -110,22 +104,37 @@ jobs:
     runs-on: windows-latest
     needs: [create-release-draft]
     steps:
-      - name: fetch tools
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.ref }}
-          path: tools
-
       - name: Find matching draft tag
         id: prep
-        run: ./tools/.github/helpers/find-draft-tag.ps1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          $res = Invoke-WebRequest -Uri "https://api.github.com/repos/${{ github.repository }}/releases" -Headers @{'Authorization' = "token ${{ github.token }}}"}
+          $jsonObj = ConvertFrom-Json $([String]::new($res.Content))
+
+          $selectedRelease = $null
+          Foreach ($release in $jsonObj)
+          {
+              if ( ! $release.body -contains "- jobId: ${{ github.run_id }}}\\r\\n") {
+                  continue
+              }
+              if ( ! $release.draft ) {
+                  continue
+              }
+              $selectedRelease = $release
+              break
+          }
+
+          if ( $null -eq $selectedRelease ) {
+              exit 1
+          }
+
+          $tagName = $selectedRelease.tag_name
+          $releaseId = $selectedRelease.id
+          Write-Output "::set-output name=version::$tagName"
+          Write-Output "::set-output name=release_id::$releaseId"
 
       - name: fetch code
         uses: actions/checkout@v2
         with:
-          path: main
           ref: ${{ steps.prep.output.version }}
 
       - name: Use Node.js v14.x
@@ -134,18 +143,14 @@ jobs:
           node-version: 14.x
 
       - run: npm ci --production
-        working-directory: main
 
       - name: Bundle Directory
-        working-directory: main
         run: bash ./scripts/bundle.sh
 
       - name: List bundle contents
-        working-directory: main
         run: ls -R bundle/
 
       - name: Archive bundle
-        working-directory: main
         uses: azure/powershell@v1
         with:
           inlineScript: |
@@ -168,22 +173,26 @@ jobs:
     runs-on: ubuntu-latest
     needs: [create-release-draft]
     steps:
-      - name: fetch tools
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.ref }}
-          path: tools
-
       - name: Find matching draft tag
         id: prep
-        run: ./tools/.github/helpers/find-draft-tag.ps1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(curl -s -H "Authorization: token ${{ github.token }}" \
+                      https://api.github.com/repos/${{ github.repository }}/releases | \
+                      jq -r "[.[] | select(.draft == true) | select(.body | contains(\"- jobId: ${{ github.run_id }}\\r\\n\"))] | first | .tag_name")
+          RELEASE_ID=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
+                      https://api.github.com/repos/${{ github.repository }}/releases | \
+                      jq -r "[.[] | select(.draft == true) | select(.body | contains(\"- jobId: ${{ github.run_id }}\\r\\n\"))] | first | .id")
+
+          if [ "${VERSION}" = "" ];then
+              echo "No draft version found"
+              exit 1
+          fi
+          echo ::set-output name=version::${VERSION}
+          echo ::set-output name=release_id::${RELEASE_ID}
 
       - name: fetch code
         uses: actions/checkout@v2
         with:
-          path: main
           ref: ${{ steps.prep.output.version }}
 
       - name: Use Node.js v14.x
@@ -192,11 +201,9 @@ jobs:
           node-version: 14.x
 
       - name: Archive template
-        working-directory: main
         run: cd .saucetpl && tar -czf ../saucetpl.tar.gz .
 
       - name: Upload Template Asset
-        working-directory: main
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
@@ -211,17 +218,22 @@ jobs:
     runs-on: ubuntu-latest
     needs: [release-docker, release-windows-bundle, release-template-bundle]
     steps:
-      - name: fetch tools
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.ref }}
-          path: tools
-
       - name: Find matching draft tag
         id: prep
-        run: ./tools/.github/helpers/find-draft-tag.ps1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(curl -s -H "Authorization: token ${{ github.token }}" \
+                      https://api.github.com/repos/${{ github.repository }}/releases | \
+                      jq -r "[.[] | select(.draft == true) | select(.body | contains(\"- jobId: ${{ github.run_id }}\\r\\n\"))] | first | .tag_name")
+          RELEASE_ID=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
+                      https://api.github.com/repos/${{ github.repository }}/releases | \
+                      jq -r "[.[] | select(.draft == true) | select(.body | contains(\"- jobId: ${{ github.run_id }}\\r\\n\"))] | first | .id")
+
+          if [ "${VERSION}" = "" ];then
+              echo "No draft version found"
+              exit 1
+          fi
+          echo ::set-output name=version::${VERSION}
+          echo ::set-output name=release_id::${RELEASE_ID}
 
       - name: Publish release
         run: |
