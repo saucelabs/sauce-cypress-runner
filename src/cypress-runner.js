@@ -81,7 +81,7 @@ const getCypressOpts = function (runCfg, suiteName) {
 const canAccessFolder = async function (file) {
   const fsAccess = util.promisify(fs.access);
   await fsAccess(file, fs.constants.R_OK | fs.constants.W_OK);
-}
+};
 
 const cypressRunner = async function (runCfgPath, suiteName) {
   runCfgPath = getAbsolutePath(runCfgPath);
@@ -94,7 +94,7 @@ const cypressRunner = async function (runCfgPath, suiteName) {
     const fsMkdir = util.promisify(fs.mkdir);
     await fsMkdir(runCfg.resultsDir);
     await canAccessFolder(runCfg.resultsDir);
- }
+  }
 
   let metrics = [];
   let npmMetrics = await prepareNpmEnv(runCfg);
