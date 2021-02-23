@@ -9,11 +9,11 @@ on:
         default: 'patch'
       preRelease:
         description: 'Pre-Release flavor. Provide one to create a pre-release.'
-        require: false
+        required: true
         default: ''
       branch:
         description: 'Base branch'
-        require: true
+        required: true
         default: 'master'
 
 jobs:
@@ -213,12 +213,6 @@ jobs:
       - name: Find matching draft tag
         id: prep
         run: ./tools/.github/helps/find-draft-tag.ps1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-
-      - name: Find Draft tag
-        id: prep
-        run: ./.github/helpers/find-draft-tag.sh
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
