@@ -45,7 +45,7 @@ jobs:
       # Generate Release if there is no flavour
       - name: Release
         if: ${{ github.event.inputs.preRelease == '' }}
-        run: npx release-it ${{github.event.inputs.releaseType}} --github.release
+        run: npx release-it ${{github.event.inputs.releaseType}}
         env:
           GITHUB_TOKEN: ${{ github.token }}
 

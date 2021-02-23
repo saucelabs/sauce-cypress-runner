@@ -12,6 +12,7 @@
         "publish": false
     },
     "github": {
+        "release": true,
         "draft": true,
         "releaseName": "v${version}",
         "releaseNotes": "./.github/helpers/generate-release-notes.sh ${latestVersion} ${version}"
