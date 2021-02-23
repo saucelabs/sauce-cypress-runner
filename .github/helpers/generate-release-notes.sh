@@ -31,7 +31,7 @@ ${CHANGELOG}
 <details>
 
 - jobId: ${GITHUB_RUN_ID}
-- branch: ${BRANCH_NAME}
+- branch: ${GITHUB_REF}
 
 </details>
 EOF
