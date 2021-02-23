@@ -1,8 +1,10 @@
 const path = require('path');
 const fs = require('fs');
 const _ = require('lodash');
-const childProcess = require('child_process');
 const yargs = require('yargs/yargs');
+const npm = require('./npm');
+
+const DEFAULT_REGISTRY = 'https://registry.npmjs.org';
 
 function getAbsolutePath (pathToDir) {
   if (path.isAbsolute(pathToDir)) {
@@ -33,35 +35,51 @@ function loadRunConfig (cfgPath) {
   throw new Error(`Runner config (${cfgPath}) unavailable.`);
 }
 
-async function installDependencies (runCfg) {
+function getDefaultRegistry () {
+  return process.env.SAUCE_NPM_CACHE || DEFAULT_REGISTRY;
+}
+
+async function setUpNpmConfig (registry) {
+  console.log('Preparing npm environment');
+  await npm.load({
+    registry,
+    retry: { retries: 3 },
+    json: false,
+    save: false,
+    audit: false,
+    rollback: false,
+    fund: false
+  });
+}
+
+async function installNpmDependencies (packageList) {
+  console.log(`\nInstalling packages: ${packageList.join(' ')}`);
+  await npm.install(...packageList);
+}
+
+async function prepareNpmEnv (runCfg) {
+  const npmMetrics = {
+    name: 'npm_metrics.json', data: {}
+  };
   const npmConfig = runCfg && runCfg.npm && runCfg.npm.packages || {};
   const packageList = Object.entries(npmConfig).map(([pkg, version]) => `${pkg}@${version}`);
-
   if (packageList.length === 0) {
-    return;
+    return npmMetrics;
   }
+  // prepares npm config
+  const registry = runCfg.npm.registry || getDefaultRegistry();
+  let startTime = (new Date()).getTime();
+  await setUpNpmConfig(registry);
+  let endTime = (new Date()).getTime();
+  npmMetrics.data.setup = {duration: endTime - startTime};
 
-  const p = new Promise((resolve, reject) => {
-    const nodeBin = process.platform === 'win32' ? 'node.exe' : 'node';
-    const nodePath = path.join(__dirname, '..', nodeBin);
-    const npmCli = path.join(__dirname, '..', 'node_modules', 'npm', 'bin', 'npm-cli');
-    const npmArgs = ['install', '--no-save', ...packageList];
-    const procArgs = process.env.SAUCE_VM ?
-      [nodePath, npmCli, ...npmArgs] :
-      ['npm', ...npmArgs];
-    console.log(`Running npm install on ${npmArgs.join(', ')}`);
-    const child = childProcess.spawn(procArgs[0], procArgs.slice(1));
-    child.stdout.pipe(process.stdout);
-    child.stderr.pipe(process.stderr);
-    child.on('exit', (exitCode) => {
-      if (exitCode === 0) {
-        resolve();
-      } else {
-        reject(`Could not install NPM dependencies`);
-      }
-    });
-  });
-  return await p;
+  // install npm packages
+  npmMetrics.data.install = {};
+  startTime = (new Date()).getTime();
+  await installNpmDependencies(packageList);
+  endTime = (new Date()).getTime();
+  npmMetrics.data.install = {duration: endTime - startTime};
+  return npmMetrics;
 }
 
 let args = null;
@@ -137,5 +155,6 @@ function renameAsset ({specFile, oldFilePath, resultsFolder}) {
 
 module.exports = {
   getAbsolutePath, shouldRecordVideo, loadRunConfig,
-  installDependencies, getArgs, getEnv, getSuite, renameScreenshot, renameAsset
+  prepareNpmEnv, setUpNpmConfig, installNpmDependencies,
+  getArgs, getEnv, getSuite, renameScreenshot, renameAsset
 };

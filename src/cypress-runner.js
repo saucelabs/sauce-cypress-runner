@@ -1,11 +1,12 @@
 const { sauceReporter, prepareAssets } = require('./sauce-reporter');
 const path = require('path');
 const fs = require('fs');
-const { shouldRecordVideo, getAbsolutePath, loadRunConfig, installDependencies, getArgs, getEnv } = require('./utils');
+const { shouldRecordVideo, getAbsolutePath, loadRunConfig, prepareNpmEnv, getArgs, getEnv } = require('./utils');
 const cypress = require('cypress');
+const util = require('util');
 const _ = require('lodash');
 
-const report = async (results, browserName, runCfg, suiteName, startTime, endTime) => {
+const report = async (results, browserName, runCfg, suiteName, startTime, endTime, metrics) => {
   // Prepare the assets
   const runs = results.runs || [];
   let specFiles = runs.map((run) => run.spec.name);
@@ -13,8 +14,9 @@ const report = async (results, browserName, runCfg, suiteName, startTime, endTim
   let failures = results.failures || results.totalFailed;
 
   let assets = await prepareAssets(
-    specFiles,
-    runCfg.resultsDir,
+      specFiles,
+      runCfg.resultsDir,
+      metrics
   );
   // Run in cloud mode
   if (process.env.SAUCE_VM) {
@@ -77,19 +79,33 @@ const getCypressOpts = function (runCfg, suiteName) {
   return opts;
 };
 
+const canAccessFolder = async function (file) {
+  const fsAccess = util.promisify(fs.access);
+  await fsAccess(file, fs.constants.R_OK | fs.constants.W_OK);
+};
+
 const cypressRunner = async function (runCfgPath, suiteName) {
   runCfgPath = getAbsolutePath(runCfgPath);
   const runCfg = await loadRunConfig(runCfgPath);
   runCfg.path = runCfgPath;
   runCfg.resultsDir = path.join(path.dirname(runCfgPath), '__assets__');
+  try {
+    await canAccessFolder(runCfg.resultsDir);
+  } catch (err) {
+    const fsMkdir = util.promisify(fs.mkdir);
+    await fsMkdir(runCfg.resultsDir);
+    await canAccessFolder(runCfg.resultsDir);
+  }
 
-  await installDependencies(runCfg);
+  let metrics = [];
+  let npmMetrics = await prepareNpmEnv(runCfg);
+  metrics.push(npmMetrics);
   let cypressOpts = getCypressOpts(runCfg, suiteName);
   let startTime = new Date().toISOString();
   const results = await cypress.run(cypressOpts);
   let endTime = new Date().toISOString();
 
-  return await report(results, cypressOpts.browser, runCfg, suiteName, startTime, endTime);
+  return await report(results, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
 };
 
 // For dev and test purposes, this allows us to run our Cypress Runner from command line

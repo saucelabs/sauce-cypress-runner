@@ -1,14 +1,14 @@
 jest.mock('child_process');
+jest.mock('../../../src/npm');
 
 const path = require('path');
 const fs = require('fs');
-const childProcess = require('child_process');
-const { EventEmitter } = require('events');
-const { getAbsolutePath, shouldRecordVideo, installDependencies, getArgs, getEnv, getSuite, renameScreenshot, renameAsset } = require('../../../src/utils');
+const { getAbsolutePath, shouldRecordVideo, getArgs, getEnv, getSuite, renameScreenshot, renameAsset, prepareNpmEnv, setUpNpmConfig, installNpmDependencies } = require('../../../src/utils');
+const _ = require('lodash');
+const npm = require('../../../src/npm');
 
 describe('utils', function () {
-  describe('.installDependencies', function () {
-    let mockSpawnEventEmitter;
+  describe('.prepareNpmEnv', function () {
     let backupEnv;
     const runCfg = {
       npm: {
@@ -20,46 +20,32 @@ describe('utils', function () {
     };
     beforeEach(function () {
       backupEnv = {...process.env};
-      childProcess.spawn.mockClear();
-      childProcess.spawn.mockImplementation(() => {
-        mockSpawnEventEmitter = new EventEmitter();
-        mockSpawnEventEmitter.stdout = {pipe () {}};
-        mockSpawnEventEmitter.stderr = {pipe () {}};
-        return mockSpawnEventEmitter;
-      });
     });
     afterEach(function () {
       process.env = backupEnv;
     });
-    it('should call node + npm on Sauce VM', async function () {
-      process.env.SAUCE_VM = 'truthy';
-      const installDeps = installDependencies(runCfg);
-      mockSpawnEventEmitter.emit('exit', 0);
-      await installDeps;
-      const calls = childProcess.spawn.mock.calls;
-      calls[0][0] = calls[0][0].replace(path.join(__dirname, '..', '..', '..'), '/fake/home');
-      calls[0][1][0] = calls[0][1][0].replace(path.join(__dirname, '..', '..', '..'), '/fake/home');
-      expect(calls).toMatchSnapshot();
+    it('should set right registry for npm', async function () {
+      await setUpNpmConfig('my.registry');
+      expect(npm.load.mock.calls).toMatchSnapshot();
     });
-    it('should call npm + install on non-Sauce VM', async function () {
-      const installDeps = installDependencies(runCfg);
-      mockSpawnEventEmitter.emit('exit', 0);
-      await installDeps;
-      expect(childProcess.spawn.mock.calls).toMatchSnapshot();
+    it('should call npm install', async function () {
+      await installNpmDependencies(['mypackage@1.2.3']);
+      expect(npm.install.mock.calls).toMatchSnapshot();
     });
-    it('should do nothing if no packages', async function () {
-      const res = await installDependencies({});
-      expect(res).toEqual(undefined);
+    it('should use env var for registry', async function () {
+      process.env.SAUCE_NPM_CACHE = 'npmland.io';
+      await prepareNpmEnv(runCfg);
+      expect(npm.load.mock.calls).toMatchSnapshot();
     });
-    it('should gracefully exit with exit code non-zero', function (done) {
-      const installDeps = installDependencies(runCfg);
-      mockSpawnEventEmitter.emit('exit', 1);
-      installDeps.catch(function (e) {
-        expect(e).toMatch(/Could not install NPM dependencies/);
-        done();
-      }).finally(function () {
-        throw new Error('Should not reach this statement');
-      });
+    it('should use user registry', async function () {
+      let cfg = _.clone(runCfg);
+      cfg.npm.registry = 'registryland.io';
+      await prepareNpmEnv(cfg);
+      expect(npm.load.mock.calls).toMatchSnapshot();
+    });
+    it('should use default registry', async function () {
+      await prepareNpmEnv(runCfg);
+      expect(npm.load.mock.calls).toMatchSnapshot();
     });
   });
   describe('.renameScreenshot', function () {

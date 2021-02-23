@@ -1,12 +1,15 @@
 jest.mock('cypress');
 jest.mock('fs');
 jest.mock('../../../src/sauce-reporter');
+jest.mock('../../../src/npm');
 jest.mock('../../../src/utils');
 
+require('../../../src/npm');
+const utils = require('../../../src/utils');
 const cypress = require('cypress');
 const path = require('path');
 const fs = require('fs');
-const { sauceReporter, prepareAssets } = require('../../../src/sauce-reporter');
+const SauceReporter = require('../../../src/sauce-reporter');
 const { cypressRunner } = require('../../../src/cypress-runner');
 const { loadRunConfig, getAbsolutePath } = require('../../../src/utils');
 
@@ -15,7 +18,6 @@ describe('.cypressRunner', function () {
   let cypressRunSpy;
   cypressRunSpy = jest.spyOn(cypress, 'run');
   beforeEach(function () {
-    jest.resetModules();
     process.env = { ...oldEnv };
     cypressRunSpy.mockClear();
     const cypressRunResults = {
@@ -23,8 +25,8 @@ describe('.cypressRunner', function () {
       failures: [],
     };
     cypress.run.mockImplementation(() => cypressRunResults);
-    prepareAssets.mockClear();
-    prepareAssets.mockImplementation(() => (['spec-a', 'spec-b']));
+    SauceReporter.prepareAssets.mockClear();
+    SauceReporter.prepareAssets.mockImplementation(() => (['spec-a', 'spec-b']));
     const fakeRunnerJson = {
       cypress: {
         configFile: 'fake-cypress.json',
@@ -37,11 +39,17 @@ describe('.cypressRunner', function () {
     loadRunConfig.mockImplementation(() => fakeRunnerJson);
     fs.existsSync.mockImplementation(() => true);
     fs.readFileSync.mockImplementation(() => JSON.stringify(fakeRunnerJson));
+    fs.mkdir.mockImplementation((obj, resolver) => resolver(null));
+    fs.access.mockImplementation((obj, constants, resolver) => resolver(null));
+    utils.prepareNpmEnv.mockImplementation(() => 'some metricz');
 
     // Mock the dates so that it's deterministic
     const isoDateSpy = jest.spyOn(Date.prototype, 'toISOString');
     let day = 0;
     isoDateSpy.mockImplementation(() => `Date: ${++day}`);
+  });
+  afterEach(function () {
+    SauceReporter.sauceReporter.mockReset();
   });
   it('can call Cypress.run with basic args', async function () {
     process.env.SAUCE_USERNAME = 'fake-sauce-username';
@@ -51,11 +59,7 @@ describe('.cypressRunner', function () {
     const {reporter} = cypressRunSpy.mock.calls[0][0].config;
     cypressRunSpy.mock.calls[0][0].config.reporter = path.basename(reporter);
     expect(cypressRunSpy.mock.calls).toMatchSnapshot();
-    expect(prepareAssets.mock.calls).toEqual([
-      [
-        ['spec-a', 'spec-b'], '/fake/runner/__assets__'
-      ]
-    ]);
+    expect(SauceReporter.prepareAssets.mock.calls).toMatchSnapshot();
   });
   it('can hardcode the browser path', async function () {
     process.env.SAUCE_BROWSER = 'C:/User/App/browser.exe:chrome';
@@ -67,9 +71,8 @@ describe('.cypressRunner', function () {
     process.env.SAUCE_USERNAME = 'bruno.alassia';
     process.env.SAUCE_ACCESS_KEY = 'i_l0ve_mayonnaise';
     process.env.SAUCE_BROWSER = 'firefox';
-    sauceReporter.mockClear();
     await cypressRunner('/fake/runner/path', 'fake-suite');
-    expect(sauceReporter.mock.calls).toMatchSnapshot();
+    expect(SauceReporter.sauceReporter.mock.calls).toMatchSnapshot();
   });
   it('throws error if browser is unsupported', function () {
     process.env.BROWSER_NAME = 'lynx';

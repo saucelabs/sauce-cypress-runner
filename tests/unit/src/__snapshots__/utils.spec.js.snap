@@ -17,31 +17,160 @@ Object {
 }
 `;
 
-exports[`utils .installDependencies should call node + npm on Sauce VM 1`] = `
+exports[`utils .prepareNpmEnv should call npm install 1`] = `
 Array [
   Array [
-    "/fake/home/node",
-    Array [
-      "/fake/home/node_modules/npm/bin/npm-cli",
-      "install",
-      "--no-save",
-      "left-pad@1.3.0",
-      "jquery@2",
-    ],
+    "mypackage@1.2.3",
   ],
 ]
 `;
 
-exports[`utils .installDependencies should call npm + install on non-Sauce VM 1`] = `
+exports[`utils .prepareNpmEnv should set right registry for npm 1`] = `
 Array [
   Array [
-    "npm",
-    Array [
-      "install",
-      "--no-save",
-      "left-pad@1.3.0",
-      "jquery@2",
-    ],
+    Object {
+      "audit": false,
+      "fund": false,
+      "json": false,
+      "registry": "my.registry",
+      "retry": Object {
+        "retries": 3,
+      },
+      "rollback": false,
+      "save": false,
+    },
+  ],
+]
+`;
+
+exports[`utils .prepareNpmEnv should use default registry 1`] = `
+Array [
+  Array [
+    Object {
+      "audit": false,
+      "fund": false,
+      "json": false,
+      "registry": "my.registry",
+      "retry": Object {
+        "retries": 3,
+      },
+      "rollback": false,
+      "save": false,
+    },
+  ],
+  Array [
+    Object {
+      "audit": false,
+      "fund": false,
+      "json": false,
+      "registry": "npmland.io",
+      "retry": Object {
+        "retries": 3,
+      },
+      "rollback": false,
+      "save": false,
+    },
+  ],
+  Array [
+    Object {
+      "audit": false,
+      "fund": false,
+      "json": false,
+      "registry": "registryland.io",
+      "retry": Object {
+        "retries": 3,
+      },
+      "rollback": false,
+      "save": false,
+    },
+  ],
+  Array [
+    Object {
+      "audit": false,
+      "fund": false,
+      "json": false,
+      "registry": "registryland.io",
+      "retry": Object {
+        "retries": 3,
+      },
+      "rollback": false,
+      "save": false,
+    },
+  ],
+]
+`;
+
+exports[`utils .prepareNpmEnv should use env var for registry 1`] = `
+Array [
+  Array [
+    Object {
+      "audit": false,
+      "fund": false,
+      "json": false,
+      "registry": "my.registry",
+      "retry": Object {
+        "retries": 3,
+      },
+      "rollback": false,
+      "save": false,
+    },
+  ],
+  Array [
+    Object {
+      "audit": false,
+      "fund": false,
+      "json": false,
+      "registry": "npmland.io",
+      "retry": Object {
+        "retries": 3,
+      },
+      "rollback": false,
+      "save": false,
+    },
+  ],
+]
+`;
+
+exports[`utils .prepareNpmEnv should use user registry 1`] = `
+Array [
+  Array [
+    Object {
+      "audit": false,
+      "fund": false,
+      "json": false,
+      "registry": "my.registry",
+      "retry": Object {
+        "retries": 3,
+      },
+      "rollback": false,
+      "save": false,
+    },
+  ],
+  Array [
+    Object {
+      "audit": false,
+      "fund": false,
+      "json": false,
+      "registry": "npmland.io",
+      "retry": Object {
+        "retries": 3,
+      },
+      "rollback": false,
+      "save": false,
+    },
+  ],
+  Array [
+    Object {
+      "audit": false,
+      "fund": false,
+      "json": false,
+      "registry": "registryland.io",
+      "retry": Object {
+        "retries": 3,
+      },
+      "rollback": false,
+      "save": false,
+    },
   ],
 ]
 `;
