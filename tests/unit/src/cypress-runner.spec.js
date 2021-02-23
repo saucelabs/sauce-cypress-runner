@@ -40,6 +40,7 @@ describe('.cypressRunner', function () {
     fs.existsSync.mockImplementation(() => true);
     fs.readFileSync.mockImplementation(() => JSON.stringify(fakeRunnerJson));
     fs.mkdir.mockImplementation((obj, resolver) => resolver(null));
+    fs.access.mockImplementation((obj, constants, resolver) => resolver(null));
     utils.prepareNpmEnv.mockImplementation(() => 'some metricz');
 
     // Mock the dates so that it's deterministic
