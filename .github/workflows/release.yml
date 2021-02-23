@@ -74,6 +74,8 @@ jobs:
           echo ::set-output name=version::${VERSION}
           echo ::set-output name=release_id::${RELEASE_ID}
 
+      - run: echo "${{ steps.prep.output.release_id }} - ${{  steps.prep.output.version }}"
+
       - name: fetch code
         uses: actions/checkout@v2
         with:
@@ -132,6 +134,8 @@ jobs:
           Write-Output "::set-output name=version::$tagName"
           Write-Output "::set-output name=release_id::$releaseId"
 
+      - run: Write-Output "${{ steps.prep.output.release_id }} - ${{  steps.prep.output.version }}"
+
       - name: fetch code
         uses: actions/checkout@v2
         with:
@@ -188,6 +192,8 @@ jobs:
           fi
           echo ::set-output name=version::${VERSION}
           echo ::set-output name=release_id::${RELEASE_ID}
+
+      - run: echo "${{ steps.prep.output.release_id }} - ${{  steps.prep.output.version }}"
 
       - name: fetch code
         uses: actions/checkout@v2
