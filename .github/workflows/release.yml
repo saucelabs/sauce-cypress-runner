@@ -11,10 +11,6 @@ on:
         description: 'Pre-Release flavor. Provide one to create a pre-release.'
         required: false
         default: ''
-      branch:
-        description: 'Base branch'
-        required: true
-        default: 'master'
 
 jobs:
   create-release-draft:
@@ -23,7 +19,7 @@ jobs:
       - name: fetch code
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.inputs.branch }}
+          ref: ${{ github.ref }}
           fetch-depth: 0
 
       - name: Setup Node version
