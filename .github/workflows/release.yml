@@ -9,7 +9,7 @@ on:
         default: 'patch'
       preRelease:
         description: 'Pre-Release flavor. Provide one to create a pre-release.'
-        required: true
+        required: false
         default: ''
       branch:
         description: 'Base branch'
