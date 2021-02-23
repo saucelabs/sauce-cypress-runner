@@ -78,17 +78,23 @@ const getCypressOpts = function (runCfg, suiteName) {
   return opts;
 };
 
+const canAccessFolder = async function (file) {
+  const fsAccess = util.promisify(fs.access);
+  await fsAccess(file, fs.constants.R_OK | fs.constants.W_OK);
+}
+
 const cypressRunner = async function (runCfgPath, suiteName) {
   runCfgPath = getAbsolutePath(runCfgPath);
   const runCfg = await loadRunConfig(runCfgPath);
   runCfg.path = runCfgPath;
   runCfg.resultsDir = path.join(path.dirname(runCfgPath), '__assets__');
-  const fsMkdir = util.promisify(fs.mkdir);
   try {
-  	await fsMkdir(runCfg.resultsDir);
+    await canAccessFolder(runCfg.resultsDir);
   } catch (err) {
-	console.error(`Failed to create resultsDir: ${runCfg.resultsDir}`);
-  }
+    const fsMkdir = util.promisify(fs.mkdir);
+    await fsMkdir(runCfg.resultsDir);
+    await canAccessFolder(runCfg.resultsDir);
+ }
 
   let metrics = [];
   let npmMetrics = await prepareNpmEnv(runCfg);
