@@ -41,6 +41,7 @@ function getDefaultRegistry () {
 
 async function setUpNpmConfig (registry) {
   console.log('Preparing npm environment');
+  console.log(registry);
   await npm.load({
     registry,
     retry: { retries: 3 },
@@ -61,6 +62,7 @@ async function prepareNpmEnv (runCfg) {
   const npmMetrics = {
     name: 'npm_metrics.json', data: {}
   };
+  console.log(runCfg);
   const npmConfig = runCfg && runCfg.npm && runCfg.npm.packages || {};
   const packageList = Object.entries(npmConfig).map(([pkg, version]) => `${pkg}@${version}`);
   if (packageList.length === 0) {
