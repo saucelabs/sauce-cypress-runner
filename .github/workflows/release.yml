@@ -63,7 +63,7 @@ jobs:
           VERSION=$(curl -s -H "Authorization: token ${{ github.token }}" \
                       https://api.github.com/repos/${{ github.repository }}/releases | \
                       jq -r "[.[] | select(.draft == true) | select(.body | contains(\"- jobId: ${{ github.run_id }}\\r\\n\"))] | first | .tag_name")
-          RELEASE_ID=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
+          RELEASE_ID=$(curl -s -H "Authorization: token ${{ github.token }}" \
                       https://api.github.com/repos/${{ github.repository }}/releases | \
                       jq -r "[.[] | select(.draft == true) | select(.body | contains(\"- jobId: ${{ github.run_id }}\\r\\n\"))] | first | .id")
 
@@ -107,7 +107,7 @@ jobs:
       - name: Find matching draft tag
         id: prep
         run: |
-          $res = Invoke-WebRequest -Uri "https://api.github.com/repos/${{ github.repository }}/releases" -Headers @{'Authorization' = "token ${{ github.token }}}"}
+          $res = Invoke-WebRequest -Uri "https://api.github.com/repos/${{ github.repository }}/releases" -Headers @{'Authorization' = "token ${{ github.token }}"}
           $jsonObj = ConvertFrom-Json $([String]::new($res.Content))
 
           $selectedRelease = $null
@@ -178,7 +178,7 @@ jobs:
           VERSION=$(curl -s -H "Authorization: token ${{ github.token }}" \
                       https://api.github.com/repos/${{ github.repository }}/releases | \
                       jq -r "[.[] | select(.draft == true) | select(.body | contains(\"- jobId: ${{ github.run_id }}\\r\\n\"))] | first | .tag_name")
-          RELEASE_ID=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
+          RELEASE_ID=$(curl -s -H "Authorization: token ${{ github.token }}" \
                       https://api.github.com/repos/${{ github.repository }}/releases | \
                       jq -r "[.[] | select(.draft == true) | select(.body | contains(\"- jobId: ${{ github.run_id }}\\r\\n\"))] | first | .id")
 
@@ -223,7 +223,7 @@ jobs:
           VERSION=$(curl -s -H "Authorization: token ${{ github.token }}" \
                       https://api.github.com/repos/${{ github.repository }}/releases | \
                       jq -r "[.[] | select(.draft == true) | select(.body | contains(\"- jobId: ${{ github.run_id }}\\r\\n\"))] | first | .tag_name")
-          RELEASE_ID=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
+          RELEASE_ID=$(curl -s -H "Authorization: token ${{ github.token }}" \
                       https://api.github.com/repos/${{ github.repository }}/releases | \
                       jq -r "[.[] | select(.draft == true) | select(.body | contains(\"- jobId: ${{ github.run_id }}\\r\\n\"))] | first | .id")
 
