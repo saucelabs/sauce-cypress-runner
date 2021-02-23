@@ -86,15 +86,18 @@ jobs:
           ref: ${{ steps.prep.output.version }}
 
       - name: Set up Docker Buildx
+        working-directory: main
         uses: docker/setup-buildx-action@v1      
       # -
       #   name: Login to DockerHub
+      #   working-directory: main
       #   uses: docker/login-action@v1
       #   with:
       #     username: ${{ secrets.DOCKER_USERNAME }}
       #     password: ${{ secrets.DOCKER_PASSWORD }}
       # -
       #   name: Build and push
+      #   working-directory: main
       #   uses: docker/build-push-action@v2
       #   with:
       #     push: true
@@ -134,14 +137,18 @@ jobs:
           node-version: 14.x
 
       - run: npm ci --production
+        working-directory: main
 
       - name: Bundle Directory
+        working-directory: main
         run: bash ./scripts/bundle.sh
 
       - name: List bundle contents
+        working-directory: main
         run: ls -R bundle/
 
       - name: Archive bundle
+        working-directory: main
         uses: azure/powershell@v1
         with:
           inlineScript: |
@@ -149,6 +156,7 @@ jobs:
           azPSVersion: '3.1.0'
 
       - name: Upload Release Asset
+        working-directory: main
         id: upload-release-asset 
         uses: actions/upload-release-asset@v1
         env:
@@ -187,9 +195,11 @@ jobs:
           node-version: 14.x
 
       - name: Archive template
+        working-directory: main
         run: cd .saucetpl && tar -czf ../saucetpl.tar.gz .
 
       - name: Upload Template Asset
+        working-directory: main
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
