@@ -46,8 +46,7 @@ jobs:
         if: ${{ github.event.inputs.preRelease != '' }}
         run: npx release-it pre${{github.event.inputs.releaseType}} --preReleaseId=${{github.event.inputs.preRelease}} --github.preRelease
         env:
-          GITHUB_RUN_ID: ${{github.run_id}}
-          GITHUB_TOKEN: ${{ secrets.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Generate Release if there is no flavour
       -
@@ -55,8 +54,7 @@ jobs:
         if: ${{ github.event.inputs.preRelease == '' }}
         run: npx release-it ${{github.event.inputs.releaseType}} --github.release
         env:
-          GITHUB_RUN_ID: ${{github.run_id}}
-          GITHUB_TOKEN: ${{ secrets.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   release-docker:
     runs-on: ubuntu-latest
