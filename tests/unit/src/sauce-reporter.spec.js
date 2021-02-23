@@ -1,7 +1,9 @@
 jest.mock('fs');
 jest.mock('webdriverio');
 jest.mock('saucelabs');
+jest.mock('../../../src/npm');
 const fs = require('fs');
+require('../../../src/npm');
 const webdriverio = require('webdriverio');
 const SauceLabs = require('saucelabs');
 const SauceReporter = require('../../../src/sauce-reporter');
@@ -27,7 +29,7 @@ describe('SauceReporter', function () {
       fs.copyFileSync.mockReturnValue(true);
       fs.readdirSync.mockReturnValue(['fake/path/to/screenshot-1.png', 'fake/path/to/screenshot-2.png']);
       SauceReporter.mergeVideos = jest.fn().mockImplementation(async function () {});
-      const res = await SauceReporter.prepareAssets(['spec/file.test.js'], 'results/');
+      const res = await SauceReporter.prepareAssets(['spec/file.test.js'], 'results/', []);
       expect(fs.readdirSync.mock.calls).toMatchSnapshot();
       expect(res).toMatchSnapshot();
     });
@@ -35,7 +37,7 @@ describe('SauceReporter', function () {
       fs.existsSync.mockReturnValue(false);
       fs.copyFileSync.mockReturnValue(true);
       fs.mkdtempSync.mockReturnValue('tmp/folder');
-      const res = await SauceReporter.prepareAssets('spec/file', 'results/');
+      const res = await SauceReporter.prepareAssets('spec/file', 'results/', []);
       expect(res).toEqual([]);
     });
   });

@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const SauceLabs = require('saucelabs').default;
+const _ = require('lodash');
 const ffmpeg = require('fluent-ffmpeg');
 const { promisify } = require('util');
 const ffprobe = promisify(ffmpeg.ffprobe);
@@ -152,7 +153,7 @@ SauceReporter.createJobLegacy = async (api, region, tld, browserName, testName, 
   return sessionId || 0;
 };
 
-SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
+SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics) => {
   const assets = [];
   const videos = [];
 
@@ -160,6 +161,14 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder) => {
   let clog = 'console.log';
   if (fs.existsSync(clog)) {
     assets.push(clog);
+  }
+  for (let [, mt] of Object.entries(metrics)) {
+    if (_.isEmpty(mt.data)) {
+      continue;
+    }
+    let mtFile = path.join(resultsFolder, mt.name);
+    fs.writeFileSync(mtFile, JSON.stringify(mt.data, ' ', 2));
+    assets.push(mtFile);
   }
 
   for (let specFile of specFiles) {

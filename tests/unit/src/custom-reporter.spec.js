@@ -1,5 +1,6 @@
 jest.mock('mkdirp');
 jest.mock('fs');
+jest.mock('../../../src/utils');
 const mkdirp = require('mkdirp');
 const fs = require('fs');
 const path = require('path');
