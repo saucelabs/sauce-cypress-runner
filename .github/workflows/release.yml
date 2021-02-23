@@ -75,7 +75,7 @@ jobs:
 
       - name: Find matching draft tag
         id: prep
-        run: ./tools/.github/helps/find-draft-tag.sh
+        run: ./tools/.github/helpers/find-draft-tag.sh
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -118,7 +118,7 @@ jobs:
 
       - name: Find matching draft tag
         id: prep
-        run: ./tools/.github/helps/find-draft-tag.ps1
+        run: ./tools/.github/helpers/find-draft-tag.ps1
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -171,7 +171,7 @@ jobs:
 
       - name: Find matching draft tag
         id: prep
-        run: ./tools/.github/helps/find-draft-tag.ps1
+        run: ./tools/.github/helpers/find-draft-tag.ps1
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -212,7 +212,7 @@ jobs:
 
       - name: Find matching draft tag
         id: prep
-        run: ./tools/.github/helps/find-draft-tag.ps1
+        run: ./tools/.github/helpers/find-draft-tag.ps1
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
