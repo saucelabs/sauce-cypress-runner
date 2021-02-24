@@ -11,10 +11,6 @@ on:
         description: 'Pre-Release - set value if this is a pre-release'
         required: false
         default: ''
-      preReleaseType:
-        description: 'Pre-Release type - major, minor or patch - keep empty to update same flavor'
-        required: false
-        default: ''
       preReleaseFlavor:
         description: 'Pre-Release flavor - rc, beta, or anything'
         required: false
@@ -49,22 +45,21 @@ jobs:
         run: |
           RELEASE_TYPE=${{ github.event.inputs.releaseType }}
           PRE_RELEASE=${{ github.event.inputs.preRelease }}
-          PRE_RELEASE_TYPE=${{ github.event.inputs.preReleaseType }}
           PRE_RELEASE_FLAVOR=${{ github.event.inputs.preReleaseFlavor }}
 
-          if [ -z "${RELEASE_TYPE}" ] && [ -z "${PRE_RELEASE}" ] && [ -z "${PRE_RELEASE_TYPE}" ] && [ "${PRE_RELEASE_FLAVOR}" ];then
+          if [ -z "${RELEASE_TYPE}" ] && [ -z "${PRE_RELEASE}" ] && [ "${PRE_RELEASE_FLAVOR}" ];then
             echo "No release type provided."
             exit 1
           fi
 
           if [ -n "${PRE_RELEASE}" ];then
-            if [ -n "${{ github.event.inputs.preReleaseFlavor }}" ];then
-              PRE_RELEASE_ID=--preReleaseId=${{ github.event.inputs.preReleaseFlavor }}
+            if [ -n "${PRE_RELEASE_FLAVOR}" ];then
+              PRE_RELEASE_FLAVOR_CLI=--preReleaseId=${PRE_RELEASE_FLAVOR}
             fi
-            if [ -n "${{ github.event.inputs.preReleaseType }}" ];then
-              PRE_RELEASE_TYPE=--preReleaseId=${{ github.event.inputs.preReleaseType }}
+            if [ -n "${RELEASE_TYPE}" ];then
+              PRE_RELEASE_TYPE=-pre${RELEASE_TYPE}
             fi
-            npx release-it ${PRE_RELEASE_TYPE} ${PRE_RELEASE_ID} --github.preRelease
+            npx release-it ${PRE_RELEASE_TYPE} ${PRE_RELEASE_FLAVOR_CLI} --github.preRelease
           fi
 
           if [ -z "${PRE_RELEASE}" ];then
