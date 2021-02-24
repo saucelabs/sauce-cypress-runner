@@ -4,7 +4,6 @@
     },
     "git": {
         "commitMessage": "Release v${version}",
-        "requireBranch": "master",
         "tag": true,
         "tagName": "v${version}"
     },
