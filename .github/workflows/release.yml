@@ -45,14 +45,10 @@ jobs:
           fi
 
           if [ -n "${{ github.event.inputs.preReleaseFlavor }}" ];then
-            if [ -n "${{ github.event.inputs.releaseType }}" ];then
-              PRE_RELEASE_TYPE=pre
-            fi
-
-            PRE_RELEASE_ARGS="--preReleaseId=${{ github.event.inputs.preReleaseFlavor }} --github.preRelease"
+            PRE_RELEASE_ARGS="--preRelease=${{ github.event.inputs.preReleaseFlavor }} --github.preRelease"
           fi
 
-          npx release-it ${PRE_RELEASE_TYPE}${{ github.event.inputs.releaseType }} ${PRE_RELEASE_ARGS}
+          npx release-it ${{ github.event.inputs.releaseType }} ${PRE_RELEASE_ARGS}
 
   release-docker:
     runs-on: ubuntu-latest
