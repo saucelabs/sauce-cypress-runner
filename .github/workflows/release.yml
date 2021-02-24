@@ -49,7 +49,7 @@ jobs:
               PRE_RELEASE_TYPE=pre
             fi
 
-            PRE_RELEASE_ARGS="--preReleaseId=${{ github.event.inputs.preReleaseFlavor }}--github.preRelease"
+            PRE_RELEASE_ARGS="--preReleaseId=${{ github.event.inputs.preReleaseFlavor }} --github.preRelease"
           fi
 
           npx release-it ${PRE_RELEASE_TYPE}${{ github.event.inputs.releaseType }} ${PRE_RELEASE_ARGS}
