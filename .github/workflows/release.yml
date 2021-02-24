@@ -5,10 +5,18 @@ on:
     inputs:
       releaseType:
         description: 'Release type - major, minor or patch'
-        required: true
-        default: 'patch'
+        required: false
+        default: ''
       preRelease:
-        description: 'Pre-Release flavor. Provide one to create a pre-release.'
+        description: 'Pre-Release - set value if this is a pre-release'
+        required: false
+        default: ''
+      preReleaseType:
+        description: 'Pre-Release type - major, minor or patch - keep empty to update same flavor'
+        required: false
+        default: ''
+      preReleaseFlavor:
+        description: 'Pre-Release flavor - rc, beta, or anything'
         required: false
         default: ''
 
@@ -35,19 +43,33 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Generate PreRelease if there is a flavour
-      - name: PreRelease
-        if: ${{ github.event.inputs.preRelease != '' }}
-        run: npx release-it pre${{ github.event.inputs.releaseType }} --preReleaseId=${{ github.event.inputs.preRelease }} --github.preRelease
+      - name: generate (pre-)release
         env:
           GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          RELEASE_TYPE=${{ github.event.inputs.releaseType }}
+          PRE_RELEASE=${{ github.event.inputs.preRelease }}
+          PRE_RELEASE_TYPE=${{ github.event.inputs.preReleaseType }}
+          PRE_RELEASE_FLAVOR=${{ github.event.inputs.preReleaseFlavor }}
 
-      # Generate Release if there is no flavour
-      - name: Release
-        if: ${{ github.event.inputs.preRelease == '' }}
-        run: npx release-it ${{github.event.inputs.releaseType}}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+          if [ -z "${RELEASE_TYPE}" ] && [ -z "${PRE_RELEASE}" ] && [ -z "${PRE_RELEASE_TYPE}" ] && [ "${PRE_RELEASE_FLAVOR}" ];then
+            echo "No release type provided."
+            exit 1
+          fi
+
+          if [ -n "${PRE_RELEASE}" ];then
+            if [ -n "${{ github.event.inputs.preReleaseFlavor }}" ];then
+              PRE_RELEASE_ID=--preReleaseId=${{ github.event.inputs.preReleaseFlavor }}
+            fi
+            if [ -n "${{ github.event.inputs.preReleaseType }}" ];then
+              PRE_RELEASE_TYPE=--preReleaseId=${{ github.event.inputs.preReleaseType }}
+            fi
+            npx release-it ${PRE_RELEASE_TYPE} ${PRE_RELEASE_ID} --github.preRelease
+          fi
+
+          if [ -z "${PRE_RELEASE}" ];then
+            npx release-it ${{github.event.inputs.releaseType}}
+          fi
 
   release-docker:
     runs-on: ubuntu-latest
