@@ -39,13 +39,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          if [ -z "${{ github.event.inputs.releaseType }}" ] && [ "${{ github.event.inputs.preReleaseFlavor }}" ];then
+          if [ -z "${{ github.event.inputs.releaseType }}" ] && [ -z "${{ github.event.inputs.preReleaseFlavor }}" ];then
             echo "No release type provided."
             exit 1
           fi
 
-          if [ -n "${PRE_RELEASE_FLAVOR}" ];then
-            if [ -n "${{ github.event.inputs.preReleaseFlavor }}" ];then
+          if [ -n "${{ github.event.inputs.preReleaseFlavor }}" ];then
+            if [ -n "${{ github.event.inputs.releaseType }}" ];then
               PRE_RELEASE_TYPE=pre
             fi
 
