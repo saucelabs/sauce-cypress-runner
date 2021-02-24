@@ -23,7 +23,6 @@
     "lodash": "^4.17.20",
     "mocha-junit-reporter": "^2.0.0",
     "npm": "^6.14.9",
-    "sauce-testrunner-utils": "^0.0.3",
     "saucelabs": "^4.6.3",
     "typescript": "^3.9.7",
     "webdriverio": "^6.10.10",
