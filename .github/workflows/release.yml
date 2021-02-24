@@ -39,19 +39,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          RELEASE_TYPE=${{ github.event.inputs.releaseType }}
-          PRE_RELEASE_FLAVOR=${{ github.event.inputs.preReleaseFlavor }}
-
-          if [ -z "${RELEASE_TYPE}" ] && [ "${PRE_RELEASE_FLAVOR}" ];then
+          if [ -z "${{ github.event.inputs.releaseType }}" ] && [ "${{ github.event.inputs.preReleaseFlavor }}" ];then
             echo "No release type provided."
             exit 1
           fi
 
           if [ -n "${PRE_RELEASE_FLAVOR}" ];then
-            PRE_RELEASE_ARGS="--preReleaseId=${PRE_RELEASE_FLAVOR} --github.preRelease"
+            if [ -n "${{ github.event.inputs.preReleaseFlavor }}" ];then
+              PRE_RELEASE_TYPE=pre
+            fi
+
+            PRE_RELEASE_ARGS="--preReleaseId=${{ github.event.inputs.preReleaseFlavor }}--github.preRelease"
           fi
 
-          npx release-it ${RELEASE_TYPE} ${PRE_RELEASE_ARGS}
+          npx release-it ${PRE_RELEASE_TYPE}${{ github.event.inputs.releaseType }} ${PRE_RELEASE_ARGS}
 
   release-docker:
     runs-on: ubuntu-latest
