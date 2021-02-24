@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## Gather Changelog
-CHANGELOG=$(git --no-pager log --no-notes --no-decorate --oneline  v${1}...v${2})
+CHANGELOG=$(git --no-pager log --no-notes --no-decorate --oneline  v${1}...HEAD)
 
 ## Gather Framework version
 CYPRESS_VER=$(< package-lock.json jq -r '.dependencies["cypress"].version')
