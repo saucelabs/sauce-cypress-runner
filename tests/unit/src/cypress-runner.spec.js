@@ -1,17 +1,15 @@
 jest.mock('cypress');
 jest.mock('fs');
+jest.mock('sauce-runner-utils');
 jest.mock('../../../src/sauce-reporter');
-jest.mock('../../../src/npm');
-jest.mock('../../../src/utils');
 
-require('../../../src/npm');
-const utils = require('../../../src/utils');
+const utils = require('sauce-runner-utils');
+const { loadRunConfig, getAbsolutePath } = require('sauce-runner-utils');
 const cypress = require('cypress');
 const path = require('path');
 const fs = require('fs');
 const SauceReporter = require('../../../src/sauce-reporter');
 const { cypressRunner } = require('../../../src/cypress-runner');
-const { loadRunConfig, getAbsolutePath } = require('../../../src/utils');
 
 describe('.cypressRunner', function () {
   let oldEnv = { ...process.env };

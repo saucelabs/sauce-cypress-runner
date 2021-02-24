@@ -1,9 +1,7 @@
 jest.mock('fs');
 jest.mock('webdriverio');
 jest.mock('saucelabs');
-jest.mock('../../../src/npm');
 const fs = require('fs');
-require('../../../src/npm');
 const webdriverio = require('webdriverio');
 const SauceLabs = require('saucelabs');
 const SauceReporter = require('../../../src/sauce-reporter');

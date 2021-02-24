@@ -1,6 +1,6 @@
 jest.mock('mkdirp');
 jest.mock('fs');
-jest.mock('../../../src/utils');
+jest.mock('sauce-runner-utils');
 const mkdirp = require('mkdirp');
 const fs = require('fs');
 const path = require('path');
