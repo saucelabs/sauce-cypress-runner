@@ -7,6 +7,7 @@ const ffmpeg = require('fluent-ffmpeg');
 const { promisify } = require('util');
 const ffprobe = promisify(ffmpeg.ffprobe);
 const utils = require('./utils');
+const { updateExportedValueToSaucectl } = require('./saucectl-exporter');
 
 const { remote } = require('webdriverio');
 
@@ -289,7 +290,7 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
   const jobDetailsUrl = `https://app.${domain}/tests/${sessionId}`;
   console.log(`\nOpen job details page: ${jobDetailsUrl}\n`);
 
-  utils.updateExportedValueToSaucectl({ jobDetailsUrl, reportingSucceeded });
+  updateExportedValueToSaucectl({ jobDetailsUrl, reportingSucceeded });
 };
 
 SauceReporter.mergeVideos = async (videos, target) => {
