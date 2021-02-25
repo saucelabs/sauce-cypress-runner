@@ -13,13 +13,11 @@ jobs:
     #needs: release-windows-bundle
     steps:
       - uses: actions/checkout@master
-      - name: Install SauceCtl
-        run: npm install -g saucectl
+      - name: Install Deps
+        run: npm ci
       - name: SauceCtl Kitchen Sink
         working-directory: ./tests/kitchen-sink-tests
         # TODO: Add runner_version as a parameter so that it can pull from github releases
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
           saucectl run --test-env sauce --ccy 5 --region us-west-1
-
-          
