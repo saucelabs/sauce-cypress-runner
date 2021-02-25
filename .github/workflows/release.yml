@@ -1,14 +1,10 @@
-
-
-name: Docker Release
+name: Release Version
 
 on:
-  #push:
-    #tags:
-      #- 'v*.*.*'
+  push:
+    branches: [ master ]
   pull_request:
-    branches:
-      - master
+    branches: [ master ]
 
 jobs:
   # Post Deploy Tests
