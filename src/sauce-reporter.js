@@ -234,6 +234,7 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
     tld
   });
 
+  let reportingSucceeded = false;
   let sessionId;
   if (process.env.ENABLE_DATA_STORE) {
     sessionId = await SauceReporter.createJobShell(api, testName, metadata.tags, browserName);
@@ -243,7 +244,8 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
 
   if (!sessionId) {
     console.error('Unable to retrieve test entry. Assets won\'t be uploaded.');
-    return 'unable to retrieve test';
+    utils.updateExportedValueToSaucectl({ reportingSucceeded });
+    return;
   }
 
   // upload assets
@@ -271,6 +273,7 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
         (e) => console.log('Failed to update job status', e)
     )
   ]);
+  reportingSucceeded = true;
 
   let domain;
 
@@ -286,11 +289,7 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
   const jobDetailsUrl = `https://app.${domain}/tests/${sessionId}`;
   console.log(`\nOpen job details page: ${jobDetailsUrl}\n`);
 
-  // Store file containing job-details url.
-  // Path is similar to com.saucelabs.job-info LABEL in Dockerfile.
-  fs.writeFileSync('/tmp/output.json', JSON.stringify({
-    jobDetailsUrl,
-  }));
+  utils.updateExportedValueToSaucectl({ jobDetailsUrl, reportingSucceeded });
 };
 
 SauceReporter.mergeVideos = async (videos, target) => {
