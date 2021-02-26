@@ -7,11 +7,15 @@ const ffmpeg = require('fluent-ffmpeg');
 const { promisify } = require('util');
 const ffprobe = promisify(ffmpeg.ffprobe);
 const utils = require('./utils');
-const { updateExportedValueToSaucectl } = require('./saucectl-exporter');
+const { updateExportedValue } = require('sauce-testrunner-utils').saucectl;
 
 const { remote } = require('webdriverio');
 
 const SauceReporter = {};
+
+// Path has to match the value of the Dockerfile label com.saucelabs.job-info !
+SauceReporter.SAUCECTL_OUTPUT_FILE = '/tmp/output.json';
+
 
 // NOTE: this function is not available currently.
 // It will be ready once data store API actually works.
@@ -245,7 +249,7 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
 
   if (!sessionId) {
     console.error('Unable to retrieve test entry. Assets won\'t be uploaded.');
-    updateExportedValueToSaucectl({ reportingSucceeded });
+    updateExportedValue(SauceReporter.SAUCECTL_OUTPUT_FILE, { reportingSucceeded });
     return;
   }
 
@@ -290,7 +294,7 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
   const jobDetailsUrl = `https://app.${domain}/tests/${sessionId}`;
   console.log(`\nOpen job details page: ${jobDetailsUrl}\n`);
 
-  updateExportedValueToSaucectl({ jobDetailsUrl, reportingSucceeded });
+  updateExportedValue(SauceReporter.SAUCECTL_OUTPUT_FILE, { jobDetailsUrl, reportingSucceeded });
 };
 
 SauceReporter.mergeVideos = async (videos, target) => {
