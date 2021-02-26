@@ -1,13 +1,11 @@
+
+
 name: Release Version
 
 on:
   push:
     tags:
       - 'v*.*.*'
-
-env:
-  SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
-  SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
 
 jobs:
   release-github:
@@ -157,6 +155,9 @@ jobs:
   post-release-windows-tests:
     runs-on: ubuntu-latest
     needs: release-windows-bundle
+    env:
+      SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+      SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
     steps:
       - uses: actions/checkout@master
       - name: Install Deps
@@ -167,3 +168,4 @@ jobs:
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
           npx saucectl run --test-env sauce --ccy 5 --region us-west-1
+
