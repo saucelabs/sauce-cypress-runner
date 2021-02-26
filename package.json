@@ -1,6 +1,6 @@
 {
   "name": "sauce-cypress-runner",
-  "version": "5.7.3",
+  "version": "0.0.0",
   "description": "Sauce Labs test runner image for saucectl to run Cypress tests using Sauce Labs Testrunner Toolkit.",
   "author": "devx <dev@saucelabs.com>",
   "license": "MIT",
