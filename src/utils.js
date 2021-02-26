@@ -157,5 +157,5 @@ function renameAsset (specFile, oldFilePath, resultsFolder) {
 module.exports = {
   getAbsolutePath, shouldRecordVideo, loadRunConfig,
   prepareNpmEnv, setUpNpmConfig, installNpmDependencies,
-  getArgs, getEnv, getSuite, renameScreenshot, renameAsset
+  getArgs, getEnv, getSuite, renameScreenshot, renameAsset,
 };
