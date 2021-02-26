@@ -233,7 +233,7 @@ jobs:
                       https://api.github.com/repos/${{ github.repository }}/releases | \
                       jq -r "[.[] | select(.draft == true) | select(.body | contains(\"- jobId: ${{ github.run_id }}\\n\"))] | first | .id")
 
-          if [ "${VERSION}" = "" ];then
+          if [ "${RELEASE_ID}" = "" ];then
               echo "No draft version found"
               exit 1
           fi
