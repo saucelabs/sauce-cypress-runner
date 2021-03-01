@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const _ = require('lodash');
 const yargs = require('yargs/yargs');
-const npm = require('./npm');
+const npm = require('sauce-testrunner-utils');
 
 const DEFAULT_REGISTRY = 'https://registry.npmjs.org';
 
