@@ -56,8 +56,8 @@
     "husky": "^4.3.6",
     "jest": "^26.6.3",
     "mocha": "^8.2.1",
-    "saucectl": "^0.31.0",
     "release-it": "^14.4.0",
+    "saucectl": "^0.31.2",
     "typescript": "^3.9.7"
   },
   "husky": {
