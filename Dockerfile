@@ -29,7 +29,9 @@ COPY --chown=seluser:seluser . .
 ENV CYPRESS_CACHE_FOLDER=/home/seluser/.cache/Cypress
 
 # Let saucectl know where to mount files
-LABEL com.saucelabs.project-dir=/home/seluser/
+LABEL com.saucelabs.project-dir=/home/seluser/__project__/
+ENV SAUCE_PROJECT_DIR=/home/seluser/__project__/
+
 LABEL com.saucelabs.job-info=/tmp/output.json
 RUN echo "{}" > /tmp/output.json
 

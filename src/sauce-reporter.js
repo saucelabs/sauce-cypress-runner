@@ -6,7 +6,7 @@ const _ = require('lodash');
 const ffmpeg = require('fluent-ffmpeg');
 const { promisify } = require('util');
 const ffprobe = promisify(ffmpeg.ffprobe);
-const utils = require('./utils');
+const utils = require('sauce-testrunner-utils');
 const { updateExportedValue } = require('sauce-testrunner-utils').saucectl;
 
 const { remote } = require('webdriverio');
