@@ -49,7 +49,7 @@ const getCypressOpts = function (runCfg, suiteName) {
   const cypressCfg = JSON.parse(fs.readFileSync(cypressCfgFile, 'utf8'));
 
   let opts = {
-    project: process.env.SAUCE_PROJECT_DIR || path.dirname(getAbsolutePath(cypressCfgFile)),
+    project: path.dirname(getAbsolutePath(runCfg.path)),
     browser: process.env.SAUCE_BROWSER || suite.browser || 'chrome',
     configFile: cypressCfgFile,
     config: {
