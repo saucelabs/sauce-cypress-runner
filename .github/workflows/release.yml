@@ -228,9 +228,7 @@ jobs:
 
   publish-release:
     runs-on: ubuntu-latest
-    # TODO: DO NOT MERGE LIKE THIS!!!!!
-    #needs: [release-docker, release-template-bundle, release-windows-bundle]
-    needs: [release-template-bundle, release-windows-bundle]
+    needs: [release-docker, release-template-bundle, release-windows-bundle]
     steps:
       - name: Find matching draft tag
         id: prep
