@@ -25,22 +25,14 @@ jobs:
             BUILD_TAG=pipeline-test
       
       # Checkout the latest saucectl
-      - uses: actions/checkout@v2
-        with:
-          repository: saucelabs/saucectl
-          path: saucectl
+      - run: npm ci
+        name: Install dependencies
 
-      # Build saucectl
-      - run: pushd saucectl && make build && popd
-        name: Build Saucectl and run E2E tests
+      # Run kitchen sink tests
+      - run: npx saucectl run
+        working-directory: ./tests/kitchen-sink-tests
+        name: Run kitchen sink tests
 
-      # Run e2e tests
-      # TODO: Re-enable these when saucectl accepts relative paths
-      #- run: bash ./tests/e2e/run.sh
-        #env:
-          #SKIP_CI: true
-          #SAUCE_CTL_BINARY: ./saucectl/saucectl
-        #name: Build Saucectl and run E2E tests
   build-ubuntu-bundle-and-test:
     runs-on: ubuntu-latest
     steps:
