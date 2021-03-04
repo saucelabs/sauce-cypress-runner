@@ -36,7 +36,7 @@ LABEL com.saucelabs.project-dir=/home/seluser/__project__/
 ENV SAUCE_PROJECT_DIR=/home/seluser/__project__/
 
 # Let saucectl know what command to execute
-LABEL com.saucelabs.executable=/home/seluser/bin/cypress
+LABEL com.saucelabs.entrypoint=/home/seluser/bin/cypress
 
 LABEL com.saucelabs.job-info=/tmp/output.json
 RUN echo "{}" > /tmp/output.json
