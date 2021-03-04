@@ -1,7 +1,7 @@
 const { sauceReporter, prepareAssets } = require('./sauce-reporter');
 const path = require('path');
 const fs = require('fs');
-const { shouldRecordVideo, getAbsolutePath, loadRunConfig, prepareNpmEnv, getArgs, getEnv } = require('./utils');
+const { shouldRecordVideo, getAbsolutePath, loadRunConfig, prepareNpmEnv, getArgs, getEnv } = require('sauce-testrunner-utils');
 const cypress = require('cypress');
 const util = require('util');
 const _ = require('lodash');
@@ -50,7 +50,7 @@ const getCypressOpts = function (runCfg, suiteName) {
   const cypressCfg = JSON.parse(fs.readFileSync(cypressCfgFile, 'utf8'));
 
   let opts = {
-    project: path.dirname(runCfg.path),
+    project: path.dirname(getAbsolutePath(runCfg.path)),
     browser: process.env.SAUCE_BROWSER || suite.browser || 'chrome',
     configFile: cypressCfgFile,
     config: {
