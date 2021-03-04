@@ -23,15 +23,6 @@ jobs:
           push: false
           build-args: |
             BUILD_TAG=pipeline-test
-      
-      # Checkout the latest saucectl
-      - run: npm ci
-        name: Install dependencies
-
-      # Run kitchen sink tests
-      - run: npx saucectl run
-        working-directory: ./tests/kitchen-sink-tests
-        name: Run kitchen sink tests
 
   build-ubuntu-bundle-and-test:
     runs-on: ubuntu-latest
