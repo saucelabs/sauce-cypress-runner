@@ -22,6 +22,8 @@ COPY package.json .
 COPY package-lock.json .
 RUN npm ci
 
+RUN mkdir -p ~/__project__
+
 COPY --chown=seluser:seluser . .
 # Cypress caches its binary by default in ~/.cache/Cypress
 # However, running the container in CI may result in a different active user and therefore home folder.
@@ -36,7 +38,6 @@ ENV SAUCE_PROJECT_DIR=/home/seluser/__project__/
 # Let saucectl know what command to execute
 LABEL com.saucelabs.executable=/home/seluser/bin/cypress
 
-# Let saucectl know where to retrie infos
 LABEL com.saucelabs.job-info=/tmp/output.json
 RUN echo "{}" > /tmp/output.json
 
