@@ -24,27 +24,6 @@ jobs:
           build-args: |
             BUILD_TAG=pipeline-test
 
-      - uses: actions/setup-go@v2
-        with:
-          go-version: '1.16.0'
-      
-      # Checkout the latest saucectl
-      - uses: actions/checkout@v2
-        with:
-          repository: saucelabs/saucectl
-          path: saucectl
-
-      # Build saucectl
-      - run: pushd saucectl && make build && popd
-        name: Build Saucectl and run E2E tests
-
-      # Run e2e tests
-      # TODO: Re-enable these when saucectl accepts relative paths
-      #- run: bash ./tests/e2e/run.sh
-        #env:
-          #SKIP_CI: true
-          #SAUCE_CTL_BINARY: ./saucectl/saucectl
-        #name: Build Saucectl and run E2E tests
   build-ubuntu-bundle-and-test:
     runs-on: ubuntu-latest
     steps:
