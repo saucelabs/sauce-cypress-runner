@@ -133,7 +133,7 @@ function getSuite (runConfig, suiteName) {
 // nested/example.test.js/screenshot.png will be renamed to nested__example.test.js__screenshot.png
 // example.test.js/screenshot.png will be renamed to example.test.js__screenshot.png
 function renameScreenshot (specFile, oldFilePath, folderName, fileName) {
-  let newName = path.join(folderName, specFile.replace('/', '__') + '__' + fileName);
+  let newName = path.join(folderName, specFile.replace(path.sep, '__') + '__' + fileName);
   fs.renameSync(oldFilePath, newName);
   return newName;
 }
@@ -141,15 +141,14 @@ function renameScreenshot (specFile, oldFilePath, folderName, fileName) {
 // renameAsset renames asset.
 // nested/example.test.js.xml will be renamed to nested__example.test.js.xml
 // example.test.js.xml will not be renamed and stay example.test.js.xml
-function renameAsset (specFile, oldFilePath, resultsFolder) {
-  const splittedSpecFile = specFile.split('/');
+function renameAsset ({specFile, oldFilePath, resultsFolder}) {
+  const splittedSpecFile = specFile.split(path.sep);
   if (splittedSpecFile.length < 2) {
     return oldFilePath;
   }
   // create new file name
   let newFile = splittedSpecFile.slice(0, splittedSpecFile.length).join('__');
-  let nestedPath = splittedSpecFile.slice(0, splittedSpecFile.length - 1).join('/');
-  let newFilePath = path.join(resultsFolder, nestedPath, newFile);
+  let newFilePath = path.join(resultsFolder, newFile);
   fs.renameSync(oldFilePath, newFilePath);
   return newFilePath;
 }

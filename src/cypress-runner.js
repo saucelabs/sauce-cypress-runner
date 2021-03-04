@@ -12,6 +12,13 @@ const report = async (results, browserName, runCfg, suiteName, startTime, endTim
   let specFiles = runs.map((run) => run.spec.name);
 
   let failures = results.failures || results.totalFailed;
+
+  let assets = await prepareAssets(
+      specFiles,
+      runCfg.resultsDir,
+      metrics
+  );
+  // Run in cloud mode
   if (process.env.SAUCE_VM) {
     return failures === 0;
   }
@@ -19,13 +26,7 @@ const report = async (results, browserName, runCfg, suiteName, startTime, endTim
     console.log('Skipping asset uploads! Remember to setup your SAUCE_USERNAME/SAUCE_ACCESS_KEY');
     return failures === 0;
   }
-
-  let assets = await prepareAssets(
-    specFiles,
-    runCfg.resultsDir,
-    metrics
-  );
-
+  // Run in docker mode
   if (process.env.SAUCE_USERNAME !== '' && process.env.SAUCE_ACCESS_KEY !== '') {
     await sauceReporter(runCfg, suiteName, browserName, assets, failures, startTime, endTime);
   }
