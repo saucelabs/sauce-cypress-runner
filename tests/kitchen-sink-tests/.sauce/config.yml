@@ -12,7 +12,7 @@ sauce:
 
 cypress:
   configFile: cypress.json
-  version: 5
+  version: 5.6.0
 
 suites:
   - name: "kitchen-sink-1"
