@@ -202,7 +202,7 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics) => {
         continue;
       }
       // rename assets to allow uploading assets with the same name but different folders
-      assetFile = utils.renameAsset(asset.name, assetFile, resultsFolder);
+      assetFile = utils.renameAsset({specFile: asset.name, oldFilePath: assetFile, resultsFolder});
       assets.push(assetFile);
 
       if (asset.name.endsWith('.mp4')) {
