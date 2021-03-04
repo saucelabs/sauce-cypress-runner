@@ -20,7 +20,7 @@ ENV PATH="/home/seluser/bin:/home/seluser/.nvm/versions/node/v${NODE_VERSION}/bi
 
 COPY package.json .
 COPY package-lock.json .
-RUN npm ci
+RUN npm ci --production
 
 RUN mkdir -p ~/__project__
 
