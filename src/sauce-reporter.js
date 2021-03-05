@@ -198,7 +198,9 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics) => {
     for (let asset of sauceAssets) {
       let assetFile = path.join(resultsFolder, asset.name);
       if (!fs.existsSync(assetFile)) {
-        console.warn(`Failed to prepare asset. Could not find: '${assetFile}'`);
+        if (!process.env.SAUCE_CYPRESS_VIDEO_RECORDING) {
+          console.warn(`Failed to prepare asset. Could not find: '${assetFile}'`);
+        }
         continue;
       }
       // rename assets to allow uploading assets with the same name but different folders

@@ -39,7 +39,8 @@ const getCypressOpts = function (runCfg, suiteName) {
   const suites = runCfg.suites || [];
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
   if (!suite) {
-    throw new Error(`Could not find suite named '${suiteName}'; available suites='${suites}`);
+    const suiteNames = suites.map((suite) => suite.name);
+    throw new Error(`Could not find suite named '${suiteName}'; available suites='${JSON.stringify(suiteNames)}`);
   }
 
   let cypressCfgFile = path.basename(runCfg.cypress.configFile);
