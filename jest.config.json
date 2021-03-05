@@ -1,5 +1,6 @@
 {
     "testMatch": ["**/tests/unit/**/*.[jt]s?(x)"],
+    "modulePathIgnorePatterns": ["cypress/tests/unit/"],
     "collectCoverageFrom": ["src/**/*.js"],
     "collectCoverage": true
 }

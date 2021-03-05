@@ -8,6 +8,7 @@ const { promisify } = require('util');
 const ffprobe = promisify(ffmpeg.ffprobe);
 const utils = require('sauce-testrunner-utils');
 const { updateExportedValue } = require('sauce-testrunner-utils').saucectl;
+const { shouldRecordVideo } = require('sauce-testrunner-utils');
 
 const { remote } = require('webdriverio');
 
@@ -198,7 +199,7 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics) => {
     for (let asset of sauceAssets) {
       let assetFile = path.join(resultsFolder, asset.name);
       if (!fs.existsSync(assetFile)) {
-        if (!process.env.SAUCE_CYPRESS_VIDEO_RECORDING) {
+        if (!shouldRecordVideo()) {
           console.warn(`Failed to prepare asset. Could not find: '${assetFile}'`);
         }
         continue;
