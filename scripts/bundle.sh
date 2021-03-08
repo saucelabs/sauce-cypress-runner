@@ -12,7 +12,7 @@ cp "$(which node)" bundle/
 
 pushd bundle/
 npm cache clean --force
-npm ci --production
+npm ci --production --verbose
 ./node ./node_modules/cypress/bin/cypress verify
 # TODO: Add "saucectl" tests here
 popd
