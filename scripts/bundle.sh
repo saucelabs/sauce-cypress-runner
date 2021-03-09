@@ -11,8 +11,11 @@ cp cypress.json bundle/cypress.json
 cp "$(which node)" bundle/
 
 pushd bundle/
-# npm cache clean --force
-npm ci --production --verbose
+npm ci --production
+if [[ "$?" -ne "0" ]]; then
+    echo "Retrying npm ci"
+    npm ci --production
+fi
 ./node ./node_modules/cypress/bin/cypress verify
 # TODO: Add "saucectl" tests here
 popd
