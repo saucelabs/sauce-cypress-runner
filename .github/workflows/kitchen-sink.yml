@@ -33,7 +33,7 @@ jobs:
 
       - name: Change user for cypress files
         run: |
-          sudo chown -R 1000:1000 ./cypress
+          sudo chown -R 1000:1000 ./tests/kitchen-sink-tests/cypress
 
       - name: Run kitchen sink test
         uses: saucelabs/saucectl-run-action@v1
