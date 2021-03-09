@@ -24,6 +24,12 @@ jobs:
           build-args: |
             BUILD_TAG=pipeline-test
 
+      # Run tests
+      - name: Run integration tests
+        run: bash ./tests/integration-test.sh
+        env:
+          SKIP_CI: true
+
   build-ubuntu-bundle-and-test:
     runs-on: ubuntu-latest
     steps:

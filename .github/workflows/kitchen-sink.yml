@@ -31,18 +31,13 @@ jobs:
           tags: |
             saucelabs/stt-cypress-mocha-node:local
 
-      - name: Install saucectl
-        run: |
-          LATEST_TAG=`curl -s https://api.github.com/repos/saucelabs/saucectl/releases/latest | jq -r '.name'`
-          LATEST_VERSION=`echo ${LATEST_TAG} | sed s/v//`
-          curl -s -L https://github.com/saucelabs/saucectl/releases/download/${LATEST_TAG}/saucectl_${LATEST_VERSION}_linux_64-bit.tar.gz | sudo tar -xvz -C /usr/bin/
-
-      - name: Run kitchen sink test
-        working-directory: ./tests/kitchen-sink-tests
-        env:
-          SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
-          SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+      - name: Change user for cypress files
         run: |
           sudo chown -R 1000:1000 ./cypress
-          saucectl run
 
+      - name: Run kitchen sink test
+        use: saucelabs/saucectl-run-action@v1
+        with:
+          working-directory: ./tests/kitchen-sink-tests
+          sauce-username: ${{ secrets.SAUCE_USERNAME }}
+          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
