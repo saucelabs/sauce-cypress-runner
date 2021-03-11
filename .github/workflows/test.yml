@@ -59,13 +59,18 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2
 
-      - name: use yq
-        uses: mikefarah/yq@v4.6.1
+      - name: Install yq
+        run: sudo snap install yq
 
       # Install saucectl
       - uses: saucelabs/saucectl-run-action@v1
         with:
           skip-run: true
+
+      # There is discrepencies between uid used to clone and uid in container,
+      # As a temporary measure, we chmod files to allow test outputs to be written.
+      - name: Workaround for container permissions
+        run: sudo chmod -R 777 .saucetpl/
 
       # Run test in template
       - run: |
@@ -75,7 +80,6 @@ jobs:
           yq e -i '.cypress.version = "latest"' .sauce/config.yml
           saucectl run
         env:
-          SKIP_CI: true
           SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
           SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
         name: Run template tests
