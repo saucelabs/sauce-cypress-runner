@@ -7,10 +7,10 @@
   "private": true,
   "bin": "./bin/cypress",
   "main": "./src/cypress-runner.js",
-  "homepage": "https://github.com/FriggaHel/sauce-cypress-runner",
+  "homepage": "https://github.com/saucelabs/sauce-cypress-runner",
   "repository": {
     "type": "git",
-    "url": "git://github.com/FriggaHel/sauce-cypress-runner.git"
+    "url": "git://github.com/saucelabs/sauce-cypress-runner.git"
   },
   "scripts": {
     "test": "./bin/cypress",
