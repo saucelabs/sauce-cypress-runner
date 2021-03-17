@@ -151,7 +151,7 @@ jobs:
 
           $selectedAsset = $null
           Foreach ($asset in $selectedRelease.assets) {
-            if ($asset.name -eq "sauce-cypress-win.zip") {
+            if ($asset.name -eq "sauce-cypress-runner.zip") {
               $selectedAsset = $asset
             }
           }
@@ -197,7 +197,7 @@ jobs:
         uses: azure/powershell@v1
         with:
           inlineScript: |
-            Compress-Archive bundle/ sauce-cypress-win.zip
+            Compress-Archive bundle/ sauce-cypress-runner.zip
           azPSVersion: '3.1.0'
 
       - name: Upload Release Asset
@@ -208,8 +208,8 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.prep.outputs.release_id }}/assets?name=sauce-cypress-runner.zip
-          asset_path: ./sauce-cypress-win.zip
-          asset_name: sauce-cypress-win.zip
+          asset_path: ./sauce-cypress-runner.zip
+          asset_name: sauce-cypress-runner.zip
           asset_content_type: application/zip
 
   release-template-bundle:
