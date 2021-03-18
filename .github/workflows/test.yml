@@ -66,6 +66,7 @@ jobs:
       - uses: saucelabs/saucectl-run-action@v1
         with:
           skip-run: true
+          testing-environment: docker
 
       # There is discrepencies between uid used to clone and uid in container,
       # As a temporary measure, we chmod files to allow test outputs to be written.
@@ -78,7 +79,7 @@ jobs:
           cd .saucetpl
           yq e -i '.docker.image = "saucelabs/stt-cypress-mocha-node:local"' .sauce/config.yml
           yq e -i '.cypress.version = "latest"' .sauce/config.yml
-          saucectl run
+          saucectl run --test-env docker
         env:
           SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
           SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
