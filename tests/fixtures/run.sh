@@ -30,13 +30,14 @@ run_test() {
         rm -f ${tmpfile}
 
         echo "TEST FAILURE: Result expected is ${result}, and exitCode is ${RETURN_CODE}" 
-        exit 1
+        return 1
     else
         # Display warning if there is some
         grep -E "(ERR|WRN)" ${tmpfile}
     fi
     rm -f ${tmpfile}
     echo ""
+    return 0
 }
 
 # Test required commands
@@ -49,9 +50,16 @@ docker build -t saucelabs/stt-cypress-mocha-node:local . > /dev/null 2>&1
 # suite=result
 tests=(basic-js-rootdir-copy=success basic-js-rootdir-mount=success basic-js-no-rootdir-copy=success basic-js-no-rootdir-mount=success)
 
+FAILURES=0
 for i in ${tests[@]}; do
     key=$(echo ${i} | cut -d '=' -f 1)
     result=$(echo ${i} | cut -d '=' -f 2)
 
     run_test ${key} ${result}
+    FAILURES=$((FAILURES+$?))
 done
+
+if [ ${FAILURES} -gt 0 ];then
+    echo "Failed: ${FAILURES} failures occured."
+    exit 1
+fi
