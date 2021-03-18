@@ -45,6 +45,9 @@ jobs:
         with:
           skip-run: true
 
+      - name: Use yq
+        run: sudo snap install yq
+
       - name: Run fixtures
         run: ./tests/fixtures/run.sh
 
