@@ -48,7 +48,16 @@ echo "Build docker images"
 docker build -t saucelabs/stt-cypress-mocha-node:local . > /dev/null 2>&1
 
 # suite=result
-tests=(basic-js-rootdir-copy=success basic-js-rootdir-mount=success basic-js-no-rootdir-copy=success basic-js-no-rootdir-mount=success)
+tests=(
+    basic-js-rootdir-copy=success
+    basic-js-rootdir-mount=success
+    basic-js-no-rootdir-copy=success
+    basic-js-no-rootdir-mount=success
+    basic-root-level-rootdir-copy=success
+    basic-root-level-rootdir-mount=success
+    basic-root-level-no-rootdir-copy=success
+    basic-root-level-no-rootdir-mount=success
+)
 
 FAILURES=0
 for i in ${tests[@]}; do
