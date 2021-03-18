@@ -24,6 +24,30 @@ jobs:
           build-args: |
             BUILD_TAG=pipeline-test
 
+  build-fixtures:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: saucelabs/stt-cypress-mocha-node
+          tag_with_ref: true
+          cache_froms: saucelabs/stt-cypress-mocha-node:latest
+          push: false
+          build-args: |
+            BUILD_TAG=pipeline-test
+
+      - uses: saucelabs/saucectl-run-action@v1
+        with:
+          skip-run: true
+
+      - name: Run fixtures
+        run: ./tests/fixtures/run.sh
+
   build-ubuntu-bundle-and-test:
     runs-on: ubuntu-latest
     steps:
@@ -66,7 +90,6 @@ jobs:
       - uses: saucelabs/saucectl-run-action@v1
         with:
           skip-run: true
-          testing-environment: docker
 
       # There is discrepencies between uid used to clone and uid in container,
       # As a temporary measure, we chmod files to allow test outputs to be written.
