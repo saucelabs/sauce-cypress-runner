@@ -50,6 +50,9 @@ jobs:
 
       - name: Run fixtures
         run: ./tests/fixtures/run.sh
+        env:
+          SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+          SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
 
   build-ubuntu-bundle-and-test:
     runs-on: ubuntu-latest
