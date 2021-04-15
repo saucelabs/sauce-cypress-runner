@@ -191,7 +191,7 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics) => {
       screenshotPaths.forEach((file) => {
         let screenshot = path.join(screenshotsFolder, file);
         // rename screenshots to allow uploading screenshots with the same name but different folders
-        screenshot = utils.renameScreenshot(specFile, screenshot, screenshotsFolder, file);
+        screenshot = utils.renameScreenshot(specFile, screenshot, resultsFolder, path.basename(file));
         assets.push(screenshot);
       });
     }
