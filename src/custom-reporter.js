@@ -242,6 +242,7 @@ function MochaJUnitReporter (runner, options) {
     console.error('- expected: ', test.err && test.err.expected);
     console.error('+ actual: ', test.err && test.err.actual);
     console.error(test.err && test.err.codeFrame && test.err.codeFrame.frame);
+    console.error(test.err.message);
     sauceJson.push(this.getSauceTestcaseData(test));
     lastSuite().push(this.getTestcaseData(test, err));
   }.bind(this));
