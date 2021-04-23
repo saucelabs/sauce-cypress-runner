@@ -100,7 +100,7 @@ const cypressRunner = async function (runCfgPath, suiteName) {
 
   console.log('=========');
   console.log('=========');
-  console.log('proxy: ', process.env.proxy);
+  console.log('proxy: ', process.env.HTTP_PROXY);
   console.log('=========');
   console.log('=========');
   let metrics = [];
