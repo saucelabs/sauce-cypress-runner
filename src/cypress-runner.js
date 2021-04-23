@@ -98,6 +98,11 @@ const cypressRunner = async function (runCfgPath, suiteName) {
     await canAccessFolder(runCfg.resultsDir);
   }
 
+  console.log('=========');
+  console.log('=========');
+  console.log('proxy: ', process.env.proxy);
+  console.log('=========');
+  console.log('=========');
   let metrics = [];
   let npmMetrics = await prepareNpmEnv(runCfg);
   metrics.push(npmMetrics);
