@@ -20,7 +20,7 @@ context('Assertions', function () {
         // chai-jquery uses "is()" to check if element matches selector
         .should('match', 'td')
         // to match text content against a regular expression
-        // first need to invoke jQuery method text();
+        // first need to invoke jQuery method text()
         // and then match using regular expression
         .invoke('text')
         .should('match', /column content/i);

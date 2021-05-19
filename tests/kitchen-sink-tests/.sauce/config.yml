@@ -12,14 +12,14 @@ sauce:
 
 cypress:
   configFile: cypress.json
-  version: 5.6.0
+  version: 7.3.0
 
 suites:
   - name: "kitchen-sink-1"
     browser: "chrome"
     config:
       testFiles: [ "examples/*.*" ]
-  - name: "kitchen-sink-3"
+  - name: "kitchen-sink-2"
     browser: "firefox"
     config:
       testFiles: [ "examples/*.*" ]

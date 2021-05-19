@@ -67,7 +67,7 @@ context('Querying', function () {
 
   it('.within() - query DOM elements within a specific element', function () {
     // https://on.cypress.io/within
-    cy.get('.query-form').within(function () {
+    cy.get('.query-form').within(() => {
       cy.get('input:first').should('have.attr', 'placeholder', 'Email');
       cy.get('input:last').should('have.attr', 'placeholder', 'Password');
     });
@@ -79,7 +79,7 @@ context('Querying', function () {
     // By default, root is the document
     cy.root().should('match', 'html');
 
-    cy.get('.query-ul').within(function () {
+    cy.get('.query-ul').within(() => {
       // In this within, the root is now the ul DOM element
       cy.root().should('have.class', 'query-ul');
     });
@@ -87,7 +87,7 @@ context('Querying', function () {
 
   it('best practices - selecting elements', function () {
     // https://on.cypress.io/best-practices#Selecting-Elements
-    cy.get('[data-cy=best-practices-selecting-elements]').within(function () {
+    cy.get('[data-cy=best-practices-selecting-elements]').within(() => {
       // Worst - too generic, no context
       cy.get('button').click();
 
