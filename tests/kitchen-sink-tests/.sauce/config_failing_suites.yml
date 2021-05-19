@@ -21,4 +21,4 @@ suites:
       testFiles: [ "failing/*.*" ]
 
 docker:
-  image: cypress
+  image: saucelabs/stt-cypress-mocha-node:local
