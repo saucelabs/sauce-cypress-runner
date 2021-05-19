@@ -28,7 +28,8 @@ context('Cypress.Commands', function () {
     });
 
     // @ts-ignore TS2339
-    cy.get('button').console('info').then(() => {
+    // eslint-disable-next-line
+    cy.get('button').console('info').then(($button) => {
       // subject is still $button
     });
   });
@@ -63,31 +64,10 @@ context('Cypress.Cookies', function () {
   });
 
   it('.defaults() - set defaults for all cookies', function () {
-    if (Number(Cypress.version.charAt(0)) < 5) {
-      return;
-    }
     // now any cookie with the name 'session_id' will
     // not be cleared before each new test runs
     Cypress.Cookies.defaults({
-      // @ts-ignore
       preserve: 'session_id',
-    });
-  });
-});
-
-context('Cypress.Server', function () {
-  beforeEach(function () {
-    cy.visit('https://example.cypress.io/cypress-api');
-  });
-
-  // Permanently override server options for
-  // all instances of cy.server();
-
-  // https://on.cypress.io/cypress-server
-  it('.defaults() - change default config of server', function () {
-    Cypress.Server.defaults({
-      delay: 0,
-      force404: false,
     });
   });
 });

@@ -10,7 +10,7 @@ context('Misc', function () {
 
     // cy.end is useful when you want to end a chain of commands
     // and force Cypress to re-query from the root element
-    cy.get('.misc-table').within(function () {
+    cy.get('.misc-table').within(() => {
       // ends the current chain and yields null
       cy.contains('Cheryl').click().end();
 

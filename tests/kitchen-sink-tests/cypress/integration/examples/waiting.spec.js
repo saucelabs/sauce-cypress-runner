@@ -9,22 +9,25 @@ context('Waiting', function () {
 
   // https://on.cypress.io/wait
   it('cy.wait() - wait for a specific amount of time', function () {
-    cy.get('.wait-input1').type('Wait timeoutms after typing');
-    cy.get('.wait-input2').type('Wait timeoutms after typing');
-    cy.get('.wait-input3').type('Wait timeoutms after typing');
+    cy.get('.wait-input1').type('Wait 1000ms after typing');
+    /* eslint-disable */
+    cy.wait(1000);
+    cy.get('.wait-input2').type('Wait 1000ms after typing');
+    cy.wait(1000);
+    cy.get('.wait-input3').type('Wait 1000ms after typing');
+    cy.wait(1000);
+    /* eslint-enable */
   });
 
   it('cy.wait() - wait for a specific route', function () {
-    cy.server();
-
     // Listen to GET to comments/1
-    cy.route('GET', 'comments/*').as('getComment');
+    cy.intercept('GET', '**/comments/*').as('getComment');
 
     // we have code that gets a comment when
     // the button is clicked in scripts.js
     cy.get('.network-btn').click();
 
     // wait for GET comments/1
-    cy.wait('@getComment').its('status').should('eq', 200);
+    cy.wait('@getComment').its('response.statusCode').should('be.oneOf', [200, 304]);
   });
 });
