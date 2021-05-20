@@ -8,7 +8,6 @@ on:
         required: false
         default: ''
       preReleaseFlavor:
-        description: 'Pre-Release flavor - rc, beta, or anything'
         required: false
         default: ''
 
@@ -121,6 +120,7 @@ jobs:
             saucelabs/stt-cypress-mocha-node:${{ steps.prep.outputs.version }}
           build-args: |
             BUILD_TAG=${{ steps.prep.outputs.version }}
+            CYPRESS_VERSION=$(< package-lock.json jq -r '.dependencies["cypress"].version')
 
   release-windows-bundle:
     runs-on: windows-latest
