@@ -6,8 +6,25 @@ on:
       - master
 
 jobs:
+  check-consistency:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Check consistency
+        run: |
+          DOCKERIMAGE_VERSION=$(grep "ENV CYPRESS_VERSION=" Dockerfile | cut -d '=' -f 2)
+          CYPRESS_VERSION=$(< package-lock.json jq -r '.dependencies["cypress"].version')
+
+          if [ "${DOCKERIMAGE_VERSION}" != "${CYPRESS_VERSION}" ];then
+            echo "Cypress version in package-lock.json and Dockerfile differs."
+            exit 1
+          fi
   build:
     runs-on: ubuntu-latest
+    needs: [check-consistency]
     steps:
       -
         name: Checkout
@@ -26,6 +43,7 @@ jobs:
 
   build-ubuntu-bundle-and-test:
     runs-on: ubuntu-latest
+    needs: [check-consistency]
     steps:
       -
         name: Checkout
@@ -38,6 +56,7 @@ jobs:
         run: ls -R bundle/
   build-windows-bundle-and-test:
     runs-on: windows-latest
+    needs: [check-consistency]
     steps:
       -
         name: Checkout
@@ -54,6 +73,7 @@ jobs:
 
   test_template:
     runs-on: ubuntu-latest
+    needs: [check-consistency]
     steps:
       -
         name: Checkout
