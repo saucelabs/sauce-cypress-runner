@@ -112,7 +112,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         run: |
-          echo "CYPRESS_VERSION=$(< package-lock.json jq -r '.dependencies[\"cypress\"].version')" >> $GITHUB_ENV
+          cypress_version=$(< package-lock.json jq -r '.dependencies["cypress"].version')
+          echo "CYPRESS_VERSION=$cypress_version" >> $GITHUB_ENV
         with:
           push: true
           context: .
