@@ -8,6 +8,7 @@ on:
         required: false
         default: ''
       preReleaseFlavor:
+        description: 'Pre-Release flavor - rc, beta, or anything'
         required: false
         default: ''
 
