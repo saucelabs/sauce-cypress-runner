@@ -72,7 +72,7 @@ SauceReporter.createJobShell = async (api, testName, tags, browserName) => {
 
 // TODO Tian: this method is a temporary solution for creating jobs via test-composer.
 // Once the global data store is ready, this method will be deprecated.
-SauceReporter.createJobWorkaround = async (api, testName, suiteName, metadata, browserName, passed, startTime, endTime) => {
+SauceReporter.createJobWorkaround = async (api, testName, suiteName, metadata, browserName, passed, startTime, endTime, saucectlVersion) => {
   let browserVersion = '*';
   switch (browserName.toLowerCase()) {
     case 'firefox':
@@ -100,7 +100,8 @@ SauceReporter.createJobWorkaround = async (api, testName, suiteName, metadata, b
     build: metadata.build,
     browserName,
     browserVersion,
-    platformName: process.env.IMAGE_NAME + ':' + process.env.IMAGE_TAG
+    platformName: process.env.IMAGE_NAME + ':' + process.env.IMAGE_TAG,
+    saucectlVersion
   };
 
   let sessionId;
@@ -234,6 +235,7 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
   const testName = baseTestName + ' - ' + suiteName;
   const region = sauce.region || 'us-west-1';
   const tld = region === 'staging' ? 'net' : 'com';
+  const saucectlVersion = sauce.saucectlVersion;
 
   const api = new SauceLabs({
     user: process.env.SAUCE_USERNAME,
@@ -247,7 +249,7 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
   if (process.env.ENABLE_DATA_STORE) {
     sessionId = await SauceReporter.createJobShell(api, testName, metadata.tags, browserName);
   } else {
-    sessionId = await SauceReporter.createJobWorkaround(api, testName, suiteName, metadata, browserName, failures === 0, startTime, endTime);
+    sessionId = await SauceReporter.createJobWorkaround(api, testName, suiteName, metadata, browserName, failures === 0, startTime, endTime, saucectlVersion);
   }
 
   if (!sessionId) {
