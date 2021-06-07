@@ -23,7 +23,7 @@ context('Connectors', function () {
 
   it('.invoke() - invoke a function on the current subject', function () {
     // our div is hidden in our script.js
-    // $('.connectors-div').hide();
+    // $('.connectors-div').hide()
 
     // https://on.cypress.io/invoke
     cy.get('.connectors-div').should('be.hidden')

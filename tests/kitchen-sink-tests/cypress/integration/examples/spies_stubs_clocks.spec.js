@@ -33,11 +33,11 @@ context('Spies, Stubs, and Clock', function () {
 
     cy.spy(obj, 'foo').as('foo');
 
-    setTimeout(function () {
+    setTimeout(() => {
       obj.foo('first');
     }, 500);
 
-    setTimeout(function () {
+    setTimeout(() => {
       obj.foo('second');
     }, 2500);
 

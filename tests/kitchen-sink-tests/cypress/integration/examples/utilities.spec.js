@@ -85,9 +85,10 @@ context('Utilities', function () {
      */
     function waitOneSecond () {
       // return a promise that resolves after 1 second
-      // @ts-ignore TS2351 (new Cypress.Promise);
-      return new Cypress.Promise((resolve) => {
-        setTimeout(function () {
+      // @ts-ignore TS2351 (new Cypress.Promise)
+      // eslint-disable-next-line
+      return new Cypress.Promise((resolve, reject) => {
+        setTimeout(() => {
           // set waited to true
           waited = true;
 
@@ -97,14 +98,14 @@ context('Utilities', function () {
       });
     }
 
-    cy.then(function () {
+    cy.then(() =>
       // return a promise to cy.then() that
-      // is thened until it resolves
+      // is awaited until it resolves
       // @ts-ignore TS7006
-      return waitOneSecond().then((str) => {
+      waitOneSecond().then((str) => {
         expect(str).to.eq('foo');
         expect(waited).to.be.true;
-      });
-    });
+      })
+    );
   });
 });

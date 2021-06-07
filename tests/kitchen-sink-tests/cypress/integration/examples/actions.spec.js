@@ -64,7 +64,7 @@ context('Actions', function () {
       .next().should('contain', 'Your form has been submitted!');
   });
 
-  it.skip('.click() - click on a DOM element', function () {
+  it('.click() - click on a DOM element', function () {
     // https://on.cypress.io/click
     cy.get('.action-btn').click();
 
@@ -94,7 +94,7 @@ context('Actions', function () {
     cy.get('#action-canvas').click('bottomRight');
 
     // .click() accepts an x and y coordinate
-    // that controls where the click occurs :);
+    // that controls where the click occurs :)
 
     cy.get('#action-canvas')
       .click(80, 75) // click 80px on x coord and 75px on y coord
@@ -221,7 +221,7 @@ context('Actions', function () {
     // normally all of these buttons are hidden,
     // because they're not within
     // the viewable area of their parent
-    // (we need to scroll to see them);
+    // (we need to scroll to see them)
     cy.get('#scroll-horizontal button')
       .should('not.be.visible');
 
@@ -247,7 +247,7 @@ context('Actions', function () {
   it('.trigger() - trigger an event on a DOM element', function () {
     // https://on.cypress.io/trigger
 
-    // To interact with a range input (slider);
+    // To interact with a range input (slider)
     // we need to set its value & trigger the
     // event to signal it changed
 
@@ -261,7 +261,7 @@ context('Actions', function () {
   });
 
   it('cy.scrollTo() - scroll the window or element to a position', function () {
-    // https://on.cypress.io/scrollTo
+    // https://on.cypress.io/scrollto
 
     // You can scroll to 9 specific positions of an element:
     //  -----------------------------------
@@ -290,10 +290,10 @@ context('Actions', function () {
     // of the (width, height) of the element
     cy.get('#scrollable-both').scrollTo('75%', '25%');
 
-    // control the easing of the scroll (default is 'swing');
+    // control the easing of the scroll (default is 'swing')
     cy.get('#scrollable-vertical').scrollTo('center', { easing: 'linear' });
 
-    // control the duration of the scroll (in ms);
+    // control the duration of the scroll (in ms)
     cy.get('#scrollable-both').scrollTo('center', { duration: 2000 });
   });
 });
