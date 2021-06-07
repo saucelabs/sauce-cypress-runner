@@ -235,7 +235,7 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
   const testName = baseTestName + ' - ' + suiteName;
   const region = sauce.region || 'us-west-1';
   const tld = region === 'staging' ? 'net' : 'com';
-  const saucectlVersion = sauce.saucectlVersion;
+  const saucectlVersion = runCfg.saucectlVersion;
 
   const api = new SauceLabs({
     user: process.env.SAUCE_USERNAME,
