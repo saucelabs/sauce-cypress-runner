@@ -101,7 +101,7 @@ SauceReporter.createJobWorkaround = async (api, testName, suiteName, metadata, b
     browserName,
     browserVersion,
     platformName: process.env.IMAGE_NAME + ':' + process.env.IMAGE_TAG,
-    saucectlVersion: saucectlVersion,
+    saucectlVersion,
   };
 
   let sessionId;
