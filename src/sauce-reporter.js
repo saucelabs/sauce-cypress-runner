@@ -10,8 +10,6 @@ const utils = require('sauce-testrunner-utils');
 const { updateExportedValue } = require('sauce-testrunner-utils').saucectl;
 const { shouldRecordVideo } = require('sauce-testrunner-utils');
 
-const { remote } = require('webdriverio');
-
 const SauceReporter = {};
 
 // Path has to match the value of the Dockerfile label com.saucelabs.job-info !
@@ -21,9 +19,9 @@ SauceReporter.SAUCECTL_OUTPUT_FILE = '/tmp/output.json';
 // NOTE: this function is not available currently.
 // It will be ready once data store API actually works.
 // Keep these pieces of code for future integration.
-SauceReporter.createJobShell = async (api, testName, tags, browserName) => {
+SauceReporter.createJobShell = async (api, suiteName, tags, browserName) => {
   const body = {
-    name: testName,
+    name: suiteName,
     acl: [
       {
         type: 'username',
@@ -72,7 +70,7 @@ SauceReporter.createJobShell = async (api, testName, tags, browserName) => {
 
 // TODO Tian: this method is a temporary solution for creating jobs via test-composer.
 // Once the global data store is ready, this method will be deprecated.
-SauceReporter.createJobWorkaround = async (api, testName, suiteName, metadata, browserName, passed, startTime, endTime, saucectlVersion) => {
+SauceReporter.createJobWorkaround = async (api, suiteName, metadata, browserName, passed, startTime, endTime, saucectlVersion) => {
   let browserVersion = '*';
   switch (browserName.toLowerCase()) {
     case 'firefox':
@@ -86,7 +84,7 @@ SauceReporter.createJobWorkaround = async (api, testName, suiteName, metadata, b
   }
 
   const body = {
-    name: testName,
+    name: suiteName,
     user: process.env.SAUCE_USERNAME,
     startTime,
     endTime,
@@ -113,49 +111,6 @@ SauceReporter.createJobWorkaround = async (api, testName, suiteName, metadata, b
     },
     (e) => console.error('Create job failed: ', e.stack)
   );
-
-  return sessionId || 0;
-};
-
-
-SauceReporter.createJobLegacy = async (api, region, tld, browserName, testName, metadata) => {
-  try {
-    const hostname = `ondemand.${region}.saucelabs.${tld}`;
-    await remote({
-      user: process.env.SAUCE_USERNAME,
-      key: process.env.SAUCE_ACCESS_KEY,
-      region,
-      tld,
-      hostname,
-      connectionRetryCount: 0,
-      logLevel: 'silent',
-      capabilities: {
-        browserName,
-        platformName: '*',
-        browserVersion: '*',
-        'sauce:options': {
-          devX: true,
-          name: testName,
-          framework: 'cypress',
-          build: metadata.build,
-          tags: metadata.tags,
-        }
-      }
-    }).catch((err) => err);
-  } catch (e) {
-    console.error(e);
-  }
-
-  let sessionId;
-  try {
-    const { jobs } = await api.listJobs(
-      process.env.SAUCE_USERNAME,
-      { limit: 1, full: true, name: testName }
-    );
-    sessionId = jobs && jobs.length && jobs[0].id;
-  } catch (e) {
-    console.warn('Failed to prepare test', e);
-  }
 
   return sessionId || 0;
 };
@@ -231,8 +186,6 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics) => {
 SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, failures, startTime, endTime) => {
   const { sauce = {} } = runCfg;
   const { metadata = {} } = sauce;
-  const baseTestName = metadata.name || `Test ${+new Date()}`;
-  const testName = baseTestName + ' - ' + suiteName;
   const region = sauce.region || 'us-west-1';
   const tld = region === 'staging' ? 'net' : 'com';
   const saucectlVersion = runCfg.saucectlVersion;
@@ -247,9 +200,9 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
   let reportingSucceeded = false;
   let sessionId;
   if (process.env.ENABLE_DATA_STORE) {
-    sessionId = await SauceReporter.createJobShell(api, testName, metadata.tags, browserName);
+    sessionId = await SauceReporter.createJobShell(api, suiteName, metadata.tags, browserName);
   } else {
-    sessionId = await SauceReporter.createJobWorkaround(api, testName, suiteName, metadata, browserName, failures === 0, startTime, endTime, saucectlVersion);
+    sessionId = await SauceReporter.createJobWorkaround(api, suiteName, metadata, browserName, failures === 0, startTime, endTime, saucectlVersion);
   }
 
   if (!sessionId) {
@@ -276,7 +229,7 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
   // set appropriate job status
   await Promise.all([
     api.updateJob(process.env.SAUCE_USERNAME, sessionId, {
-      name: testName,
+      name: suiteName,
       passed: failures === 0
     }).then(
         () => {},
