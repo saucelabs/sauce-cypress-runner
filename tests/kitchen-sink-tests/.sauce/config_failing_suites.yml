@@ -3,7 +3,6 @@ kind: Cypress
 sauce:
   region: us-west-1
   metadata:
-    name: Testing Cypress Failing Suites
     tags:
       - e2e
       - release team
