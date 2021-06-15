@@ -48,7 +48,7 @@ Array [
       },
       "live": false,
       "metadata": Object {},
-      "name": "Fake Name - build",
+      "name": "build",
       "platform": "webdriver",
       "source": "vdc",
       "status": "complete",
