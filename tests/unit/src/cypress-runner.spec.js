@@ -72,12 +72,6 @@ describe('.cypressRunner', function () {
     await cypressRunner('/fake/runner/path', 'fake-suite');
     expect(SauceReporter.sauceReporter.mock.calls).toMatchSnapshot();
   });
-  it('throws error if browser is unsupported', function () {
-    process.env.BROWSER_NAME = 'lynx';
-    expect(cypressRunner('/fake/runner/path', 'fake-suite')).rejects.toThrow(new Error(
-      `Unsupported browser: 'lynx'. Sorry.`
-    ));
-  });
   describe('from SAUCE VM', function () {
     beforeEach(function () {
       process.env.SAUCE_VM = 'truthy';

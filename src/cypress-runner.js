@@ -16,7 +16,9 @@ const report = async (results, browserName, runCfg, suiteName, startTime, endTim
   let assets = await prepareAssets(
       specFiles,
       runCfg.resultsDir,
-      metrics
+      metrics,
+      suiteName,
+      browserName,
   );
   // Run in cloud mode
   if (process.env.SAUCE_VM) {
