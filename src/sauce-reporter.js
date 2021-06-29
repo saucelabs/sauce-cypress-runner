@@ -9,6 +9,7 @@ const ffprobe = promisify(ffmpeg.ffprobe);
 const utils = require('sauce-testrunner-utils');
 const { updateExportedValue } = require('sauce-testrunner-utils').saucectl;
 const { shouldRecordVideo } = require('sauce-testrunner-utils');
+const convert = require('xml-js');
 
 const SauceReporter = {};
 
@@ -115,7 +116,7 @@ SauceReporter.createJobWorkaround = async (api, suiteName, metadata, browserName
   return sessionId || 0;
 };
 
-SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics) => {
+SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics, testName, browserName) => {
   const assets = [];
   const videos = [];
 
@@ -133,12 +134,15 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics) => {
     assets.push(mtFile);
   }
 
+  SauceReporter.mergeJunitFile(specFiles, resultsFolder, testName, browserName);
+
   for (let specFile of specFiles) {
     const sauceAssets = [
       { name: `${specFile}.mp4`},
       { name: `${specFile}.json`},
       { name: `${specFile}.xml`},
     ];
+
 
     // screenshotsFolder has the same name as spec file name
     const screenshotsFolder = path.join(resultsFolder, specFile);
@@ -178,6 +182,11 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics) => {
     } catch (e) {
       console.error('Failed to merge videos: ', e);
     }
+  }
+
+  let junitPath = path.join(resultsFolder, 'junit.xml');
+  if (fs.existsSync(junitPath)) {
+    assets.push(junitPath);
   }
 
   return assets;
@@ -302,6 +311,74 @@ SauceReporter.areVideosSameSize = async (videos) => {
   }
 
   return true;
+};
+
+SauceReporter.mergeJunitFile = (specFiles, resultsFolder, testName, browserName) => {
+  if (specFiles.length === 0) {
+    return;
+  }
+  let result;
+  let totalTests = 0;
+  let totalErr = 0;
+  let totalFailure = 0;
+  let totalDisabled = 0;
+  let totalTime = 0.0000;
+  try {
+    const xmlData = fs.readFileSync(path.join(resultsFolder, `${specFiles[0]}.xml`), 'utf8');
+    result = convert.xml2js(xmlData, {compact: true, spaces: 4});
+  } catch (err) {
+    console.error(err);
+  }
+  for (let i = 1; i < specFiles.length; i++) {
+    let jsObj;
+    try {
+      const xmlData = fs.readFileSync(path.join(resultsFolder, `${specFiles[i]}.xml`), 'utf8');
+      jsObj = convert.xml2js(xmlData, {compact: true, spaces: 4});
+    } catch (err) {
+      console.error(err);
+    }
+    result.testsuites.testsuite.push(...jsObj.testsuites.testsuite);
+  }
+
+  for (let ts of result.testsuites.testsuite) {
+    totalTests += +ts._attributes.tests || 0;
+    totalFailure += +ts._attributes.failures || 0;
+    totalTime += +ts._attributes.time || 0.0000;
+    totalErr += +ts._attributes.error || 0;
+    totalDisabled += +ts._attributes.disabled || 0;
+  }
+  result.testsuites._attributes.name = testName;
+  result.testsuites._attributes.tests = totalTests;
+  result.testsuites._attributes.failures = totalFailure;
+  result.testsuites._attributes.time = totalTime;
+  result.testsuites._attributes.error = totalErr;
+  result.testsuites._attributes.disabled = totalDisabled;
+  result.testsuites.testsuite = result.testsuites.testsuite.filter((item) => item._attributes.name !== 'Root Suite');
+  for (let i = 0; i < result.testsuites.testsuite.length; i++) {
+    result.testsuites.testsuite[i]._attributes.id = i;
+    result.testsuites.testsuite[i].properties = {};
+    result.testsuites.testsuite[i].properties.property = [
+      {
+        _attributes: {
+          name: 'platformName',
+          value: process.platform,
+        }
+      },
+      {
+        _attributes: {
+          name: 'browserName',
+          value: browserName,
+        }
+      }
+    ];
+  }
+  try {
+    let options = {compact: true, spaces: 4};
+    let xmlResult = convert.js2xml(result, options);
+    fs.writeFileSync(path.join(resultsFolder, 'junit.xml'), xmlResult);
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 module.exports = SauceReporter;

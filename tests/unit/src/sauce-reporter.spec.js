@@ -27,7 +27,8 @@ describe('SauceReporter', function () {
       fs.copyFileSync.mockReturnValue(true);
       fs.readdirSync.mockReturnValue(['fake/path/to/screenshot-1.png', 'fake/path/to/screenshot-2.png']);
       SauceReporter.mergeVideos = jest.fn().mockImplementation(async function () {});
-      const res = await SauceReporter.prepareAssets(['spec/file.test.js'], 'results/', []);
+      SauceReporter.mergeJunitFile = jest.fn().mockImplementation(function () {});
+      const res = await SauceReporter.prepareAssets(['spec/file.test.js'], 'results/', [], 'fake-test-name', 'fake-browser-name');
       expect(fs.readdirSync.mock.calls).toMatchSnapshot();
       expect(res).toMatchSnapshot();
     });
@@ -35,7 +36,8 @@ describe('SauceReporter', function () {
       fs.existsSync.mockReturnValue(false);
       fs.copyFileSync.mockReturnValue(true);
       fs.mkdtempSync.mockReturnValue('tmp/folder');
-      const res = await SauceReporter.prepareAssets('spec/file', 'results/', []);
+      SauceReporter.mergeJunitFile = jest.fn().mockImplementation(function () {});
+      const res = await SauceReporter.prepareAssets('spec/file', 'results/', [], 'fake-test-name', 'fake-browser-name');
       expect(res).toEqual([]);
     });
   });
