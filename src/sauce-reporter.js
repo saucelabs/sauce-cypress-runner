@@ -9,8 +9,6 @@ const ffprobe = promisify(ffmpeg.ffprobe);
 const utils = require('sauce-testrunner-utils');
 const { updateExportedValue } = require('sauce-testrunner-utils').saucectl;
 const { shouldRecordVideo } = require('sauce-testrunner-utils');
-
-const { remote } = require('webdriverio');
 const convert = require('xml-js');
 
 const SauceReporter = {};
@@ -118,7 +116,7 @@ SauceReporter.createJobWorkaround = async (api, suiteName, metadata, browserName
   return sessionId || 0;
 };
 
-SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics) => {
+SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics, testName, browserName) => {
   const assets = [];
   const videos = [];
 
