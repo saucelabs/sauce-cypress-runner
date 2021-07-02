@@ -1,0 +1,6 @@
+{
+  "supportFile": "cypress/support/index.js",
+  "integrationFolder": "cypress/integration",
+  "pluginsFiles": "cypress/plugins/index.js",
+  "chromeWebSecurity": false
+}
