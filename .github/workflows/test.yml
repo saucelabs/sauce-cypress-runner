@@ -30,10 +30,10 @@ jobs:
       -
         name: Checkout
         uses: actions/checkout@v2
-      - 
+      -
         name: Bundle Directory
         run: bash ./scripts/bundle.sh
-      - 
+      -
         name: List bundle contents
         run: ls -R bundle/
   build-windows-bundle-and-test:
@@ -42,10 +42,10 @@ jobs:
       -
         name: Checkout
         uses: actions/checkout@v2
-      - 
+      -
         name: Bundle Directory
         run: bash ./scripts/bundle.sh
-      - 
+      -
         name: List bundle contents
         run: ls -R bundle/
       -
