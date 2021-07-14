@@ -8,7 +8,8 @@ sauce:
       - kitchen-sink
     build: Release $CI_COMMIT_SHORT_SHA
   region: us-west-1
-
+defaults:
+  mode: docker
 cypress:
   configFile: cypress.json
   version: 7.3.0
