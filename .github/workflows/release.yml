@@ -324,9 +324,9 @@ jobs:
           echo ::set-output name=version::${VERSION}
 
       - name: cloud tests
-        working-directory: ./tests/kitchen-sink-tests
+        working-directory: ./tests/post-release
         run: |
-          npx saucectl run --test-env sauce --ccy 5 --region us-west-1 --runner-version "github-release: ${{ steps.parse_version.outputs.version }}"
+          npx saucectl run --runner-version "github-release: ${{ steps.parse_version.outputs.version }}"
 
       - name: Notify slack on failure
         uses: 8398a7/action-slack@v3
