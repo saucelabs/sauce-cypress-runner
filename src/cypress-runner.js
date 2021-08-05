@@ -41,7 +41,7 @@ const configureReporters = function (cypressCfg, runCfg, opts) {
   // Enable cypress-multi-reporters plugin
   opts.reporter = path.join(__dirname, '../node_modules/cypress-multi-reporters/lib/MultiReporters.js');
   opts.reporterOptions = {
-    configFile: path.join(__dirname, '..', 'reporter-config.json'),
+    configFile: path.join(__dirname, '..', 'sauce-reporter-config.json'),
   };
 
   // Referencing "mocha-junit-reporter" using relative path will allow to have multiple instance of mocha-junit-reporter.
@@ -61,24 +61,19 @@ const configureReporters = function (cypressCfg, runCfg, opts) {
   console.log(cypressCfg, process.cwd());
   console.log(runCfg);
 
-  // Gather already set config
-  if (cypressCfg.reporter && cypressCfg.reporter === 'cypress-multi-reporters') {
-    const rConfig = JSON.parse(fs.readFileSync(cypressCfg.reporterOptions.configFile));
-    console.log(rConfig);
-    reporterConfig = {...reporterConfig, ...rConfig};
-  } else if (cypressCfg.reporter) {
-    console.log('Found reporter:', cypressCfg.reporter);
-    reporterConfig.reporterEnabled = `${reporterConfig.reporterEnabled}, ${cypressCfg.reporter}`;
-
-    const cfgFieldName = [_.camelCase(cypressCfg.reporter), 'ReporterOptions'].join('');
-    console.log(`Setting field ${cfgFieldName}`);
-    reporterConfig[cfgFieldName] = cypressCfg.reporterOptions || {};
+  // Adding custom reporters
+  if (runCfg && runCfg.cypress && runCfg.cypress.reporters) {
+    for (const reporter of Object.keys(runCfg.cypress.reporters)) {
+      const cfgFieldName = [_.camelCase(reporter), 'ReporterOptions'].join('');
+      reporterConfig.reporterEnabled = `${reporterConfig.reporterEnabled}, ${reporter}`;
+      reporterConfig[cfgFieldName] = runCfg.cypress.reporters[reporter] || {};
+    }
   }
 
   console.log(`Final reporterConfig:`, reporterConfig);
 
   // Save reporters config
-  fs.writeFileSync(path.join(__dirname, '..', 'reporter-config.json'), JSON.stringify(reporterConfig));
+  fs.writeFileSync(path.join(__dirname, '..', 'sauce-reporter-config.json'), JSON.stringify(reporterConfig));
   return opts;
 };
 
