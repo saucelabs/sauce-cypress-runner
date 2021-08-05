@@ -96,7 +96,7 @@ const getCypressOpts = function (runCfg, suiteName) {
     throw new Error(`Unable to locate the cypress config file. Looked for '${getAbsolutePath(cypressCfgFile)}'.`);
   }
 
-  const cypressCfg = JSON.parse(fs.readFileSync(cypressCfgFile), 'utf8');
+  const cypressCfg = JSON.parse(fs.readFileSync(cypressCfgFile, 'utf8'));
 
   let opts = {
     project: path.dirname(cypressCfgFile),
