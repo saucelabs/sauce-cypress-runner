@@ -42,11 +42,6 @@ Array [
         "env": Object {
           "HELLO": "WORLD",
         },
-        "reporter": "custom-reporter.js",
-        "reporterOptions": Object {
-          "mochaFile": "/fake/runner/__assets__/[suite].xml",
-          "specRoot": "cypress/integration",
-        },
         "screenshotsFolder": "/fake/runner/__assets__",
         "testFiles": undefined,
         "video": undefined,
@@ -56,6 +51,10 @@ Array [
       },
       "configFile": "fake-cypress.json",
       "project": "/fake/runner",
+      "reporter": "MultiReporters.js",
+      "reporterOptions": Object {
+        "configFile": "/Users/felixpescarmona/Projects/sauce-cypress-runner/sauce-reporter-config.json",
+      },
     },
   ],
 ]
@@ -87,11 +86,6 @@ Array [
         "env": Object {
           "HELLO": "WORLD",
         },
-        "reporter": "custom-reporter.js",
-        "reporterOptions": Object {
-          "mochaFile": "/fake/runner/__assets__/[suite].xml",
-          "specRoot": "cypress/integration",
-        },
         "screenshotsFolder": "/fake/runner/__assets__",
         "testFiles": undefined,
         "video": undefined,
@@ -101,6 +95,10 @@ Array [
       },
       "configFile": "fake-cypress.json",
       "project": "/fake/runner",
+      "reporter": "MultiReporters.js",
+      "reporterOptions": Object {
+        "configFile": "sauce-reporter-config.json",
+      },
     },
   ],
 ]
