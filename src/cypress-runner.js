@@ -44,19 +44,24 @@ const configureReporters = function (cypressCfg, runCfg, opts) {
     configFile: path.join(__dirname, '..', 'sauce-reporter-config.json'),
   };
 
+  const customReporter = path.join(__dirname, '../src/custom-reporter.js');
+  const junitReporter = path.join(__dirname, '../node_modules/mocha-junit-reporter/index.js');
+
   // Referencing "mocha-junit-reporter" using relative path will allow to have multiple instance of mocha-junit-reporter.
   // That permits to have a configuration specific to us, and in addition to keep customer's one.
   let reporterConfig = {
-    reporterEnabled: `spec, ../src/custom-reporter.js, ../node_modules/mocha-junit-reporter/index.js`,
-    nodeModulesMochaJunitReporterReporterOptions: {
+    reporterEnabled: `spec, ${customReporter}, ${junitReporter}`,
+    [[_.camelCase(customReporter), 'ReporterOptions'].join('')]: {
       mochaFile: `${runCfg.resultsDir}/[suite].xml`,
       specRoot: cypressCfg.integrationFolder || 'cypress/integration'
     },
-    srcCustomReporterJsReporterOptions: {
+    [[_.camelCase(junitReporter), 'ReporterOptions'].join('')]: {
       mochaFile: `${runCfg.resultsDir}/[suite].xml`,
       specRoot: cypressCfg.integrationFolder || 'cypress/integration'
     }
   };
+
+  // console.log('Cypress Cfg:', runCfg.cypress);
 
   // Adding custom reporters
   if (runCfg && runCfg.cypress && runCfg.cypress.reporters) {
@@ -66,6 +71,8 @@ const configureReporters = function (cypressCfg, runCfg, opts) {
       reporterConfig[cfgFieldName] = runCfg.cypress.reporters[reporter] || {};
     }
   }
+
+  // console.log('Final reporters config:', reporterConfig);
 
   // Save reporters config
   fs.writeFileSync(path.join(__dirname, '..', 'sauce-reporter-config.json'), JSON.stringify(reporterConfig));
@@ -81,18 +88,20 @@ const getCypressOpts = function (runCfg, suiteName) {
     throw new Error(`Could not find suite named '${suiteName}'; available suites='${JSON.stringify(suiteNames)}`);
   }
 
-  let cypressCfgFile = path.basename(runCfg.cypress.configFile);
+  const projectDir = path.dirname(getAbsolutePath(runCfg.path));
+
+  let cypressCfgFile = path.join(projectDir, runCfg.cypress.configFile);
+  console.log(`Looking: ${cypressCfgFile} / ${getAbsolutePath(cypressCfgFile)}`);
   if (!fs.existsSync(getAbsolutePath(cypressCfgFile))) {
     throw new Error(`Unable to locate the cypress config file. Looked for '${getAbsolutePath(cypressCfgFile)}'.`);
   }
 
-  // FIXME: SauceProjectDir should be updated
-  const cypressCfg = JSON.parse(fs.readFileSync(path.join(process.env.SAUCE_PROJECT_DIR, cypressCfgFile), 'utf8'));
+  const cypressCfg = JSON.parse(fs.readFileSync(cypressCfgFile), 'utf8');
 
   let opts = {
-    project: path.dirname(getAbsolutePath(runCfg.path)),
+    project: path.dirname(cypressCfgFile),
     browser: process.env.SAUCE_BROWSER || suite.browser || 'chrome',
-    configFile: cypressCfgFile,
+    configFile: path.basename(cypressCfgFile),
     config: {
       testFiles: suite.config.testFiles,
       videosFolder: runCfg.resultsDir,
