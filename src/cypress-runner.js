@@ -36,6 +36,52 @@ const report = async (results, browserName, runCfg, suiteName, startTime, endTim
   return failures === 0;
 };
 
+// Configure reporters
+const configureReporters = function (cypressCfg, runCfg, opts) {
+  // Enable cypress-multi-reporters plugin
+  opts.reporter = path.join(__dirname, '../node_modules/cypress-multi-reporters/lib/MultiReporters.js');
+  opts.reporterOptions = {
+    configFile: path.join(__dirname, '..', 'reporter-config.json'),
+  };
+
+  // Referencing "mocha-junit-reporter" using relative path will allow to have multiple instance of mocha-junit-reporter.
+  // That permits to have a configuration specific to us, and in addition to keep customer's one.
+  let reporterConfig = {
+    reporterEnabled: `spec, ../src/custom-reporter.js, ../node_modules/mocha-junit-reporter/index.js`,
+    nodeModulesMochaJunitReporterReporterOptions: {
+      mochaFile: `${runCfg.resultsDir}/[suite].xml`,
+      specRoot: cypressCfg.integrationFolder || 'cypress/integration'
+    },
+    srcCustomReporterJsReporterOptions: {
+      mochaFile: `${runCfg.resultsDir}/[suite].xml`,
+      specRoot: cypressCfg.integrationFolder || 'cypress/integration'
+    }
+  };
+
+  console.log(cypressCfg, process.cwd());
+  console.log(runCfg);
+
+  // Gather already set config
+  if (cypressCfg.reporter && cypressCfg.reporter === 'cypress-multi-reporters') {
+    const rConfig = JSON.parse(fs.readFileSync(cypressCfg.reporterOptions.configFile));
+    console.log(rConfig);
+    reporterConfig = {...reporterConfig, ...rConfig};
+  } else if (cypressCfg.reporter) {
+    console.log('Found reporter:', cypressCfg.reporter);
+    reporterConfig.reporterEnabled = `${reporterConfig.reporterEnabled}, ${cypressCfg.reporter}`;
+
+    const cfgFieldName = [_.camelCase(cypressCfg.reporter), 'ReporterOptions'].join('');
+    console.log(`Setting field ${cfgFieldName}`);
+    reporterConfig[cfgFieldName] = cypressCfg.reporterOptions || {};
+  }
+
+  console.log(`Final reporterConfig:`, reporterConfig);
+
+  // Save reporters config
+  fs.writeFileSync(path.join(__dirname, '..', 'reporter-config.json'), JSON.stringify(reporterConfig));
+  return opts;
+};
+
 const getCypressOpts = function (runCfg, suiteName) {
   // Get user settings from suites.
   const suites = runCfg.suites || [];
@@ -50,6 +96,7 @@ const getCypressOpts = function (runCfg, suiteName) {
     throw new Error(`Unable to locate the cypress config file. Looked for '${getAbsolutePath(cypressCfgFile)}'.`);
   }
 
+  // FIXME: SauceProjectDir should be updated
   const cypressCfg = JSON.parse(fs.readFileSync(path.join(process.env.SAUCE_PROJECT_DIR, cypressCfgFile), 'utf8'));
 
   let opts = {
@@ -73,46 +120,7 @@ const getCypressOpts = function (runCfg, suiteName) {
     opts.config.videoUploadOnPasses = true;
   }
 
-  // Reporter addition
-  opts.reporter = path.join(__dirname, '../node_modules/cypress-multi-reporters/lib/MultiReporters.js');
-  opts.reporterOptions = {
-    configFile: path.join(__dirname, '..', 'reporter-config.json'),
-  };
-
-  // Referencing "mocha-junit-reporter" using relative path will allow to have multiple instance of mocha-junit-reporter.
-  // That permits to have a configuration specific to us, and in addition to keep customer's one.
-  let reporterConfig = {
-    reporterEnabled: `spec, ../src/custom-reporter.js, ../node_modules/mocha-junit-reporter/index.js`,
-    nodeModulesMochaJunitReporterReporterOptions: {
-      mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: cypressCfg.integrationFolder || 'cypress/integration'
-    },
-    srcCustomReporterJsReporterOptions: {
-      mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: cypressCfg.integrationFolder || 'cypress/integration'
-    }
-  };
-
-  console.log(cypressCfgFile, cypressCfg, process.cwd());
-
-  // Gather already set config
-  if (cypressCfg.reporter && cypressCfg.reporter === 'cypress-multi-reporters') {
-    const rConfig = JSON.parse(fs.readFileSync(cypressCfg.reporterOptions.configFile));
-    console.log(rConfig);
-    reporterConfig = {...reporterConfig, ...rConfig};
-  } else if (cypressCfg.reporter) {
-    console.log('Found reporter:', cypressCfg.reporter);
-    reporterConfig.reporterEnabled = `${reporterConfig.reporterEnabled}, ${cypressCfg.reporter}`;
-
-    const cfgFieldName = [_.camelCase(cypressCfg.reporter), 'ReporterOptions'].join('');
-    console.log(`Setting field ${cfgFieldName}`);
-    reporterConfig[cfgFieldName] = cypressCfg.reporterOptions || {};
-  }
-
-  console.log(`Final reporterConfig:`, reporterConfig);
-
-  // Save reporters config
-  fs.writeFileSync(path.join(__dirname, '..', 'reporter-config.json'), JSON.stringify(reporterConfig));
+  opts = configureReporters(cypressCfg, runCfg, opts);
 
   _.defaultsDeep(opts.config, suite.config);
   return opts;
