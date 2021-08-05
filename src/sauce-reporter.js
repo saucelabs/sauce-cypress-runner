@@ -6,7 +6,6 @@ const _ = require('lodash');
 const ffmpeg = require('fluent-ffmpeg');
 const { promisify } = require('util');
 const ffprobe = promisify(ffmpeg.ffprobe);
-const utils = require('sauce-testrunner-utils');
 const { updateExportedValue } = require('sauce-testrunner-utils').saucectl;
 const { shouldRecordVideo } = require('sauce-testrunner-utils');
 const convert = require('xml-js');
@@ -150,8 +149,6 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics, testName
       const screenshotPaths = fs.readdirSync(screenshotsFolder);
       screenshotPaths.forEach((file) => {
         let screenshot = path.join(screenshotsFolder, file);
-        // rename screenshots to allow uploading screenshots with the same name but different folders
-        screenshot = utils.renameScreenshot(specFile, screenshot, resultsFolder, path.basename(file));
         assets.push(screenshot);
       });
     }
@@ -164,8 +161,6 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics, testName
         }
         continue;
       }
-      // rename assets to allow uploading assets with the same name but different folders
-      assetFile = utils.renameAsset({specFile: asset.name, oldFilePath: assetFile, resultsFolder});
       assets.push(assetFile);
 
       if (asset.name.endsWith('.mp4')) {
