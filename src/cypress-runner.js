@@ -58,9 +58,6 @@ const configureReporters = function (cypressCfg, runCfg, opts) {
     }
   };
 
-  console.log(cypressCfg, process.cwd());
-  console.log(runCfg);
-
   // Adding custom reporters
   if (runCfg && runCfg.cypress && runCfg.cypress.reporters) {
     for (const reporter of Object.keys(runCfg.cypress.reporters)) {
@@ -69,8 +66,6 @@ const configureReporters = function (cypressCfg, runCfg, opts) {
       reporterConfig[cfgFieldName] = runCfg.cypress.reporters[reporter] || {};
     }
   }
-
-  console.log(`Final reporterConfig:`, reporterConfig);
 
   // Save reporters config
   fs.writeFileSync(path.join(__dirname, '..', 'sauce-reporter-config.json'), JSON.stringify(reporterConfig));
