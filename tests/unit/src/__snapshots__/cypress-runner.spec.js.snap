@@ -53,7 +53,7 @@ Array [
       "project": "/fake/runner",
       "reporter": "MultiReporters.js",
       "reporterOptions": Object {
-        "configFile": "/Users/felixpescarmona/Projects/sauce-cypress-runner/sauce-reporter-config.json",
+        "configFile": "sauce-reporter-config.json",
       },
     },
   ],

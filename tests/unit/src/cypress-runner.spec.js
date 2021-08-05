@@ -55,6 +55,7 @@ describe('.cypressRunner', function () {
     await cypressRunner('/fake/runner/path', 'fake-suite');
     // Change reporter to not be fully-qualified path
     cypressRunSpy.mock.calls[0][0].reporter = path.basename(cypressRunSpy.mock.calls[0][0].reporter);
+    cypressRunSpy.mock.calls[0][0].reporterOptions.configFile = path.basename(cypressRunSpy.mock.calls[0][0].reporterOptions.configFile);
     expect(cypressRunSpy.mock.calls).toMatchSnapshot();
     expect(SauceReporter.prepareAssets.mock.calls).toMatchSnapshot();
   });
