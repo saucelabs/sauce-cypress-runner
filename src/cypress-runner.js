@@ -63,10 +63,10 @@ const configureReporters = function (cypressCfg, runCfg, opts) {
 
   // Adding custom reporters
   if (runCfg && runCfg.cypress && runCfg.cypress.reporters) {
-    for (const reporter of Object.keys(runCfg.cypress.reporters)) {
-      const cfgFieldName = [_.camelCase(reporter), 'ReporterOptions'].join('');
-      reporterConfig.reporterEnabled = `${reporterConfig.reporterEnabled}, ${reporter}`;
-      reporterConfig[cfgFieldName] = runCfg.cypress.reporters[reporter] || {};
+    for (const reporter of runCfg.cypress.reporters) {
+      const cfgFieldName = [_.camelCase(reporter.name), 'ReporterOptions'].join('');
+      reporterConfig.reporterEnabled = `${reporterConfig.reporterEnabled}, ${reporter.name}`;
+      reporterConfig[cfgFieldName] = reporter.options || {};
     }
   }
 
@@ -87,7 +87,6 @@ const getCypressOpts = function (runCfg, suiteName) {
   const projectDir = path.dirname(getAbsolutePath(runCfg.path));
 
   let cypressCfgFile = path.join(projectDir, runCfg.cypress.configFile);
-  console.log(`Looking: ${cypressCfgFile} / ${getAbsolutePath(cypressCfgFile)}`);
   if (!fs.existsSync(getAbsolutePath(cypressCfgFile))) {
     throw new Error(`Unable to locate the cypress config file. Looked for '${getAbsolutePath(cypressCfgFile)}'.`);
   }
@@ -166,3 +165,4 @@ if (require.main === module) {
 }
 
 exports.cypressRunner = cypressRunner;
+exports.configureReporters = configureReporters;
