@@ -42,10 +42,9 @@ Array [
         "env": Object {
           "HELLO": "WORLD",
         },
-        "reporter": "custom-reporter.js",
+        "reporter": "MultiReporters.js",
         "reporterOptions": Object {
-          "mochaFile": "/fake/runner/__assets__/[suite].xml",
-          "specRoot": "cypress/integration",
+          "configFile": "sauce-reporter-config.json",
         },
         "screenshotsFolder": "/fake/runner/__assets__",
         "testFiles": undefined,
@@ -87,10 +86,9 @@ Array [
         "env": Object {
           "HELLO": "WORLD",
         },
-        "reporter": "custom-reporter.js",
+        "reporter": "MultiReporters.js",
         "reporterOptions": Object {
-          "mochaFile": "/fake/runner/__assets__/[suite].xml",
-          "specRoot": "cypress/integration",
+          "configFile": "sauce-reporter-config.json",
         },
         "screenshotsFolder": "/fake/runner/__assets__",
         "testFiles": undefined,
