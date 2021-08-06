@@ -39,8 +39,8 @@ const report = async (results, browserName, runCfg, suiteName, startTime, endTim
 // Configure reporters
 const configureReporters = function (cypressCfg, runCfg, opts) {
   // Enable cypress-multi-reporters plugin
-  opts.reporter = path.join(__dirname, '../node_modules/cypress-multi-reporters/lib/MultiReporters.js');
-  opts.reporterOptions = {
+  opts.config.reporter = path.join(__dirname, '../node_modules/cypress-multi-reporters/lib/MultiReporters.js');
+  opts.config.reporterOptions = {
     configFile: path.join(__dirname, '..', 'sauce-reporter-config.json'),
   };
 

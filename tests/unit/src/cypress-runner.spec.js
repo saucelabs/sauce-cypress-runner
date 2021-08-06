@@ -54,8 +54,8 @@ describe('.cypressRunner', function () {
     process.env.SAUCE_ACCESS_KEY = 'fake-sauce-accesskey';
     await cypressRunner('/fake/runner/path', 'fake-suite');
     // Change reporter to not be fully-qualified path
-    cypressRunSpy.mock.calls[0][0].reporter = path.basename(cypressRunSpy.mock.calls[0][0].reporter);
-    cypressRunSpy.mock.calls[0][0].reporterOptions.configFile = path.basename(cypressRunSpy.mock.calls[0][0].reporterOptions.configFile);
+    cypressRunSpy.mock.calls[0][0].config.reporter = path.basename(cypressRunSpy.mock.calls[0][0].config.reporter);
+    cypressRunSpy.mock.calls[0][0].config.reporterOptions.configFile = path.basename(cypressRunSpy.mock.calls[0][0].config.reporterOptions.configFile);
     expect(cypressRunSpy.mock.calls).toMatchSnapshot();
     expect(SauceReporter.prepareAssets.mock.calls).toMatchSnapshot();
   });
@@ -92,8 +92,8 @@ describe('.cypressRunner', function () {
       const { calls } = cypressRunSpy.mock;
 
       // Rename to basename to remove home dir
-      calls[0][0].reporter = path.basename(calls[0][0].reporter);
-      calls[0][0].reporterOptions.configFile = path.basename(calls[0][0].reporterOptions.configFile);
+      calls[0][0].config.reporter = path.basename(calls[0][0].config.reporter);
+      calls[0][0].config.reporterOptions.configFile = path.basename(calls[0][0].config.reporterOptions.configFile);
       expect(cypressRunSpy.mock.calls).toMatchSnapshot();
     });
   });
