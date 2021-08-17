@@ -318,9 +318,10 @@ SauceReporter.mergeJunitFile = (specFiles, resultsFolder, testName, browserName)
   let totalFailure = 0;
   let totalDisabled = 0;
   let totalTime = 0.0000;
+  let opts = {compact: true, spaces: 4}
   try {
     const xmlData = fs.readFileSync(path.join(resultsFolder, `${specFiles[0]}.xml`), 'utf8');
-    result = convert.xml2js(xmlData, {compact: true, spaces: 4});
+    result = convert.xml2js(xmlData, opts);
   } catch (err) {
     console.error(err);
   }
@@ -328,7 +329,7 @@ SauceReporter.mergeJunitFile = (specFiles, resultsFolder, testName, browserName)
     let jsObj;
     try {
       const xmlData = fs.readFileSync(path.join(resultsFolder, `${specFiles[i]}.xml`), 'utf8');
-      jsObj = convert.xml2js(xmlData, {compact: true, spaces: 4});
+      jsObj = convert.xml2js(xmlData, opts);
     } catch (err) {
       console.error(err);
     }
@@ -350,9 +351,15 @@ SauceReporter.mergeJunitFile = (specFiles, resultsFolder, testName, browserName)
   result.testsuites._attributes.disabled = totalDisabled;
   result.testsuites.testsuite = result.testsuites.testsuite.filter((item) => item._attributes.name !== 'Root Suite');
   for (let i = 0; i < result.testsuites.testsuite.length; i++) {
+    const testcase = result.testsuites.testsuite[i].testcase;
     result.testsuites.testsuite[i]._attributes.id = i;
     result.testsuites.testsuite[i].properties = {};
+    if (testcase.failure) {
+      result.testsuites.testsuite[i].testcase.failure = testcase.failure._cdata;
+      delete result.testsuites.testsuite[i].testcase.failure._cdata;
+    }
     result.testsuites.testsuite[i].properties.property = [
+
       {
         _attributes: {
           name: 'platformName',
@@ -366,10 +373,18 @@ SauceReporter.mergeJunitFile = (specFiles, resultsFolder, testName, browserName)
         }
       }
     ];
-  }
-  try {
-    let options = {compact: true, spaces: 4};
-    let xmlResult = convert.js2xml(result, options);
+ }
+ try {
+    opts.textFn = (val) => val.replace(/[<>&'"]/g, function (c) {
+      switch (c) {
+        case '<': return '&lt;';
+        case '>': return '&gt;';
+        case '&': return '&amp;';
+        case '\'': return '&apos;';
+        case '"': return '&quot;';
+      }
+    });
+    let xmlResult = convert.js2xml(result, opts);
     fs.writeFileSync(path.join(resultsFolder, 'junit.xml'), xmlResult);
   } catch (err) {
     console.error(err);
