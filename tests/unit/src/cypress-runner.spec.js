@@ -30,7 +30,7 @@ describe('.cypressRunner', function () {
         configFile: 'fake-cypress.json',
       },
       suites: [
-        {name: 'fake-suite', config: {env: {HELLO: 'WORLD'}}}
+        {name: 'fake-suite', platformName: 'Windows 10', config: {env: {HELLO: 'WORLD'}}}
       ]
     };
     getAbsolutePath.mockImplementation((path) => path);

@@ -12,6 +12,13 @@ const report = async (results, browserName, runCfg, suiteName, startTime, endTim
   let specFiles = runs.map((run) => run.spec.name);
 
   let failures = results.failures || results.totalFailed;
+  let platformName = '';
+  for (let c of runCfg.suites) {
+    if (c.name === suiteName) {
+      platformName = c.platformName;
+      break;
+    }
+  }
 
   let assets = await prepareAssets(
       specFiles,
@@ -19,6 +26,7 @@ const report = async (results, browserName, runCfg, suiteName, startTime, endTim
       metrics,
       suiteName,
       browserName,
+      platformName,
   );
   // Run in cloud mode
   if (process.env.SAUCE_VM) {

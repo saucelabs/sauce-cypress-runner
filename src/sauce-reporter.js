@@ -115,7 +115,7 @@ SauceReporter.createJobWorkaround = async (api, suiteName, metadata, browserName
   return sessionId || 0;
 };
 
-SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics, testName, browserName) => {
+SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics, testName, browserName, platformName) => {
   const assets = [];
   const videos = [];
 
@@ -133,7 +133,7 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics, testName
     assets.push(mtFile);
   }
 
-  SauceReporter.mergeJunitFile(specFiles, resultsFolder, testName, browserName);
+  SauceReporter.mergeJunitFile(specFiles, resultsFolder, testName, browserName, platformName);
 
   for (let specFile of specFiles) {
     const sauceAssets = [
@@ -308,7 +308,7 @@ SauceReporter.areVideosSameSize = async (videos) => {
   return true;
 };
 
-SauceReporter.mergeJunitFile = (specFiles, resultsFolder, testName, browserName) => {
+SauceReporter.mergeJunitFile = (specFiles, resultsFolder, testName, browserName, platformName) => {
   if (specFiles.length === 0) {
     return;
   }
@@ -318,7 +318,7 @@ SauceReporter.mergeJunitFile = (specFiles, resultsFolder, testName, browserName)
   let totalFailure = 0;
   let totalDisabled = 0;
   let totalTime = 0.0000;
-  let opts = {compact: true, spaces: 4}
+  let opts = {compact: true, spaces: 4};
   try {
     const xmlData = fs.readFileSync(path.join(resultsFolder, `${specFiles[0]}.xml`), 'utf8');
     result = convert.xml2js(xmlData, opts);
@@ -350,6 +350,9 @@ SauceReporter.mergeJunitFile = (specFiles, resultsFolder, testName, browserName)
   result.testsuites._attributes.error = totalErr;
   result.testsuites._attributes.disabled = totalDisabled;
   result.testsuites.testsuite = result.testsuites.testsuite.filter((item) => item._attributes.name !== 'Root Suite');
+  if (process.platform.toLowerCase() === 'linux') {
+    platformName = 'Linux';
+  }
   for (let i = 0; i < result.testsuites.testsuite.length; i++) {
     const testcase = result.testsuites.testsuite[i].testcase;
     result.testsuites.testsuite[i]._attributes.id = i;
@@ -363,7 +366,7 @@ SauceReporter.mergeJunitFile = (specFiles, resultsFolder, testName, browserName)
       {
         _attributes: {
           name: 'platformName',
-          value: process.platform,
+          value: platformName,
         }
       },
       {
@@ -373,8 +376,8 @@ SauceReporter.mergeJunitFile = (specFiles, resultsFolder, testName, browserName)
         }
       }
     ];
- }
- try {
+  }
+  try {
     opts.textFn = (val) => val.replace(/[<>&'"]/g, function (c) {
       switch (c) {
         case '<': return '&lt;';
