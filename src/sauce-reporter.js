@@ -357,7 +357,7 @@ SauceReporter.mergeJunitFile = (specFiles, resultsFolder, testName, browserName,
     const testcase = result.testsuites.testsuite[i].testcase;
     result.testsuites.testsuite[i]._attributes.id = i;
     result.testsuites.testsuite[i].properties = {};
-    if (testcase.failure) {
+    if (testcase && testcase.failure) {
       result.testsuites.testsuite[i].testcase.failure = testcase.failure._cdata;
       delete result.testsuites.testsuite[i].testcase.failure._cdata;
     }
