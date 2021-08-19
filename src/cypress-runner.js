@@ -105,6 +105,7 @@ const getCypressOpts = function (runCfg, suiteName) {
     project: path.dirname(cypressCfgFile),
     browser: process.env.SAUCE_BROWSER || suite.browser || 'chrome',
     configFile: path.basename(cypressCfgFile),
+    headless: true,
     config: {
       testFiles: suite.config.testFiles,
       videosFolder: runCfg.resultsDir,
