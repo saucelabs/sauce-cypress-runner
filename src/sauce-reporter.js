@@ -353,6 +353,10 @@ SauceReporter.mergeJunitFile = (specFiles, resultsFolder, testName, browserName,
   if (process.platform.toLowerCase() === 'linux') {
     platformName = 'Linux';
   }
+  const browsers = browserName.split(':');
+  if (browsers.length > 0) {
+    browserName = browsers[browsers.length - 1];
+  }
   for (let i = 0; i < result.testsuites.testsuite.length; i++) {
     const testcase = result.testsuites.testsuite[i].testcase;
     result.testsuites.testsuite[i]._attributes.id = i;
