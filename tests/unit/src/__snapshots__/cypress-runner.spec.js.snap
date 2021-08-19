@@ -17,6 +17,7 @@ Array [
             },
           },
           "name": "fake-suite",
+          "platformName": "Windows 10",
         },
       ],
     },
@@ -73,6 +74,7 @@ Array [
     ],
     "fake-suite",
     "chrome",
+    "Windows 10",
   ],
 ]
 `;
