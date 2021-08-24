@@ -362,8 +362,9 @@ SauceReporter.mergeJunitFile = (specFiles, resultsFolder, testName, browserName,
     result.testsuites.testsuite[i]._attributes.id = i;
     result.testsuites.testsuite[i].properties = {};
     if (testcase && testcase.failure) {
-      result.testsuites.testsuite[i].testcase.failure = testcase.failure._cdata;
-      delete result.testsuites.testsuite[i].testcase.failure._cdata;
+      result.testsuites.testsuite[i].testcase.failure._attributes.message = escapeXML(testcase.failure._attributes.message || '');
+      result.testsuites.testsuite[i].testcase.failure._attributes.type = testcase.failure._attributes.type || '';
+      result.testsuites.testsuite[i].testcase.failure._cdata = testcase.failure._cdata || '';
     }
     result.testsuites.testsuite[i].properties.property = [
 
