@@ -24,3 +24,34 @@ jobs:
           SAUCE_CYPRESS_VIDEO_RECORDING: false
         run: bash tests/integration/integration-tests.sh
 
+  build-artifact:
+    runs-on: windows-latest
+    needs: [integration]
+    steps:
+      - name: Use Node.js v14.x
+        if: ${{ steps.prep.outputs.asset_id == '' }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+      - name: Update Release version
+        run: npm version --no-git-tag-version 1.0.0
+
+      - run: npm ci --production
+
+      - name: Bundle Directory
+        run: bash ./scripts/bundle.sh
+
+      - name: Archive bundle
+        uses: azure/powershell@v1
+        with:
+          inlineScript: |
+            Compress-Archive bundle/ sauce-cypress-runner.zip
+          azPSVersion: '3.1.0'
+
+      - name: Save bundle
+        uses: actions/upload-artifact@v2
+        with:
+          name: bundle.zip
+          path: |
+            bundle.zip
