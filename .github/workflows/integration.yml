@@ -28,6 +28,11 @@ jobs:
     runs-on: windows-latest
     needs: [integration]
     steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
       - name: Use Node.js v14.x
         if: ${{ steps.prep.outputs.asset_id == '' }}
         uses: actions/setup-node@v1
