@@ -57,6 +57,4 @@ jobs:
       - name: Save bundle
         uses: actions/upload-artifact@v2
         with:
-          name: bundle
-          path: |
-            sauce-cypress-runner.zip
+          path: sauce-cypress-runner.zip
