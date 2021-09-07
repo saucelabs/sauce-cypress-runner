@@ -47,9 +47,20 @@ jobs:
       - name: Bundle Directory
         run: bash ./scripts/bundle.sh
 
-      - name: Attach bundle to pipeline
-        uses: actions/upload-artifact@v2
+      - uses: google-github-actions/setup-gcloud@master
         with:
-          name: sauce-cypress-runner.zip
-          path: |
-            bundle/
+          version: '290.0.1'
+          service_account_key: ${{ secrets.GCS_TOOL_SA_KEY }}
+          project_id: ${{ secrets.GCS_TOOL_PROJECT }}
+
+      - name: Upload artifact to GCS
+        run: |
+          gsutils cp ./bundle.zip gs://${{ secrets.GCS_TOOL_BUCKET }}/bundle-${{ github.run_id }}.zip
+
+      - name: Test Bundle
+        run: |
+          npx saucectl run --runner-version "url: https://storage.googleapis.com/${{ secrets.GCS_TOOL_BUCKET }}/bundle-${{ github.run_id }}.zip"
+
+      - name: Delete artifact from GCS
+        run: |
+          gsutils rm gs://${{ secrets.GCS_TOOL_BUCKET }}/bundle-${{ github.run_id }}.zip
