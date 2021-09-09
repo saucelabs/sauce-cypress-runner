@@ -5,6 +5,10 @@ on:
     branches:
       - master
 
+env:
+  SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+  SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
+
 jobs:
   integration:
     runs-on: ubuntu-latest
@@ -24,7 +28,7 @@ jobs:
           SAUCE_CYPRESS_VIDEO_RECORDING: false
         run: bash tests/integration/integration-tests.sh
 
-  build-artifact:
+  test-windows-bundle:
     runs-on: windows-latest
     needs: [integration]
     steps:
