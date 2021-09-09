@@ -59,7 +59,7 @@ jobs:
 
       - name: Upload artifact to GCS
         run: |
-          gsutils cp ./bundle.zip gs://${{ secrets.GCS_RUNNER_BUCKET }}/bundle-${{ github.run_id }}.zip
+          gsutil cp ./bundle.zip gs://${{ secrets.GCS_RUNNER_BUCKET }}/bundle-${{ github.run_id }}.zip
 
       - name: Test bundle
         run: |
