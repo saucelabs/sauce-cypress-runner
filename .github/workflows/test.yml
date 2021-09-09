@@ -88,5 +88,6 @@ jobs:
           gsutil cp ./sauce-cypress-runner.zip gs://${{ secrets.GCS_RUNNER_BUCKET }}/sauce-cypress-runner-${{ github.run_id }}.zip
 
       - name: Test on Sauce
+        working-directory: ./tests/kitchen-sink-tests
         run: |
           npx saucectl run --runner-version "url: https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/sauce-cypress-runner-${{ github.run_id }}.zip"
