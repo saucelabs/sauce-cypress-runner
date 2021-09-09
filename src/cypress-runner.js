@@ -101,10 +101,17 @@ const getCypressOpts = function (runCfg, suiteName) {
 
   const cypressCfg = JSON.parse(fs.readFileSync(cypressCfgFile, 'utf8'));
 
+  let headed = true;
+  if (suite.config.headless) {
+    headed = false;
+  }
+
   let opts = {
     project: path.dirname(cypressCfgFile),
     browser: process.env.SAUCE_BROWSER || suite.browser || 'chrome',
     configFile: path.basename(cypressCfgFile),
+    headed,
+    headless: !headed,
     config: {
       testFiles: suite.config.testFiles,
       videosFolder: runCfg.resultsDir,
