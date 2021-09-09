@@ -50,17 +50,13 @@ jobs:
       - uses: google-github-actions/setup-gcloud@master
         with:
           version: '290.0.1'
-          service_account_key: ${{ secrets.GCS_TOOL_SA_KEY }}
-          project_id: ${{ secrets.GCS_TOOL_PROJECT }}
+          service_account_key: ${{ secrets.GCS_RUNNER_SA_KEY }}
+          project_id: ${{ secrets.GCS_RUNNER_PROJECT_ID }}
 
       - name: Upload artifact to GCS
         run: |
-          gsutils cp ./bundle.zip gs://${{ secrets.GCS_TOOL_BUCKET }}/bundle-${{ github.run_id }}.zip
+          gsutils cp ./bundle.zip gs://${{ secrets.GCS_RUNNER_BUCKET }}/bundle-${{ github.run_id }}.zip
 
-      - name: Test Bundle
+      - name: Test bundle
         run: |
-          npx saucectl run --runner-version "url: https://storage.googleapis.com/${{ secrets.GCS_TOOL_BUCKET }}/bundle-${{ github.run_id }}.zip"
-
-      - name: Delete artifact from GCS
-        run: |
-          gsutils rm gs://${{ secrets.GCS_TOOL_BUCKET }}/bundle-${{ github.run_id }}.zip
+          npx saucectl run --runner-version "url: https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/bundle-${{ github.run_id }}.zip"
