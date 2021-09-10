@@ -23,4 +23,3 @@ jobs:
         env:
           SAUCE_CYPRESS_VIDEO_RECORDING: false
         run: bash tests/integration/integration-tests.sh
-

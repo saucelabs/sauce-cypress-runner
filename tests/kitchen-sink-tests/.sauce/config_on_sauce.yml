@@ -1,0 +1,21 @@
+apiVersion: v1alpha
+kind: cypress
+sauce:
+  metadata:
+    tags:
+      - e2e
+      - release team
+      - kitchen-sink
+    build: Release $CI_COMMIT_SHORT_SHA
+  region: us-west-1
+defaults:
+  mode: sauce
+cypress:
+  configFile: cypress.json
+  version: 8.3.0
+
+suites:
+  - name: "kitchen-sink on Sauce"
+    browser: "chrome"
+    config:
+      testFiles: [ "examples/*.*" ]
