@@ -120,6 +120,8 @@ jobs:
 
       - name: Run kitchensink
         run: |
+          npm start &
+          sleep 5
         working-directory: ./kitchensink/
 
       - name: Start sauce-connect
@@ -131,9 +133,5 @@ jobs:
 
       - name: run saucectl
         run: |
-          pushd ./kitchensink/
-          npm start &
-          popd
-          pushd ./tests/sauce-connect/
           saucectl run --config .sauce/config.yml --runner-version "url: https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/sauce-cypress-runner-${{ github.run_id }}.zip"
-          popd
+        working-directory: ./tests/sauce-connect/
