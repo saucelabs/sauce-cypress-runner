@@ -91,3 +91,44 @@ jobs:
         working-directory: ./tests/kitchen-sink-tests
         run: |
           npx saucectl run --config .sauce/config_on_sauce.yml --runner-version "url: https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/sauce-cypress-runner-${{ github.run_id }}.zip"
+
+  run-bundle-with-sauce-connect:
+    runs-on: ubuntu-latest
+    needs: [build-windows-bundle-and-test]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          repository: cypress-io/cypress-example-kitchensink
+          ref: 'v1.15.2'
+          path: 'kitchensink'
+
+      - name: Use Node.js v14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+      - name: Install saucectl
+        run: npm install -g saucectl
+
+      - name: Build kitchensink
+        run: npm install
+        working-directory: ./kitchensink/
+
+      - name: Run kitchensink
+        run: |
+          npm start &
+          wait 5
+        working-directory: ./kitchensink/
+
+      - name: Start sauce-connect
+        uses: saucelabs/sauce-connect-action@v2
+        with:
+          username: ${{ secrets.SAUCE_USERNAME }}
+          accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+          scVersion: 4.7.1
+
+      - name: run saucectl
+        run: |
+          saucectl run --config .sauce/config.yml --runner-version "url: https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/sauce-cypress-runner-${{ github.run_id }}.zip"
+        working-directory: ./tests/sauce-connect/
