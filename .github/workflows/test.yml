@@ -96,7 +96,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-windows-bundle-and-test]
     steps:
-      - name: Checkout
+      - name: Checkout runner
+        uses: actions/checkout@v2
+
+      - name: Checkout kitchensink
         uses: actions/checkout@v2
         with:
           repository: cypress-io/cypress-example-kitchensink
