@@ -12,7 +12,7 @@ defaults:
   mode: sauce
 cypress:
   configFile: cypress.json
-  version: 8.4.0
+  version: 8.6.0
 
 suites:
   - name: "kitchen-sink on Sauce"
