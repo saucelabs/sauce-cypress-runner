@@ -1,6 +1,6 @@
 context('Sauce-Connect', function () {
   beforeEach(function () {
-    cy.visit('http://127.0.0.1:8000/commands/actions');
+    cy.visit('http://127.0.0.1:8000/');
   });
 
   it('sc connection working', function () {
