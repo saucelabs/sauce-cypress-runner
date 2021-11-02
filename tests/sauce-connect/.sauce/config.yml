@@ -1,0 +1,21 @@
+apiVersion: v1alpha
+kind: cypress
+sauce:
+  metadata:
+    tags:
+      - sauce-connect
+    build: Pre-Release sauce-connect test
+  region: us-west-1
+  tunnel:
+    name: github-cypress-sc-check-tunnel
+defaults:
+  mode: sauce
+cypress:
+  configFile: cypress.json
+  version: 8.6.0
+
+suites:
+  - name: "kitchen-sink on Sauce"
+    browser: "chrome"
+    config:
+      testFiles: [ "*.*" ]
