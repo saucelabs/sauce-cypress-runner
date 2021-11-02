@@ -3,11 +3,11 @@ kind: cypress
 sauce:
   metadata:
     tags:
-      - e2e
-      - release team
-      - kitchen-sink
+      - sauce-connect
     build: Pre-Release sauce-connect test
   region: us-west-1
+  tunnel:
+    name: github-cypress-sc-check-tunnel
 defaults:
   mode: sauce
 cypress:

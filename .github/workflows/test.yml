@@ -99,12 +99,9 @@ jobs:
       - name: Checkout runner
         uses: actions/checkout@v2
 
-      - name: Checkout kitchensink
-        uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
         with:
-          repository: cypress-io/cypress-example-kitchensink
-          ref: 'v1.15.2'
-          path: 'kitchensink'
+          python-version: '3.x'
 
       - name: Use Node.js v14.x
         uses: actions/setup-node@v1
@@ -114,15 +111,10 @@ jobs:
       - name: Install saucectl
         run: npm install -g saucectl
 
-      - name: Build kitchensink
-        run: npm install
-        working-directory: ./kitchensink/
-
-      - name: Run kitchensink
+      - name: Run web-page
         run: |
-          npm start &
-          sleep 5
-        working-directory: ./kitchensink/
+          python -m http.server 8000 &
+        working-directory: ./tests/sauce-connect/www/
 
       - name: Start sauce-connect
         uses: saucelabs/sauce-connect-action@v2.0.0
