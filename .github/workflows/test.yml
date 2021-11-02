@@ -121,6 +121,7 @@ jobs:
         with:
           username: ${{ secrets.SAUCE_USERNAME }}
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+          tunnelIdentifier: github-cypress-sc-check-tunnel
           scVersion: 4.7.1
 
       - name: run saucectl
