@@ -49,10 +49,25 @@ describe('.cypressRunner', function () {
   afterEach(function () {
     SauceReporter.sauceReporter.mockReset();
   });
+  it('can call Cypress.run with timeout 0', async function () {
+    const run = new Promise((resolve) => {
+      setTimeout(resolve, 10);
+    });
+    cypress.run.mockImplementation(() => run);
+    process.env.SAUCE_USERNAME = 'fake-sauce-username';
+    process.env.SAUCE_ACCESS_KEY = 'fake-sauce-accesskey';
+    const status = await cypressRunner('/fake/runner/path', 'fake-suite', 0);
+    expect(status).toEqual(false);
+    // Change reporter to not be fully-qualified path
+    const {reporter} = cypressRunSpy.mock.calls[0][0].config;
+    cypressRunSpy.mock.calls[0][0].config.reporter = path.basename(reporter);
+    expect(cypressRunSpy.mock.calls).toMatchSnapshot();
+    expect(SauceReporter.prepareAssets.mock.calls).toMatchSnapshot();
+  });
   it('can call Cypress.run with basic args', async function () {
     process.env.SAUCE_USERNAME = 'fake-sauce-username';
     process.env.SAUCE_ACCESS_KEY = 'fake-sauce-accesskey';
-    await cypressRunner('/fake/runner/path', 'fake-suite');
+    await cypressRunner('/fake/runner/path', 'fake-suite', 1);
     // Change reporter to not be fully-qualified path
     const {reporter} = cypressRunSpy.mock.calls[0][0].config;
     cypressRunSpy.mock.calls[0][0].config.reporter = path.basename(reporter);
@@ -61,7 +76,7 @@ describe('.cypressRunner', function () {
   });
   it('can hardcode the browser path', async function () {
     process.env.SAUCE_BROWSER = 'C:/User/App/browser.exe:chrome';
-    await cypressRunner('/fake/runner/path', 'fake-suite');
+    await cypressRunner('/fake/runner/path', 'fake-suite', 1);
     const calledBrowser = cypressRunSpy.mock.calls[0][0].browser;
     expect(calledBrowser).toEqual('C:/User/App/browser.exe:chrome');
   });
@@ -69,7 +84,7 @@ describe('.cypressRunner', function () {
     process.env.SAUCE_USERNAME = 'bruno.alassia';
     process.env.SAUCE_ACCESS_KEY = 'i_l0ve_mayonnaise';
     process.env.SAUCE_BROWSER = 'firefox';
-    await cypressRunner('/fake/runner/path', 'fake-suite');
+    await cypressRunner('/fake/runner/path', 'fake-suite', 1);
     expect(SauceReporter.sauceReporter.mock.calls).toMatchSnapshot();
   });
   it('throws error if browser is unsupported', function () {
@@ -84,20 +99,28 @@ describe('.cypressRunner', function () {
     });
     it('returns false if there are test failures', async function () {
       cypressRunSpy.mockImplementation(() => ({failures: 100}));
-      const status = await cypressRunner('/fake/runner/path', 'fake-suite');
+      const status = await cypressRunner('/fake/runner/path', 'fake-suite', 1);
       expect(status).toEqual(false);
     });
     it('returns true if there are no test failures', async function () {
       cypressRunSpy.mockImplementation(() => ({failures: 0}));
-      const status = await cypressRunner('/fake/runner/path', 'fake-suite');
+      const status = await cypressRunner('/fake/runner/path', 'fake-suite', 1);
       expect(status).toEqual(false);
     });
     it('should take config.env as argument (DEVX-477)', async function () {
       cypressRunSpy.mockImplementation(() => ({}));
-      await cypressRunner('/fake/runner/path', 'fake-suite');
+      await cypressRunner('/fake/runner/path', 'fake-suite', 1);
       const { calls } = cypressRunSpy.mock;
       calls[0][0].config.reporter = path.basename(calls[0][0].config.reporter); // Rename to basename to remove home dir
       expect(cypressRunSpy.mock.calls).toMatchSnapshot();
+    });
+    it('call Cypress.run with timeout 0 seconds', async function () {
+      const run = new Promise((resolve) => {
+        setTimeout(resolve, 10);
+      });
+      cypress.run.mockImplementation(() => run);
+      const status = await cypressRunner('/fake/runner/path', 'fake-suite', 0);
+      expect(status).toEqual(false);
     });
   });
 });
