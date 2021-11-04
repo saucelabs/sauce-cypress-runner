@@ -12,11 +12,21 @@ const report = async (results = {}, statusCode, browserName, runCfg, suiteName, 
   let specFiles = runs.map((run) => run.spec.name);
 
   let failures = results.failures || results.totalFailed;
+  let platformName = '';
+  for (let c of runCfg.suites) {
+    if (c.name === suiteName) {
+      platformName = c.platformName;
+      break;
+    }
+  }
 
   let assets = await prepareAssets(
       specFiles,
       runCfg.resultsDir,
-      metrics
+      metrics,
+      suiteName,
+      browserName,
+      platformName,
   );
   const passed = failures === 0 && statusCode === 0
   // Run in cloud mode
@@ -35,6 +45,45 @@ const report = async (results = {}, statusCode, browserName, runCfg, suiteName, 
   return passed;
 };
 
+// Configure reporters
+const configureReporters = function (cypressCfg, runCfg, opts) {
+  // Enable cypress-multi-reporters plugin
+  opts.config.reporter = path.join(__dirname, '../node_modules/cypress-multi-reporters/lib/MultiReporters.js');
+  opts.config.reporterOptions = {
+    configFile: path.join(__dirname, '..', 'sauce-reporter-config.json'),
+  };
+
+  const customReporter = path.join(__dirname, '../src/custom-reporter.js');
+  const junitReporter = path.join(__dirname, '../node_modules/mocha-junit-reporter/index.js');
+
+  // Referencing "mocha-junit-reporter" using relative path will allow to have multiple instance of mocha-junit-reporter.
+  // That permits to have a configuration specific to us, and in addition to keep customer's one.
+  let reporterConfig = {
+    reporterEnabled: `spec, ${customReporter}, ${junitReporter}`,
+    [[_.camelCase(customReporter), 'ReporterOptions'].join('')]: {
+      mochaFile: `${runCfg.resultsDir}/[suite].xml`,
+      specRoot: cypressCfg.integrationFolder || 'cypress/integration'
+    },
+    [[_.camelCase(junitReporter), 'ReporterOptions'].join('')]: {
+      mochaFile: `${runCfg.resultsDir}/[suite].xml`,
+      specRoot: cypressCfg.integrationFolder || 'cypress/integration'
+    }
+  };
+
+  // Adding custom reporters
+  if (runCfg && runCfg.cypress && runCfg.cypress.reporters) {
+    for (const reporter of runCfg.cypress.reporters) {
+      const cfgFieldName = [_.camelCase(reporter.name), 'ReporterOptions'].join('');
+      reporterConfig.reporterEnabled = `${reporterConfig.reporterEnabled}, ${reporter.name}`;
+      reporterConfig[cfgFieldName] = reporter.options || {};
+    }
+  }
+
+  // Save reporters config
+  fs.writeFileSync(path.join(__dirname, '..', 'sauce-reporter-config.json'), JSON.stringify(reporterConfig));
+  return opts;
+};
+
 const getCypressOpts = function (runCfg, suiteName) {
   // Get user settings from suites.
   const suites = runCfg.suites || [];
@@ -44,27 +93,31 @@ const getCypressOpts = function (runCfg, suiteName) {
     throw new Error(`Could not find suite named '${suiteName}'; available suites='${JSON.stringify(suiteNames)}`);
   }
 
-  let cypressCfgFile = path.basename(runCfg.cypress.configFile);
+  const projectDir = path.dirname(getAbsolutePath(runCfg.path));
+
+  let cypressCfgFile = path.join(projectDir, runCfg.cypress.configFile);
   if (!fs.existsSync(getAbsolutePath(cypressCfgFile))) {
     throw new Error(`Unable to locate the cypress config file. Looked for '${getAbsolutePath(cypressCfgFile)}'.`);
   }
 
   const cypressCfg = JSON.parse(fs.readFileSync(cypressCfgFile, 'utf8'));
 
+  let headed = true;
+  if (suite.config.headless) {
+    headed = false;
+  }
+
   let opts = {
-    project: path.dirname(getAbsolutePath(runCfg.path)),
+    project: path.dirname(cypressCfgFile),
     browser: process.env.SAUCE_BROWSER || suite.browser || 'chrome',
-    configFile: cypressCfgFile,
+    configFile: path.basename(cypressCfgFile),
+    headed,
+    headless: !headed,
     config: {
       testFiles: suite.config.testFiles,
       videosFolder: runCfg.resultsDir,
       screenshotsFolder: runCfg.resultsDir,
       video: shouldRecordVideo(),
-      reporter: path.join(__dirname, 'custom-reporter.js'),
-      reporterOptions: {
-        mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-        specRoot: cypressCfg.integrationFolder || 'cypress/integration',
-      },
       videoCompression: false,
       videoUploadOnPasses: false,
       env: getEnv(suite),
@@ -76,6 +129,8 @@ const getCypressOpts = function (runCfg, suiteName) {
     opts.key = runCfg.cypress.key;
     opts.config.videoUploadOnPasses = true;
   }
+
+  opts = configureReporters(cypressCfg, runCfg, opts);
 
   _.defaultsDeep(opts.config, suite.config);
   return opts;
@@ -138,3 +193,4 @@ if (require.main === module) {
 }
 
 exports.cypressRunner = cypressRunner;
+exports.configureReporters = configureReporters;

@@ -30,7 +30,7 @@ describe('.cypressRunner', function () {
         configFile: 'fake-cypress.json',
       },
       suites: [
-        {name: 'fake-suite', config: {env: {HELLO: 'WORLD'}}}
+        {name: 'fake-suite', platformName: 'Windows 10', config: {env: {HELLO: 'WORLD'}}}
       ]
     };
     getAbsolutePath.mockImplementation((path) => path);
@@ -69,8 +69,8 @@ describe('.cypressRunner', function () {
     process.env.SAUCE_ACCESS_KEY = 'fake-sauce-accesskey';
     await cypressRunner('/fake/runner/path', 'fake-suite', 1);
     // Change reporter to not be fully-qualified path
-    const {reporter} = cypressRunSpy.mock.calls[0][0].config;
-    cypressRunSpy.mock.calls[0][0].config.reporter = path.basename(reporter);
+    cypressRunSpy.mock.calls[0][0].config.reporter = path.basename(cypressRunSpy.mock.calls[0][0].config.reporter);
+    cypressRunSpy.mock.calls[0][0].config.reporterOptions.configFile = path.basename(cypressRunSpy.mock.calls[0][0].config.reporterOptions.configFile);
     expect(cypressRunSpy.mock.calls).toMatchSnapshot();
     expect(SauceReporter.prepareAssets.mock.calls).toMatchSnapshot();
   });
@@ -86,12 +86,6 @@ describe('.cypressRunner', function () {
     process.env.SAUCE_BROWSER = 'firefox';
     await cypressRunner('/fake/runner/path', 'fake-suite', 1);
     expect(SauceReporter.sauceReporter.mock.calls).toMatchSnapshot();
-  });
-  it('throws error if browser is unsupported', function () {
-    process.env.BROWSER_NAME = 'lynx';
-    expect(cypressRunner('/fake/runner/path', 'fake-suite')).rejects.toThrow(new Error(
-      `Unsupported browser: 'lynx'. Sorry.`
-    ));
   });
   describe('from SAUCE VM', function () {
     beforeEach(function () {
@@ -111,7 +105,10 @@ describe('.cypressRunner', function () {
       cypressRunSpy.mockImplementation(() => ({}));
       await cypressRunner('/fake/runner/path', 'fake-suite', 1);
       const { calls } = cypressRunSpy.mock;
-      calls[0][0].config.reporter = path.basename(calls[0][0].config.reporter); // Rename to basename to remove home dir
+
+      // Rename to basename to remove home dir
+      calls[0][0].config.reporter = path.basename(calls[0][0].config.reporter);
+      calls[0][0].config.reporterOptions.configFile = path.basename(calls[0][0].config.reporterOptions.configFile);
       expect(cypressRunSpy.mock.calls).toMatchSnapshot();
     });
     it('call Cypress.run with timeout 0 seconds', async function () {

@@ -7,7 +7,6 @@ cp -r ./src/ ./bundle/src/
 cp -r bin/ bundle/bin/
 cp package.json bundle/package.json
 cp package-lock.json bundle/package-lock.json
-cp cypress.json bundle/cypress.json
 cp "$(which node)" bundle/
 
 pushd bundle/

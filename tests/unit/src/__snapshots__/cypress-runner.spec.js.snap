@@ -17,6 +17,7 @@ Array [
             },
           },
           "name": "fake-suite",
+          "platformName": "Windows 10",
         },
       ],
     },
@@ -42,10 +43,9 @@ Array [
         "env": Object {
           "HELLO": "WORLD",
         },
-        "reporter": "custom-reporter.js",
+        "reporter": "MultiReporters.js",
         "reporterOptions": Object {
-          "mochaFile": "/fake/runner/__assets__/[suite].xml",
-          "specRoot": "cypress/integration",
+          "configFile": "sauce-reporter-config.json",
         },
         "screenshotsFolder": "/fake/runner/__assets__",
         "testFiles": undefined,
@@ -55,6 +55,8 @@ Array [
         "videosFolder": "/fake/runner/__assets__",
       },
       "configFile": "fake-cypress.json",
+      "headed": true,
+      "headless": false,
       "project": "/fake/runner",
     },
   ],
@@ -72,6 +74,9 @@ Array [
     Array [
       "some metricz",
     ],
+    "fake-suite",
+    "chrome",
+    "Windows 10",
   ],
 ]
 `;
@@ -85,10 +90,9 @@ Array [
         "env": Object {
           "HELLO": "WORLD",
         },
-        "reporter": "custom-reporter.js",
+        "reporter": "MultiReporters.js",
         "reporterOptions": Object {
-          "mochaFile": "/fake/runner/__assets__/[suite].xml",
-          "specRoot": "cypress/integration",
+          "configFile": "sauce-reporter-config.json",
         },
         "screenshotsFolder": "/fake/runner/__assets__",
         "testFiles": undefined,
@@ -98,6 +102,8 @@ Array [
         "videosFolder": "/fake/runner/__assets__",
       },
       "configFile": "fake-cypress.json",
+      "headed": true,
+      "headless": false,
       "project": "/fake/runner",
     },
   ],
