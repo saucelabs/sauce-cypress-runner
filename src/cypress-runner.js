@@ -28,7 +28,7 @@ const report = async (results = {}, statusCode, browserName, runCfg, suiteName, 
       browserName,
       platformName,
   );
-  const passed = failures === 0 && statusCode === 0
+  const passed = failures === 0 && statusCode === 0;
   // Run in cloud mode
   if (process.env.SAUCE_VM) {
     return passed;

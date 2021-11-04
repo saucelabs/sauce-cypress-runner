@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+e// Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`.cypressRunner calls sauce reporter and returns a job status 1`] = `
 Array [
@@ -70,6 +70,50 @@ Array [
       "spec-a",
       "spec-b",
     ],
+    "/fake/runner/__assets__",
+    Array [
+      "some metricz",
+    ],
+    "fake-suite",
+    "chrome",
+    "Windows 10",
+  ],
+]
+`;
+
+exports[`.cypressRunner can call Cypress.run with timeout 0 1`] = `
+Array [
+  Array [
+    Object {
+      "browser": "chrome",
+      "config": Object {
+        "env": Object {
+          "HELLO": "WORLD",
+        },
+        "reporter": "MultiReporters.js",
+        "reporterOptions": Object {
+          "configFile": "/Users/valentynkremeshnyi/saucelabs/sauce-cypress-runner/sauce-reporter-config.json",
+        },
+        "screenshotsFolder": "/fake/runner/__assets__",
+        "testFiles": undefined,
+        "video": undefined,
+        "videoCompression": false,
+        "videoUploadOnPasses": false,
+        "videosFolder": "/fake/runner/__assets__",
+      },
+      "configFile": "fake-cypress.json",
+      "headed": true,
+      "headless": false,
+      "project": "/fake/runner",
+    },
+  ],
+]
+`;
+
+exports[`.cypressRunner can call Cypress.run with timeout 0 2`] = `
+Array [
+  Array [
+    Array [],
     "/fake/runner/__assets__",
     Array [
       "some metricz",
