@@ -39,7 +39,6 @@ const report = async (results = {}, statusCode, browserName, runCfg, suiteName, 
   }
   // Run in docker mode
   if (process.env.SAUCE_USERNAME !== '' && process.env.SAUCE_ACCESS_KEY !== '') {
-    // check result
     await sauceReporter(runCfg, suiteName, browserName, assets, failures, startTime, endTime);
   }
   return passed;
