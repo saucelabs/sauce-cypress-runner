@@ -158,6 +158,10 @@ const cypressRunner = async function (runCfgPath, suiteName, timeoutSec) {
   metrics.push(npmMetrics);
   let cypressOpts = getCypressOpts(runCfg, suiteName);
   let startTime = new Date().toISOString();
+  const suites = runCfg.suites || [];
+  const suite = suites.find((testSuite) => testSuite.name === suiteName);
+  // saucectl suite.timeout is in nanoseconds
+  timeoutSec = suite.timeout / 1000000000 || timeoutSec;
   let timeout;
   const timeoutPromise = new Promise((resolve) => {
     timeout = setTimeout(() => {
@@ -168,7 +172,7 @@ const cypressRunner = async function (runCfgPath, suiteName, timeoutSec) {
 
   let results = await Promise.race([timeoutPromise, cypress.run(cypressOpts)]);
   clearTimeout(timeout);
-  const statusCode = !results ? 1 : 0;
+  const statusCode = results ? 0 : 1;
   let endTime = new Date().toISOString();
 
   return await report(results, statusCode, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);

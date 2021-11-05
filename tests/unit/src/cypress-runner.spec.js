@@ -49,20 +49,15 @@ describe('.cypressRunner', function () {
   afterEach(function () {
     SauceReporter.sauceReporter.mockReset();
   });
-  it('can call Cypress.run with timeout 0', async function () {
+  it('returns failure if Cypress.run is called with a timeout of 0 (Docker mode)', async function () {
     const run = new Promise((resolve) => {
       setTimeout(resolve, 10);
     });
     cypress.run.mockImplementation(() => run);
     process.env.SAUCE_USERNAME = 'fake-sauce-username';
     process.env.SAUCE_ACCESS_KEY = 'fake-sauce-accesskey';
-    const status = await cypressRunner('/fake/runner/path', 'fake-suite', 0);
+    const status = await cypressRunner('/fake/runner/path', 'fake-suite', 2);
     expect(status).toEqual(false);
-    // Change reporter to not be fully-qualified path
-    const {reporter} = cypressRunSpy.mock.calls[0][0].config;
-    cypressRunSpy.mock.calls[0][0].config.reporter = path.basename(reporter);
-    expect(cypressRunSpy.mock.calls).toMatchSnapshot();
-    expect(SauceReporter.prepareAssets.mock.calls).toMatchSnapshot();
   });
   it('can call Cypress.run with basic args', async function () {
     process.env.SAUCE_USERNAME = 'fake-sauce-username';
@@ -111,7 +106,7 @@ describe('.cypressRunner', function () {
       calls[0][0].config.reporterOptions.configFile = path.basename(calls[0][0].config.reporterOptions.configFile);
       expect(cypressRunSpy.mock.calls).toMatchSnapshot();
     });
-    it('call Cypress.run with timeout 0 seconds', async function () {
+    it('Cypress.run returns false if it times out (Sauce VM mode)', async function () {
       const run = new Promise((resolve) => {
         setTimeout(resolve, 10);
       });
