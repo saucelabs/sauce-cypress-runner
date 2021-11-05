@@ -111,7 +111,7 @@ describe('.cypressRunner', function () {
         setTimeout(resolve, 10);
       });
       cypress.run.mockImplementation(() => run);
-      const status = await cypressRunner('/fake/runner/path', 'fake-suite', 0);
+      const status = await cypressRunner('/fake/runner/path', 'fake-suite', 1);
       expect(status).toEqual(false);
     });
   });
