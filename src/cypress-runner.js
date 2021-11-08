@@ -6,7 +6,7 @@ const cypress = require('cypress');
 const util = require('util');
 const _ = require('lodash');
 
-const report = async (results, browserName, runCfg, suiteName, startTime, endTime, metrics) => {
+const report = async (results = {}, statusCode, browserName, runCfg, suiteName, startTime, endTime, metrics) => {
   // Prepare the assets
   const runs = results.runs || [];
   let specFiles = runs.map((run) => run.spec.name);
@@ -28,20 +28,20 @@ const report = async (results, browserName, runCfg, suiteName, startTime, endTim
       browserName,
       platformName,
   );
+  const passed = failures === 0 && statusCode === 0;
   // Run in cloud mode
   if (process.env.SAUCE_VM) {
-    return failures === 0;
+    return passed;
   }
   if (!(process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY)) {
     console.log('Skipping asset uploads! Remember to setup your SAUCE_USERNAME/SAUCE_ACCESS_KEY');
-    return failures === 0;
+    return passed;
   }
   // Run in docker mode
   if (process.env.SAUCE_USERNAME !== '' && process.env.SAUCE_ACCESS_KEY !== '') {
     await sauceReporter(runCfg, suiteName, browserName, assets, failures, startTime, endTime);
   }
-
-  return failures === 0;
+  return passed;
 };
 
 // Configure reporters
@@ -140,7 +140,7 @@ const canAccessFolder = async function (file) {
   await fsAccess(file, fs.constants.R_OK | fs.constants.W_OK);
 };
 
-const cypressRunner = async function (runCfgPath, suiteName) {
+const cypressRunner = async function (runCfgPath, suiteName, timeoutSec) {
   runCfgPath = getAbsolutePath(runCfgPath);
   const runCfg = await loadRunConfig(runCfgPath);
   runCfg.path = runCfgPath;
@@ -158,18 +158,34 @@ const cypressRunner = async function (runCfgPath, suiteName) {
   metrics.push(npmMetrics);
   let cypressOpts = getCypressOpts(runCfg, suiteName);
   let startTime = new Date().toISOString();
-  const results = await cypress.run(cypressOpts);
+  const suites = runCfg.suites || [];
+  const suite = suites.find((testSuite) => testSuite.name === suiteName);
+  // saucectl suite.timeout is in nanoseconds
+  timeoutSec = suite.timeout / 1000000000 || timeoutSec;
+  let timeout;
+  const timeoutPromise = new Promise((resolve) => {
+    timeout = setTimeout(() => {
+      console.error(`Test timed out after ${timeoutSec} seconds`);
+      resolve();
+    }, timeoutSec * 1000);
+  });
+
+  let results = await Promise.race([timeoutPromise, cypress.run(cypressOpts)]);
+  clearTimeout(timeout);
+  const statusCode = results ? 0 : 1;
   let endTime = new Date().toISOString();
 
-  return await report(results, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
+  return await report(results, statusCode, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
 };
 
 // For dev and test purposes, this allows us to run our Cypress Runner from command line
 if (require.main === module) {
   console.log(`Sauce Cypress Runner ${require(path.join(__dirname, '..', 'package.json')).version}`);
   const { runCfgPath, suiteName } = getArgs();
+  // maxTimeout maximum test execution timeout is 1800 seconds (30 mins)
+  const maxTimeout = 1800;
 
-  cypressRunner(runCfgPath, suiteName)
+  cypressRunner(runCfgPath, suiteName, maxTimeout)
       // eslint-disable-next-line promise/prefer-await-to-then
       .then((passed) => process.exit(passed ? 0 : 1))
       // eslint-disable-next-line promise/prefer-await-to-callbacks

@@ -127,3 +127,5 @@ node
 
 Cache/
 .DS_Store
+
+.idea/
