@@ -2,6 +2,7 @@ jest.mock('cypress');
 jest.mock('fs');
 jest.mock('sauce-testrunner-utils');
 jest.mock('../../../src/sauce-reporter');
+jest.mock('@saucelabs/cypress-plugin');
 
 const utils = require('sauce-testrunner-utils');
 const { loadRunConfig, getAbsolutePath } = require('sauce-testrunner-utils');
