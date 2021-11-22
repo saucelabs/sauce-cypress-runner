@@ -5,6 +5,7 @@ const { shouldRecordVideo, getAbsolutePath, loadRunConfig, prepareNpmEnv, getArg
 const cypress = require('cypress');
 const util = require('util');
 const _ = require('lodash');
+const {afterRunTestReport} = require('@saucelabs/cypress-plugin');
 
 const report = async (results = {}, statusCode, browserName, runCfg, suiteName, startTime, endTime, metrics) => {
   // Prepare the assets
@@ -28,6 +29,16 @@ const report = async (results = {}, statusCode, browserName, runCfg, suiteName, 
       browserName,
       platformName,
   );
+
+  try {
+    let reportJSON = afterRunTestReport(results);
+    const filepath = path.join(runCfg.outputDir, 'sauce-test-report.json');
+    reportJSON.toFile(filepath);
+    assets.push(filepath);
+  } catch (e) {
+    console.error('Failed to serialize test results: ', e);
+  }
+
   const passed = failures === 0 && statusCode === 0;
   // Run in cloud mode
   if (process.env.SAUCE_VM) {
