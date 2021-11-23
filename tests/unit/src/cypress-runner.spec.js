@@ -2,6 +2,7 @@ jest.mock('cypress');
 jest.mock('fs');
 jest.mock('sauce-testrunner-utils');
 jest.mock('../../../src/sauce-reporter');
+jest.mock('@saucelabs/cypress-plugin');
 
 const utils = require('sauce-testrunner-utils');
 const { loadRunConfig, getAbsolutePath } = require('sauce-testrunner-utils');
@@ -10,6 +11,7 @@ const path = require('path');
 const fs = require('fs');
 const SauceReporter = require('../../../src/sauce-reporter');
 const { cypressRunner } = require('../../../src/cypress-runner');
+const {afterRunTestReport} = require('@saucelabs/cypress-plugin');
 
 describe('.cypressRunner', function () {
   let oldEnv = { ...process.env };
@@ -40,6 +42,7 @@ describe('.cypressRunner', function () {
     fs.mkdir.mockImplementation((obj, resolver) => resolver(null));
     fs.access.mockImplementation((obj, constants, resolver) => resolver(null));
     utils.prepareNpmEnv.mockImplementation(() => 'some metricz');
+    afterRunTestReport.mockImplementation(() => {});
 
     // Mock the dates so that it's deterministic
     const isoDateSpy = jest.spyOn(Date.prototype, 'toISOString');
