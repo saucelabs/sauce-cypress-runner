@@ -18,6 +18,8 @@ cypress:
 
 suites:
   - name: "kitchen-sink on Sauce"
+    platformName: "macOS 11.00"
     browser: "chrome"
+    browserName: "chrome"
     config:
       testFiles: [ "examples/*.*" ]
