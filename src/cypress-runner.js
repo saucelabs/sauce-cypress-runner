@@ -109,6 +109,11 @@ const getCypressOpts = function (runCfg, suiteName) {
   if (!runCfg.cypress) {
     runCfg.cypress = { configFile: 'cypress.json' };
   }
+  if (!suite.config) {
+    suite.config = {
+      testFiles: ['**/*.spec.js'],
+    };
+  }
 
   let cypressCfgFile = path.join(projectDir, runCfg.cypress.configFile);
   if (!fs.existsSync(getAbsolutePath(cypressCfgFile))) {
