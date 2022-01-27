@@ -1,0 +1,23 @@
+apiVersion: v1alpha
+kind: testcafe
+sauce:
+  region: us-west-1
+  concurrency: 2
+  metadata:
+    tags:
+      - e2e
+      - post release
+    build: Github Run $GITHUB_RUN_ID
+# Fakely invoke testcafe as currently no cypress available on MacOS.
+testcafe:
+  version: 1.17.1
+cypress:
+  configFile: cypress.json
+  version: 9.3.1
+rootDir: ./
+suites:
+  - name: "Post Release Test 1/2"
+    platformName: "macOS 11.00"
+    browser: "chrome"
+    config:
+      testFiles: [ "**/*.spec.js" ]

@@ -1,5 +1,5 @@
 apiVersion: v1alpha
-kind: cypress
+kind: testcafe
 sauce:
   metadata:
     tags:
@@ -13,7 +13,8 @@ defaults:
 cypress:
   configFile: cypress.json
   version: 8.6.0
-
+testcafe:
+  version: 1.17.1
 suites:
   - name: "kitchen-sink on Sauce"
     browser: "chrome"

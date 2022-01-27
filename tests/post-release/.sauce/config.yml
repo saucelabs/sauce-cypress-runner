@@ -19,9 +19,9 @@ suites:
     browser: "chrome"
     platformName: "Windows 10"
     config:
-      testFiles: [ "**/*.*" ]
+      testFiles: [ "**/*.spec.js" ]
   - name: "Post Release Test 2/2"
     browser: "firefox"
     platformName: "Windows 10"
     config:
-      testFiles: [ "**/*.*" ]
+      testFiles: [ "**/*.spec.js" ]
