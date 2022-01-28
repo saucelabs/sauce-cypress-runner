@@ -114,6 +114,8 @@ const getCypressOpts = function (runCfg, suiteName) {
       testFiles: ['**/*.spec.js'],
     };
   }
+  process.env.CYPRESS_CACHE_FOLDER = `${__dirname}/../Cache/`;
+  // End of temps tests
 
   let cypressCfgFile = path.join(projectDir, runCfg.cypress.configFile);
   if (!fs.existsSync(getAbsolutePath(cypressCfgFile))) {
