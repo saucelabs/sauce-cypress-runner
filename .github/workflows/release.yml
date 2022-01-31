@@ -276,7 +276,7 @@ jobs:
 
       - name: Archive bundle
         if: ${{ steps.prep.outputs.asset_id == '' }}
-        run: zip -r sauce-testcafe-macos.zip bundle/
+        run: zip -r sauce-cypress-macos.zip bundle/
 
       - name: Upload Release Asset
         if: ${{ steps.prep.outputs.asset_id == '' }}
