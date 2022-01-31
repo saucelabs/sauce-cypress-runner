@@ -219,7 +219,7 @@ jobs:
           asset_content_type: application/zip
 
   release-macos-bundle:
-    runs-on: windows-latest
+    runs-on: macos-latest
     needs: [create-release-draft]
     steps:
       - name: Find matching draft tag
