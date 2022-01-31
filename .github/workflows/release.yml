@@ -286,8 +286,8 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.prep.outputs.release_id }}/assets?name=sauce-cypress-macos.zip
-          asset_path: ./sauce-cypress-runner.zip
-          asset_name: sauce-cypress-runner.zip
+          asset_path: ./sauce-cypress-macos.zip
+          asset_name: sauce-cypress-macos.zip
           asset_content_type: application/zip
 
   publish-release:
