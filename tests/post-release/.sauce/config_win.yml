@@ -15,12 +15,12 @@ cypress:
   configFile: "cypress.json"
 rootDir: ./
 suites:
-  - name: "Post Release Test 1/2"
+  - name: "Post Release Test (Windows) 1/2"
     browser: "chrome"
     platformName: "Windows 10"
     config:
       testFiles: [ "**/*.spec.js" ]
-  - name: "Post Release Test 2/2"
+  - name: "Post Release Test (Windows) 2/2"
     browser: "firefox"
     platformName: "Windows 10"
     config:

@@ -15,7 +15,8 @@ cypress:
   version: 8.3.0
 
 suites:
-  - name: "kitchen-sink on Sauce"
+  - name: "kitchen-sink on Sauce (Windows)"
+    platformName: "Windows 10"
     browser: "chrome"
     config:
       testFiles: [ "examples/*.*" ]

@@ -15,7 +15,7 @@ cypress:
   version: 8.6.0
 
 suites:
-  - name: "kitchen-sink on Sauce"
+  - name: "kitchen-sink on Sauce (Windows)"
     browser: "chrome"
     config:
       testFiles: [ "*.spec.js" ]
