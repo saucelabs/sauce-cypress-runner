@@ -24,3 +24,8 @@ suites:
     platformName: "macOS 11.00"
     config:
       testFiles: [ "**/*.spec.js" ]
+
+notifications:
+  slack:
+    channels: ["devx"]
+    send: fail

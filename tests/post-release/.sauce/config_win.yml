@@ -25,3 +25,8 @@ suites:
     platformName: "Windows 10"
     config:
       testFiles: [ "**/*.spec.js" ]
+
+notifications:
+  slack:
+    channels: ["devx"]
+    send: fail
