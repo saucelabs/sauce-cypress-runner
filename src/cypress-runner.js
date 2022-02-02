@@ -113,7 +113,8 @@ const getCypressOpts = function (runCfg, suiteName) {
   const cypressCfg = JSON.parse(fs.readFileSync(cypressCfgFile, 'utf8'));
 
   let headed = true;
-  if (suite.config.headless) {
+  // suite.config.headless is kepts to keep backward compatibility.
+  if (suite.headless || suite.config.headless) {
     headed = false;
   }
 
