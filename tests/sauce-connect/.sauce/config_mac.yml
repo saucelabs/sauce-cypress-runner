@@ -12,10 +12,10 @@ defaults:
   mode: sauce
 cypress:
   configFile: cypress.json
-  version: 8.6.0
-
+  version: 9.3.1
 suites:
-  - name: "kitchen-sink on Sauce (Windows)"
+  - name: "kitchen-sink on Sauce (MacOS)"
+    platformName: "macOS 11.00"
     browser: "chrome"
     config:
       testFiles: [ "*.spec.js" ]

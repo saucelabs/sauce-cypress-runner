@@ -1,0 +1,31 @@
+apiVersion: v1alpha
+kind: cypress
+sauce:
+  region: us-west-1
+  concurrency: 2
+  metadata:
+    tags:
+      - e2e
+      - post release
+    build: Github Run $GITHUB_RUN_ID
+cypress:
+  configFile: cypress.json
+  version: 9.3.1
+rootDir: ./
+
+suites:
+  - name: "Post Release Test (MacOS) 1/2"
+    browser: "chrome"
+    platformName: "macOS 11.00"
+    config:
+      testFiles: [ "**/*.spec.js" ]
+  - name: "Post Release Test (MacOS) 2/2"
+    browser: "firefox"
+    platformName: "macOS 11.00"
+    config:
+      testFiles: [ "**/*.spec.js" ]
+
+notifications:
+  slack:
+    channels: ["devx"]
+    send: fail
