@@ -18,7 +18,7 @@ const cypress = require('cypress');
 const path = require('path');
 const fs = require('fs');
 const SauceReporter = require('../../../src/sauce-reporter');
-const { cypressRunner, setEnvironmentVariables, pickSuite } = require('../../../src/cypress-runner');
+const { cypressRunner, setEnvironmentVariables, getSuite } = require('../../../src/cypress-runner');
 const {afterRunTestReport} = require('@saucelabs/cypress-plugin');
 
 describe('.cypressRunner', function () {
@@ -132,16 +132,16 @@ describe('.cypressRunner', function () {
     });
   });
 
-  describe('.pickSuite', function () {
+  describe('.getSuite', function () {
     it('select the correct suite', function () {
       const runCfg = utils.loadRunConfig('/fake/path');
-      const suite = pickSuite(runCfg, 'fake-suite');
+      const suite = getSuite(runCfg, 'fake-suite');
       expect(suite).toEqual(runCfg.suites[0]);
     });
     it('fails when not found', function () {
       const t = () => {
         const runCfg = utils.loadRunConfig('/fake/path');
-        pickSuite(runCfg, 'non-existant');
+        getSuite(runCfg, 'non-existant');
       };
       expect(t).toThrow(`Could not find suite named 'non-existant'; available suites=["fake-suite"]`);
     });

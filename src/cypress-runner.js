@@ -94,7 +94,7 @@ const configureReporters = function (cypressCfg, runCfg, opts) {
   return opts;
 };
 
-const pickSuite = function (runCfg, suiteName) {
+const getSuite = function (runCfg, suiteName) {
   const suites = runCfg.suites || [];
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
   if (!suite) {
@@ -105,7 +105,7 @@ const pickSuite = function (runCfg, suiteName) {
 };
 
 const setEnvironmentVariables = function (runCfg, suiteName) {
-  const suite = pickSuite(runCfg, suiteName);
+  const suite = getSuite(runCfg, suiteName);
   const envVars = getEnv(suite);
 
   for (const [key, value] of Object.entries(envVars)) {
@@ -115,7 +115,7 @@ const setEnvironmentVariables = function (runCfg, suiteName) {
 
 const getCypressOpts = function (runCfg, suiteName) {
   // Get user settings from suites.
-  const suite = pickSuite(runCfg, suiteName);
+  const suite = getSuite(runCfg, suiteName);
   const projectDir = path.dirname(getAbsolutePath(runCfg.path));
 
   let cypressCfgFile = path.join(projectDir, runCfg.cypress.configFile);
@@ -225,5 +225,5 @@ if (require.main === module) {
 
 exports.cypressRunner = cypressRunner;
 exports.configureReporters = configureReporters;
-exports.pickSuite = pickSuite;
+exports.getSuite = getSuite;
 exports.setEnvironmentVariables = setEnvironmentVariables;
