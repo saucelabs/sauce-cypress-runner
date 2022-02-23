@@ -1,22 +1,31 @@
 jest.mock('cypress');
 jest.mock('fs');
-jest.mock('sauce-testrunner-utils');
+jest.mock('sauce-testrunner-utils', () => {
+  const original = jest.requireActual('sauce-testrunner-utils');
+  const mocked = Object.fromEntries(Object.keys(original).map(function (k) { return [k, jest.fn()]; }));
+
+  return {
+    ...mocked,
+    getEnv: original.getEnv,
+  };
+});
 jest.mock('../../../src/sauce-reporter');
 jest.mock('@saucelabs/cypress-plugin');
 
 const utils = require('sauce-testrunner-utils');
-const { loadRunConfig, getAbsolutePath } = require('sauce-testrunner-utils');
+const { getAbsolutePath, loadRunConfig } = require('sauce-testrunner-utils');
 const cypress = require('cypress');
 const path = require('path');
 const fs = require('fs');
 const SauceReporter = require('../../../src/sauce-reporter');
-const { cypressRunner } = require('../../../src/cypress-runner');
+const { cypressRunner, setEnvironmentVariables, getSuite } = require('../../../src/cypress-runner');
 const {afterRunTestReport} = require('@saucelabs/cypress-plugin');
 
 describe('.cypressRunner', function () {
   let oldEnv = { ...process.env };
   let cypressRunSpy;
   cypressRunSpy = jest.spyOn(cypress, 'run');
+
   beforeEach(function () {
     process.env = { ...oldEnv };
     cypressRunSpy.mockClear();
@@ -49,9 +58,11 @@ describe('.cypressRunner', function () {
     let day = 0;
     isoDateSpy.mockImplementation(() => `Date: ${++day}`);
   });
+
   afterEach(function () {
     SauceReporter.sauceReporter.mockReset();
   });
+
   it('returns failure if Cypress.run is called with a timeout of 0 (Docker mode)', async function () {
     const run = new Promise((resolve) => {
       setTimeout(resolve, 10);
@@ -85,10 +96,12 @@ describe('.cypressRunner', function () {
     await cypressRunner('/fake/runner/path', 'fake-suite', 1);
     expect(SauceReporter.sauceReporter.mock.calls).toMatchSnapshot();
   });
+
   describe('from SAUCE VM', function () {
     beforeEach(function () {
       process.env.SAUCE_VM = 'truthy';
     });
+
     it('returns false if there are test failures', async function () {
       cypressRunSpy.mockImplementation(() => ({failures: 100}));
       const status = await cypressRunner('/fake/runner/path', 'fake-suite', 1);
@@ -116,6 +129,62 @@ describe('.cypressRunner', function () {
       cypress.run.mockImplementation(() => run);
       const status = await cypressRunner('/fake/runner/path', 'fake-suite', 1);
       expect(status).toEqual(false);
+    });
+  });
+
+  describe('.getSuite', function () {
+    it('select the correct suite', function () {
+      const runCfg = utils.loadRunConfig('/fake/path');
+      const suite = getSuite(runCfg, 'fake-suite');
+      expect(suite).toEqual(runCfg.suites[0]);
+    });
+    it('fails when not found', function () {
+      const t = () => {
+        const runCfg = utils.loadRunConfig('/fake/path');
+        getSuite(runCfg, 'non-existant');
+      };
+      expect(t).toThrow(`Could not find suite named 'non-existant'; available suites=["fake-suite"]`);
+    });
+  });
+
+  describe('.setEnvironmentVariable', function () {
+    const oldEnv = process.env;
+
+    beforeEach(function () {
+      process.env = { ...oldEnv };
+    });
+
+    it('empty environment - does not explode', function () {
+      const runCfg = utils.loadRunConfig('/fake/path');
+      runCfg.suites[0].config.env = {};
+      runCfg.suites[0].env = {};
+      setEnvironmentVariables(runCfg, runCfg.suites[0].name);
+    });
+
+    it('With some vars', function () {
+      const runCfg = utils.loadRunConfig('/fake/path');
+      setEnvironmentVariables(runCfg, runCfg.suites[0].name);
+
+      expect(process.env).toEqual(
+        expect.objectContaining({
+          ...runCfg.suites[0].env,
+          ...runCfg.suites[0].config.env,
+        }));
+    });
+
+    it('With some vars + resolution', function () {
+      const runCfg = utils.loadRunConfig('/fake/path');
+      process.env.EXTRA_VAR = 'hello';
+      runCfg.suites[0].config.env.OUTSIDE_VAR = '$EXTRA_VAR';
+
+      setEnvironmentVariables(runCfg, runCfg.suites[0].name);
+
+      expect(process.env).toEqual(
+        expect.objectContaining({
+          ...runCfg.suites[0].env,
+          ...runCfg.suites[0].config.env,
+          OUTSIDE_VAR: 'hello',
+        }));
     });
   });
 });

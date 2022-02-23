@@ -94,15 +94,28 @@ const configureReporters = function (cypressCfg, runCfg, opts) {
   return opts;
 };
 
-const getCypressOpts = function (runCfg, suiteName) {
-  // Get user settings from suites.
+const getSuite = function (runCfg, suiteName) {
   const suites = runCfg.suites || [];
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
   if (!suite) {
     const suiteNames = suites.map((suite) => suite.name);
-    throw new Error(`Could not find suite named '${suiteName}'; available suites='${JSON.stringify(suiteNames)}`);
+    throw new Error(`Could not find suite named '${suiteName}'; available suites=${JSON.stringify(suiteNames)}`);
   }
+  return suite;
+};
 
+const setEnvironmentVariables = function (runCfg, suiteName) {
+  const suite = getSuite(runCfg, suiteName);
+  const envVars = getEnv(suite);
+
+  for (const [key, value] of Object.entries(envVars)) {
+    process.env[key] = value;
+  }
+};
+
+const getCypressOpts = function (runCfg, suiteName) {
+  // Get user settings from suites.
+  const suite = getSuite(runCfg, suiteName);
   const projectDir = path.dirname(getAbsolutePath(runCfg.path));
 
   let cypressCfgFile = path.join(projectDir, runCfg.cypress.configFile);
@@ -172,6 +185,9 @@ const cypressRunner = async function (runCfgPath, suiteName, timeoutSec) {
   let startTime = new Date().toISOString();
   const suites = runCfg.suites || [];
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
+
+  setEnvironmentVariables(runCfg, suiteName);
+
   // saucectl suite.timeout is in nanoseconds
   timeoutSec = suite.timeout / 1000000000 || timeoutSec;
   let timeout;
@@ -209,3 +225,5 @@ if (require.main === module) {
 
 exports.cypressRunner = cypressRunner;
 exports.configureReporters = configureReporters;
+exports.getSuite = getSuite;
+exports.setEnvironmentVariables = setEnvironmentVariables;
