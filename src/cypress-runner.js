@@ -178,6 +178,8 @@ const cypressRunner = async function (runCfgPath, suiteName, timeoutSec) {
     await canAccessFolder(runCfg.resultsDir);
   }
 
+  setEnvironmentVariables(runCfg, suiteName);
+
   let metrics = [];
   let npmMetrics = await prepareNpmEnv(runCfg);
   metrics.push(npmMetrics);
@@ -185,8 +187,6 @@ const cypressRunner = async function (runCfgPath, suiteName, timeoutSec) {
   let startTime = new Date().toISOString();
   const suites = runCfg.suites || [];
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
-
-  setEnvironmentVariables(runCfg, suiteName);
 
   // saucectl suite.timeout is in nanoseconds
   timeoutSec = suite.timeout / 1000000000 || timeoutSec;
