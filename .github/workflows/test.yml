@@ -128,7 +128,7 @@ jobs:
         run: bash ./scripts/bundle.sh
 
       - name: Archive bundle
-        run: zip -r sauce-cypress-macos.zip bundle/
+        run: zip --symlinks -r sauce-cypress-macos.zip bundle/
 
       - name: Upload to GCS
         run: |
