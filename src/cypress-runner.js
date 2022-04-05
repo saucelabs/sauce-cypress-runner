@@ -166,22 +166,15 @@ const canAccessFolder = async function (file) {
   await fsAccess(file, fs.constants.R_OK | fs.constants.W_OK);
 };
 
-const exec = function (command) {
-  return new Promise((resolve) => {
-    // TODO: Add timeout to that command
-    // TODO: Add node path to that command
-    const output = ChildProcess.execSync(command);
-    console.log(output.toString());
-    resolve();
-  });
-};
 
-const preExec = async function (suite) {
+const preExec = function (suite) {
   if (!suite.preExec) {
     return;
   }
   for (const command of suite.preExec) {
-    await exec(command);
+    console.log(`Execution pre-exec command: ${command}`);
+    const output = ChildProcess.execSync(command);
+    console.log(output.toString(), '\\');
   }
 };
 
