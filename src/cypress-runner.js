@@ -172,9 +172,9 @@ const preExec = function (suite) {
     return;
   }
   for (const command of suite.preExec) {
-    console.log(`Execution pre-exec command: ${command}`);
+    console.log(`Executing pre-exec command: ${command}`);
     const output = ChildProcess.execSync(command);
-    console.log(output.toString(), '\\');
+    console.log(output.toString(), '\n');
   }
 };
 
