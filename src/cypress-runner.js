@@ -170,7 +170,8 @@ const exec = function (command) {
   return new Promise((resolve) => {
     // TODO: Add timeout to that command
     // TODO: Add node path to that command
-    ChildProcess.execSync(command);
+    const output = ChildProcess.execSync(command);
+    console.log(output.toString());
     resolve();
   });
 };
