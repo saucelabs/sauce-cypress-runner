@@ -6,6 +6,7 @@ const cypress = require('cypress');
 const util = require('util');
 const _ = require('lodash');
 const {afterRunTestReport} = require('@saucelabs/cypress-plugin');
+const ChildProcess = require('child_process');
 
 const report = async (results = {}, statusCode, browserName, runCfg, suiteName, startTime, endTime, metrics) => {
   // Prepare the assets
@@ -165,6 +166,24 @@ const canAccessFolder = async function (file) {
   await fsAccess(file, fs.constants.R_OK | fs.constants.W_OK);
 };
 
+const exec = function (command) {
+  return new Promise((resolve) => {
+    // TODO: Add timeout to that command
+    // TODO: Add node path to that command
+    ChildProcess.execSync(command);
+    resolve();
+  });
+};
+
+const preExec = async function (suite) {
+  if (!suite.preExec) {
+    return;
+  }
+  for (const command of suite.preExec) {
+    await exec(command);
+  }
+};
+
 const cypressRunner = async function (runCfgPath, suiteName, timeoutSec) {
   runCfgPath = getAbsolutePath(runCfgPath);
   const runCfg = await loadRunConfig(runCfgPath);
@@ -187,6 +206,9 @@ const cypressRunner = async function (runCfgPath, suiteName, timeoutSec) {
   let startTime = new Date().toISOString();
   const suites = runCfg.suites || [];
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
+
+  // Execute pre-exec steps
+  preExec(suite);
 
   // saucectl suite.timeout is in nanoseconds
   timeoutSec = suite.timeout / 1000000000 || timeoutSec;
