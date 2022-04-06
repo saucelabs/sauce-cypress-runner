@@ -180,7 +180,7 @@ const preExecRunner = function (preExecs) {
 
 const preExec = async function (suite, timeoutSec) {
   if (!suite.preExec) {
-    return;
+    return true;
   }
 
   let timeout;
@@ -219,7 +219,10 @@ const cypressRunner = async function (runCfgPath, suiteName, timeoutSec, preExec
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
 
   // Execute pre-exec steps
-  preExec(suite, preExecTimeoutSec);
+  if (!preExec(suite, preExecTimeoutSec)) {
+    let endTime = new Date().toISOString();
+    await report(results, 0, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
+  }
 
   // saucectl suite.timeout is in nanoseconds
   timeoutSec = suite.timeout / 1000000000 || timeoutSec;
