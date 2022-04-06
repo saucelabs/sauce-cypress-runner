@@ -191,6 +191,7 @@ const preExec = async function (suite, timeoutSec) {
 
   let timeout;
   const timeoutPromise = new Promise((resolve) => {
+    console.log(`Starting ${timeoutSec} (${timeoutSec * 1000})`);
     timeout = setTimeout(() => {
       console.error(`Pre-Exec timed out after ${timeoutSec} seconds`);
       resolve(false);
