@@ -198,7 +198,6 @@ const preExec = async function (suite, timeoutSec) {
   });
   let results = await Promise.race([timeoutPromise, preExecRunner(suite.preExec)]);
   clearTimeout(timeout);
-  console.log(`race output: ${results}`);
   return results;
 };
 
@@ -229,6 +228,7 @@ const cypressRunner = async function (runCfgPath, suiteName, timeoutSec, preExec
   if (!preExec(suite, preExecTimeoutSec)) {
     let endTime = new Date().toISOString();
     await report(results, 0, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
+    return;
   }
 
   // saucectl suite.timeout is in nanoseconds
