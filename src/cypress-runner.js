@@ -166,16 +166,34 @@ const canAccessFolder = async function (file) {
   await fsAccess(file, fs.constants.R_OK | fs.constants.W_OK);
 };
 
+const preExecRunner = function () {
+  return new Promise((resolve) => {
+    for (const command of suite.preExec) {
+      console.log(`Executing pre-exec command: ${command}`);
+      const output = ChildProcess.execSync(command);
+      console.log(output.toString(), '\n');
+    }
+    resolve(true);
+  });
+};
 
-const preExec = function (suite) {
+
+const preExec = async function (suite) {
   if (!suite.preExec) {
     return;
   }
-  for (const command of suite.preExec) {
-    console.log(`Executing pre-exec command: ${command}`);
-    const output = ChildProcess.execSync(command);
-    console.log(output.toString(), '\n');
-  }
+
+  let timeout;
+  const timeoutSec = 120;
+  const timeoutPromise = new Promise((resolve) => {
+    timeout = setTimeout(() => {
+      console.error(`Pre-Exec timed out after ${timeoutSec} seconds`);
+      resolve(false);
+    }, timeoutSec * 1000);
+  });
+  let results = await Promise.race([timeoutPromise, preExecRunner(suite.preExec)]);
+  clearTimeout(timeout);
+  return results;
 };
 
 const cypressRunner = async function (runCfgPath, suiteName, timeoutSec) {
