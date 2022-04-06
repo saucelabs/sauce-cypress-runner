@@ -166,9 +166,9 @@ const canAccessFolder = async function (file) {
   await fsAccess(file, fs.constants.R_OK | fs.constants.W_OK);
 };
 
-const preExecRunner = function () {
+const preExecRunner = function (preExecs) {
   return new Promise((resolve) => {
-    for (const command of suite.preExec) {
+    for (const command of preExecs) {
       console.log(`Executing pre-exec command: ${command}`);
       const output = ChildProcess.execSync(command);
       console.log(output.toString(), '\n');
