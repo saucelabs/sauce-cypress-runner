@@ -322,72 +322,69 @@ SauceReporter.mergeJunitFile = (specFiles, resultsFolder, testName, browserName,
   try {
     const xmlData = fs.readFileSync(path.join(resultsFolder, `${specFiles[0]}.xml`), 'utf8');
     result = convert.xml2js(xmlData, opts);
-  } catch (err) {
-    console.error(err);
-  }
-  for (let i = 1; i < specFiles.length; i++) {
-    let jsObj;
-    try {
+    for (let i = 1; i < specFiles.length; i++) {
+      let jsObj;
       const xmlData = fs.readFileSync(path.join(resultsFolder, `${specFiles[i]}.xml`), 'utf8');
       jsObj = convert.xml2js(xmlData, opts);
-    } catch (err) {
-      console.error(err);
+      result.testsuites.testsuite.push(...jsObj.testsuites.testsuite);
     }
-    result.testsuites.testsuite.push(...jsObj.testsuites.testsuite);
-  }
 
-  for (let ts of result.testsuites.testsuite) {
-    totalTests += +ts._attributes.tests || 0;
-    totalFailure += +ts._attributes.failures || 0;
-    totalTime += +ts._attributes.time || 0.0000;
-    totalErr += +ts._attributes.error || 0;
-    totalDisabled += +ts._attributes.disabled || 0;
-  }
-  result.testsuites._attributes.name = testName;
-  result.testsuites._attributes.tests = totalTests;
-  result.testsuites._attributes.failures = totalFailure;
-  result.testsuites._attributes.time = totalTime;
-  result.testsuites._attributes.error = totalErr;
-  result.testsuites._attributes.disabled = totalDisabled;
-  result.testsuites.testsuite = result.testsuites.testsuite.filter((item) => item._attributes.name !== 'Root Suite');
-  if (process.platform.toLowerCase() === 'linux') {
-    platformName = 'Linux';
-  }
-  const browsers = browserName.split(':');
-  if (browsers.length > 0) {
-    browserName = browsers[browsers.length - 1];
-  }
-  for (let i = 0; i < result.testsuites.testsuite.length; i++) {
-    const testcase = result.testsuites.testsuite[i].testcase;
-    result.testsuites.testsuite[i]._attributes.id = i;
-    result.testsuites.testsuite[i].properties = {};
-    if (testcase && testcase.failure) {
-      result.testsuites.testsuite[i].testcase.failure._attributes.message = escapeXML(testcase.failure._attributes.message || '');
-      result.testsuites.testsuite[i].testcase.failure._attributes.type = testcase.failure._attributes.type || '';
-      result.testsuites.testsuite[i].testcase.failure._cdata = testcase.failure._cdata || '';
+    if (!result.testsuites || !result.testsuites.testsuite) {
+      return;
     }
-    result.testsuites.testsuite[i].properties.property = [
 
-      {
-        _attributes: {
-          name: 'platformName',
-          value: platformName,
-        }
-      },
-      {
-        _attributes: {
-          name: 'browserName',
-          value: browserName,
-        }
+    for (let ts of result.testsuites?.testsuite) {
+      totalTests += +ts._attributes.tests || 0;
+      totalFailure += +ts._attributes.failures || 0;
+      totalTime += +ts._attributes.time || 0.0000;
+      totalErr += +ts._attributes.error || 0;
+      totalDisabled += +ts._attributes.disabled || 0;
+    }
+    result.testsuites._attributes.name = testName;
+    result.testsuites._attributes.tests = totalTests;
+    result.testsuites._attributes.failures = totalFailure;
+    result.testsuites._attributes.time = totalTime;
+    result.testsuites._attributes.error = totalErr;
+    result.testsuites._attributes.disabled = totalDisabled;
+    result.testsuites.testsuite = result.testsuites.testsuite.filter((item) => item._attributes.name !== 'Root Suite');
+    if (process.platform.toLowerCase() === 'linux') {
+      platformName = 'Linux';
+    }
+    const browsers = browserName.split(':');
+    if (browsers.length > 0) {
+      browserName = browsers[browsers.length - 1];
+    }
+    for (let i = 0; i < result.testsuites.testsuite.length; i++) {
+      const testcase = result.testsuites.testsuite[i].testcase;
+      result.testsuites.testsuite[i]._attributes.id = i;
+      result.testsuites.testsuite[i].properties = {};
+      if (testcase && testcase.failure) {
+        result.testsuites.testsuite[i].testcase.failure._attributes.message = escapeXML(testcase.failure._attributes.message || '');
+        result.testsuites.testsuite[i].testcase.failure._attributes.type = testcase.failure._attributes.type || '';
+        result.testsuites.testsuite[i].testcase.failure._cdata = testcase.failure._cdata || '';
       }
-    ];
-  }
-  try {
+      result.testsuites.testsuite[i].properties.property = [
+
+        {
+          _attributes: {
+            name: 'platformName',
+            value: platformName,
+          }
+        },
+        {
+          _attributes: {
+            name: 'browserName',
+            value: browserName,
+          }
+        }
+      ];
+    }
+
     opts.textFn = escapeXML;
     let xmlResult = convert.js2xml(result, opts);
     fs.writeFileSync(path.join(resultsFolder, 'junit.xml'), xmlResult);
   } catch (err) {
-    console.error(err);
+    console.error('failed to generate junit file:', err);
   }
 };
 
