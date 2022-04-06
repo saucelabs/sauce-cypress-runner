@@ -225,7 +225,7 @@ const cypressRunner = async function (runCfgPath, suiteName, timeoutSec, preExec
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
 
   // Execute pre-exec steps
-  if (!preExec(suite, preExecTimeoutSec)) {
+  if (!await preExec(suite, preExecTimeoutSec)) {
     let endTime = new Date().toISOString();
     await report(results, 0, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
     return;
