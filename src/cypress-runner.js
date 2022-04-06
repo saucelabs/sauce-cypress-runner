@@ -170,8 +170,14 @@ const preExecRunner = function (preExecs) {
   return new Promise((resolve) => {
     for (const command of preExecs) {
       console.log(`Executing pre-exec command: ${command}`);
-      const output = ChildProcess.execSync(command);
-      console.log(output.toString(), '\n');
+      try {
+        ChildProcess.execSync(command, { stdio: 'pipe'});
+        console.log('\n');
+      } catch (e) {
+        console.log(`command ${command}: failed. (${e})`);
+        resolve(false);
+        return;
+      }
     }
     resolve(true);
   });
