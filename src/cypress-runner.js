@@ -171,7 +171,7 @@ const preExecRunner = function (preExecs) {
     for (const command of preExecs) {
       console.log(`Executing pre-exec command: ${command}`);
       try {
-        ChildProcess.execSync(command, { stdio: 'pipe'});
+        ChildProcess.execSync(command, { stdio: 'inherit'});
         console.log('\n');
       } catch (e) {
         console.log(`command ${command}: failed. (${e})`);
@@ -198,6 +198,7 @@ const preExec = async function (suite, timeoutSec) {
   });
   let results = await Promise.race([timeoutPromise, preExecRunner(suite.preExec)]);
   clearTimeout(timeout);
+  console.log(`race output: ${results}`);
   return results;
 };
 
