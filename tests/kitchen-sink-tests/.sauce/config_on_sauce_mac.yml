@@ -18,5 +18,6 @@ suites:
   - name: "kitchen-sink on Sauce (MacOS)"
     platformName: "macOS 11.00"
     browser: "chrome"
+    browserVersion: "98"
     config:
       testFiles: [ "examples/*.*" ]
