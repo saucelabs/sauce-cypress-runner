@@ -227,7 +227,7 @@ const cypressRunner = async function (runCfgPath, suiteName, timeoutSec, preExec
   // Execute pre-exec steps
   if (!await preExec(suite, preExecTimeoutSec)) {
     let endTime = new Date().toISOString();
-    await report(results, 0, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
+    await report([], 0, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
     return;
   }
 
