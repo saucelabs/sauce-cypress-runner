@@ -1,13 +1,11 @@
 const { sauceReporter, prepareAssets } = require('./sauce-reporter');
 const path = require('path');
 const fs = require('fs');
-const os = require('os');
-const { shouldRecordVideo, getAbsolutePath, loadRunConfig, prepareNpmEnv, getArgs, getEnv } = require('sauce-testrunner-utils');
+const { shouldRecordVideo, getAbsolutePath, loadRunConfig, prepareNpmEnv, getArgs, getEnv, preExec } = require('sauce-testrunner-utils');
 const cypress = require('cypress');
 const util = require('util');
 const _ = require('lodash');
 const {afterRunTestReport} = require('@saucelabs/cypress-plugin');
-const ChildProcess = require('child_process');
 
 const report = async (results = {}, statusCode, browserName, runCfg, suiteName, startTime, endTime, metrics) => {
   // Prepare the assets
@@ -167,59 +165,6 @@ const canAccessFolder = async function (file) {
   await fsAccess(file, fs.constants.R_OK | fs.constants.W_OK);
 };
 
-const spawnAsync = function (cmd, args) {
-  return new Promise(function (resolve) {
-    const proc = ChildProcess.spawn(cmd, args);
-    proc.stdout.on('data', (data) => {
-      process.stdout.write(data.toString());
-    });
-    proc.stderr.on('data', (data) => {
-      process.stderr.write(data.toString());
-    });
-    proc.on('exit', function (exitCode) {
-      resolve(exitCode);
-    });
-    proc.on('error', function (err) {
-      console.log(`Unable to start command: ${err}`);
-      resolve(1);
-    });
-  });
-};
-
-const preExecRunner = async function (preExecs) {
-  const cmdInvoker = (os.platform() === 'win32') ? 'cmd' : 'sh';
-  const cmdArg = (os.platform() === 'win32') ? '/C' : '-c';
-
-  for (const command of preExecs) {
-    console.log(`Executing pre-exec command: ${command}`);
-    const exitCode = await spawnAsync(cmdInvoker, [cmdArg, command]);
-    console.log('\n');
-
-    if (exitCode !== 0) {
-      return false;
-    }
-  }
-  return true;
-};
-
-
-const preExec = async function (suite, timeoutSec) {
-  if (!suite.preExec) {
-    return true;
-  }
-
-  let timeout;
-  const timeoutPromise = new Promise((resolve) => {
-    timeout = setTimeout(() => {
-      console.error(`Pre-Exec timed out after ${timeoutSec} seconds`);
-      resolve(false);
-    }, timeoutSec * 1000);
-  });
-  let results = await Promise.race([timeoutPromise, preExecRunner(suite.preExec)]);
-  clearTimeout(timeout);
-  return results;
-};
-
 const cypressRunner = async function (runCfgPath, suiteName, timeoutSec, preExecTimeoutSec) {
   runCfgPath = getAbsolutePath(runCfgPath);
   const runCfg = await loadRunConfig(runCfgPath);
@@ -244,7 +189,7 @@ const cypressRunner = async function (runCfgPath, suiteName, timeoutSec, preExec
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
 
   // Execute pre-exec steps
-  if (!await preExec(suite, preExecTimeoutSec)) {
+  if (!await preExec.run(suite, preExecTimeoutSec)) {
     let endTime = new Date().toISOString();
     await report([], 0, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
     return;
