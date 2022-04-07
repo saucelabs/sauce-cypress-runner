@@ -171,10 +171,10 @@ const spawnAsync = function (cmd, args) {
   return new Promise(function (resolve) {
     const proc = ChildProcess.spawn(cmd, args);
     proc.stdout.on('data', (data) => {
-      console.log(data.toString());
+      process.stdout.write(data.toString());
     });
     proc.stderr.on('data', (data) => {
-      console.error(data.toString());
+      process.stderr.write(data.toString());
     });
     proc.on('exit', function (exitCode) {
       resolve(exitCode);
