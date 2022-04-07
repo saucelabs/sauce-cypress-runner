@@ -274,7 +274,7 @@ if (require.main === module) {
   const { runCfgPath, suiteName } = getArgs();
   // maxTimeout maximum test execution timeout is 1800 seconds (30 mins)
   const maxTimeout = 1800;
-  const maxPreExecTimeout = 60; // TODO: Make high before full PR
+  const maxPreExecTimeout = 300;
 
   cypressRunner(runCfgPath, suiteName, maxTimeout, maxPreExecTimeout)
       // eslint-disable-next-line promise/prefer-await-to-then
