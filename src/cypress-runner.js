@@ -7,7 +7,6 @@ const util = require('util');
 const _ = require('lodash');
 const {afterRunTestReport} = require('@saucelabs/cypress-plugin');
 const ChildProcess = require('child_process');
-const ShellQuote = require('shell-quote');
 
 const report = async (results = {}, statusCode, browserName, runCfg, suiteName, startTime, endTime, metrics) => {
   // Prepare the assets
@@ -177,11 +176,12 @@ const spawnAsync = function (cmd, args) {
 };
 
 const preExecRunner = async function (preExecs) {
+  const cmdInvoker = (process.platform === 'win32') ? 'cmd' : 'sh';
+  const cmdArg = (process.platform === 'win32') ? '/C' : '-c';
+
   for (const command of preExecs) {
     console.log(`Executing pre-exec command: ${command}`);
-    const args = ShellQuote.parse(command);
-    console.log(`${command} => ${args}`);
-    const exitCode = await spawnAsync(args[0], args.slice(1));
+    const exitCode = await spawnAsync(cmdInvoker, [cmdArg, command]);
     console.log('\n');
 
     if (exitCode !== 0) {
