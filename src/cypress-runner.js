@@ -1,6 +1,7 @@
 const { sauceReporter, prepareAssets } = require('./sauce-reporter');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const { shouldRecordVideo, getAbsolutePath, loadRunConfig, prepareNpmEnv, getArgs, getEnv } = require('sauce-testrunner-utils');
 const cypress = require('cypress');
 const util = require('util');
@@ -169,15 +170,25 @@ const canAccessFolder = async function (file) {
 const spawnAsync = function (cmd, args) {
   return new Promise(function (resolve) {
     const proc = ChildProcess.spawn(cmd, args);
+    proc.stdout.on('data', (data) => {
+      console.log(data);
+    });
+    proc.stderr.on('data', (data) => {
+      console.error(data);
+    });
     proc.on('exit', function (exitCode) {
       resolve(exitCode);
+    });
+    proc.on('error', function (err) {
+      console.log(`Unable to start command: ${err}`);
+      resolve(1);
     });
   });
 };
 
 const preExecRunner = async function (preExecs) {
-  const cmdInvoker = (process.platform === 'win32') ? 'cmd' : 'sh';
-  const cmdArg = (process.platform === 'win32') ? '/C' : '-c';
+  const cmdInvoker = (os.platform() === 'win32') ? 'cmd' : 'sh';
+  const cmdArg = (os.platform() === 'win32') ? '/C' : '-c';
 
   for (const command of preExecs) {
     console.log(`Executing pre-exec command: ${command}`);
@@ -199,7 +210,6 @@ const preExec = async function (suite, timeoutSec) {
 
   let timeout;
   const timeoutPromise = new Promise((resolve) => {
-    console.log(`Starting ${timeoutSec} (${timeoutSec * 1000})`);
     timeout = setTimeout(() => {
       console.error(`Pre-Exec timed out after ${timeoutSec} seconds`);
       resolve(false);
