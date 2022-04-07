@@ -136,7 +136,7 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics, testName
   try {
     SauceReporter.mergeJunitFile(specFiles, resultsFolder, testName, browserName, platformName);
   } catch (e) {
-    console.error(`Failed to generate junit file: ${e}`);
+    console.error(`Failed to generate junit file: ${e}: `);
   }
 
   for (let specFile of specFiles) {
@@ -316,79 +316,106 @@ SauceReporter.mergeJunitFile = (specFiles, resultsFolder, testName, browserName,
   if (specFiles.length === 0) {
     return;
   }
-  let result;
+
+  let opts = {compact: true, spaces: 4};
+  let testsuites = [];
+  for (let i = 0; i < specFiles.length; i++) {
+    const xmlData = fs.readFileSync(path.join(resultsFolder, `${specFiles[i]}.xml`), 'utf8');
+    const jsObj = convert.xml2js(xmlData, opts);
+    if (jsObj.testsuites && jsObj.testsuites.testsuite) {
+      testsuites.push(...jsObj.testsuites.testsuite);
+    }
+  }
+  if (testsuites.length === 0) {
+    return;
+  }
+
   let totalTests = 0;
   let totalErr = 0;
   let totalFailure = 0;
   let totalDisabled = 0;
   let totalTime = 0.0000;
-  let opts = {compact: true, spaces: 4};
-  const xmlData = fs.readFileSync(path.join(resultsFolder, `${specFiles[0]}.xml`), 'utf8');
-  result = convert.xml2js(xmlData, opts);
-
-  if (!result.testsuites || !result.testsuites.testsuite) {
-    return;
-  }
-
-  for (let i = 1; i < specFiles.length; i++) {
-    let jsObj;
-    const xmlData = fs.readFileSync(path.join(resultsFolder, `${specFiles[i]}.xml`), 'utf8');
-    jsObj = convert.xml2js(xmlData, opts);
-    if (jsObj.testsuites && jsObj.testsuites.testsuite) {
-      result.testsuites.testsuite.push(...jsObj.testsuites.testsuite);
+  for (let ts of testsuites) {
+    if (ts._attributes) {
+      totalTests += +ts._attributes.tests || 0;
+      totalFailure += +ts._attributes.failures || 0;
+      totalTime += +ts._attributes.time || 0.0000;
+      totalErr += +ts._attributes.error || 0;
+      totalDisabled += +ts._attributes.disabled || 0;
     }
   }
 
-  for (let ts of result.testsuites.testsuite) {
-    totalTests += +ts._attributes.tests || 0;
-    totalFailure += +ts._attributes.failures || 0;
-    totalTime += +ts._attributes.time || 0.0000;
-    totalErr += +ts._attributes.error || 0;
-    totalDisabled += +ts._attributes.disabled || 0;
-  }
-  result.testsuites._attributes.name = testName;
-  result.testsuites._attributes.tests = totalTests;
-  result.testsuites._attributes.failures = totalFailure;
-  result.testsuites._attributes.time = totalTime;
-  result.testsuites._attributes.error = totalErr;
-  result.testsuites._attributes.disabled = totalDisabled;
-  result.testsuites.testsuite = result.testsuites.testsuite.filter((item) => item._attributes.name !== 'Root Suite');
-  if (process.platform.toLowerCase() === 'linux') {
-    platformName = 'Linux';
-  }
-  const browsers = browserName.split(':');
-  if (browsers.length > 0) {
-    browserName = browsers[browsers.length - 1];
-  }
+  let result = {
+    testsuites: {
+      testsuite: testsuites.filter((item) => item._attributes?.name !== 'Root Suite'),
+      _attributes: {
+        name: testName,
+        tests: totalTests,
+        failures: totalFailure,
+        time: totalTime,
+        error: totalErr,
+        disabled: totalDisabled,
+      }
+    }
+  };
+
   for (let i = 0; i < result.testsuites.testsuite.length; i++) {
     const testcase = result.testsuites.testsuite[i].testcase;
+
+    // _attributes
+    if (!result.testsuites.testsuite[i]._attributes) {
+      result.testsuites.testsuite[i]._attributes = {};
+    }
     result.testsuites.testsuite[i]._attributes.id = i;
-    result.testsuites.testsuite[i].properties = {};
+
+    // failure message
     if (testcase && testcase.failure) {
-      result.testsuites.testsuite[i].testcase.failure._attributes.message = escapeXML(testcase.failure._attributes.message || '');
-      result.testsuites.testsuite[i].testcase.failure._attributes.type = testcase.failure._attributes.type || '';
+      result.testsuites.testsuite[i].testcase.failure._attributes = {
+        message: escapeXML(testcase.failure._attributes.message || ''),
+        type: testcase.failure._attributes.type || ''
+      };
       result.testsuites.testsuite[i].testcase.failure._cdata = testcase.failure._cdata || '';
     }
-    result.testsuites.testsuite[i].properties.property = [
 
-      {
-        _attributes: {
-          name: 'platformName',
-          value: platformName,
+    // properties
+    result.testsuites.testsuite[i].properties = {
+      property: [
+        {
+          _attributes: {
+            name: 'platformName',
+            value: getPlatformName(platformName),
+          }
+        },
+        {
+          _attributes: {
+            name: 'browserName',
+            value: getBrowsername(browserName),
+          }
         }
-      },
-      {
-        _attributes: {
-          name: 'browserName',
-          value: browserName,
-        }
-      }
-    ];
+      ]
+    };
   }
 
   opts.textFn = escapeXML;
   let xmlResult = convert.js2xml(result, opts);
   fs.writeFileSync(path.join(resultsFolder, 'junit.xml'), xmlResult);
+};
+
+const getPlatformName = (platformName) => {
+  if (process.platform.toLowerCase() === 'linux') {
+    platformName = 'Linux';
+  }
+
+  return platformName;
+};
+
+const getBrowsername = (browserName) => {
+  const browsers = browserName.split(':');
+  if (browsers.length > 0) {
+    browserName = browsers[browsers.length - 1];
+  }
+
+  return browserName;
 };
 
 module.exports = SauceReporter;
