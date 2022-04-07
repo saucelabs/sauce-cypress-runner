@@ -7,6 +7,7 @@ const util = require('util');
 const _ = require('lodash');
 const {afterRunTestReport} = require('@saucelabs/cypress-plugin');
 const ChildProcess = require('child_process');
+const ShellQuote = require('shell-quote');
 
 const report = async (results = {}, statusCode, browserName, runCfg, suiteName, startTime, endTime, metrics) => {
   // Prepare the assets
@@ -166,21 +167,28 @@ const canAccessFolder = async function (file) {
   await fsAccess(file, fs.constants.R_OK | fs.constants.W_OK);
 };
 
-const preExecRunner = function (preExecs) {
-  return new Promise((resolve) => {
-    for (const command of preExecs) {
-      console.log(`Executing pre-exec command: ${command}`);
-      try {
-        ChildProcess.execSync(command, { stdio: 'inherit'});
-        console.log('\n');
-      } catch (e) {
-        console.log(`command ${command}: failed. (${e})`);
-        resolve(false);
-        return;
-      }
-    }
-    resolve(true);
+const spawnAsync = function (cmd, args) {
+  return new Promise(function (resolve) {
+    const proc = ChildProcess.spawn(cmd, args);
+    proc.on('exit', function (exitCode) {
+      resolve(exitCode);
+    });
   });
+};
+
+const preExecRunner = async function (preExecs) {
+  for (const command of preExecs) {
+    console.log(`Executing pre-exec command: ${command}`);
+    const args = ShellQuote.parse(command);
+    console.log(`${command} => ${args}`);
+    const exitCode = await spawnAsync(args[0], args.slice(1));
+    console.log('\n');
+
+    if (exitCode !== 0) {
+      return false;
+    }
+  }
+  return true;
 };
 
 
