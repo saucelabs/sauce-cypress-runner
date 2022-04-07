@@ -363,9 +363,7 @@ SauceReporter.mergeJunitFile = (specFiles, resultsFolder, testName, browserName,
     const testcase = result.testsuites.testsuite[i].testcase;
 
     // _attributes
-    if (!result.testsuites.testsuite[i]._attributes) {
-      result.testsuites.testsuite[i]._attributes = {};
-    }
+    result.testsuites.testsuite[i]._attributes = result.testsuites.testsuite[i]._attributes || {};
     result.testsuites.testsuite[i]._attributes.id = i;
 
     // failure message
