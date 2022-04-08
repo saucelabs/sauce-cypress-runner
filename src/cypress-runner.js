@@ -1,7 +1,7 @@
 const { sauceReporter, prepareAssets } = require('./sauce-reporter');
 const path = require('path');
 const fs = require('fs');
-const { shouldRecordVideo, getAbsolutePath, loadRunConfig, prepareNpmEnv, getArgs, getEnv } = require('sauce-testrunner-utils');
+const { shouldRecordVideo, getAbsolutePath, loadRunConfig, prepareNpmEnv, getArgs, getEnv, preExec } = require('sauce-testrunner-utils');
 const cypress = require('cypress');
 const util = require('util');
 const _ = require('lodash');
@@ -165,7 +165,7 @@ const canAccessFolder = async function (file) {
   await fsAccess(file, fs.constants.R_OK | fs.constants.W_OK);
 };
 
-const cypressRunner = async function (runCfgPath, suiteName, timeoutSec) {
+const cypressRunner = async function (runCfgPath, suiteName, timeoutSec, preExecTimeoutSec) {
   runCfgPath = getAbsolutePath(runCfgPath);
   const runCfg = await loadRunConfig(runCfgPath);
   runCfg.path = runCfgPath;
@@ -187,6 +187,13 @@ const cypressRunner = async function (runCfgPath, suiteName, timeoutSec) {
   let startTime = new Date().toISOString();
   const suites = runCfg.suites || [];
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
+
+  // Execute pre-exec steps
+  if (!await preExec.run(suite, preExecTimeoutSec)) {
+    let endTime = new Date().toISOString();
+    await report([], 0, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
+    return;
+  }
 
   // saucectl suite.timeout is in nanoseconds
   timeoutSec = suite.timeout / 1000000000 || timeoutSec;
@@ -212,8 +219,9 @@ if (require.main === module) {
   const { runCfgPath, suiteName } = getArgs();
   // maxTimeout maximum test execution timeout is 1800 seconds (30 mins)
   const maxTimeout = 1800;
+  const maxPreExecTimeout = 300;
 
-  cypressRunner(runCfgPath, suiteName, maxTimeout)
+  cypressRunner(runCfgPath, suiteName, maxTimeout, maxPreExecTimeout)
       // eslint-disable-next-line promise/prefer-await-to-then
       .then((passed) => process.exit(passed ? 0 : 1))
       // eslint-disable-next-line promise/prefer-await-to-callbacks

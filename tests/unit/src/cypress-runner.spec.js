@@ -7,6 +7,7 @@ jest.mock('sauce-testrunner-utils', () => {
   return {
     ...mocked,
     getEnv: original.getEnv,
+    preExec: original.preExec,
   };
 });
 jest.mock('../../../src/sauce-reporter');
