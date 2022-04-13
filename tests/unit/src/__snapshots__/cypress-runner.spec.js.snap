@@ -43,6 +43,7 @@ Array [
         "env": Object {
           "HELLO": "WORLD",
         },
+        "ignoreTestFiles": Array [],
         "reporter": "MultiReporters.js",
         "reporterOptions": Object {
           "configFile": "sauce-reporter-config.json",
@@ -90,6 +91,7 @@ Array [
         "env": Object {
           "HELLO": "WORLD",
         },
+        "ignoreTestFiles": Array [],
         "reporter": "MultiReporters.js",
         "reporterOptions": Object {
           "configFile": "sauce-reporter-config.json",
