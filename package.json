@@ -25,7 +25,7 @@
   },
   "keywords": [],
   "dependencies": {
-    "@saucelabs/cypress-plugin": "0.4.0",
+    "@saucelabs/cypress-plugin": "0.5.0",
     "cypress": "9.5.3",
     "cypress-mochawesome-reporter": "^2.3.0",
     "cypress-multi-reporters": "^1.4.0",
