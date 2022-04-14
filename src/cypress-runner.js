@@ -139,7 +139,7 @@ const getCypressOpts = function (runCfg, suiteName) {
     headless: !headed,
     config: {
       testFiles: suite.config.testFiles,
-      ignoreTestFiles: suite.ignoreTestFiles || [],
+      ignoreTestFiles: suite.config.ignoreTestFiles || [],
       videosFolder: runCfg.resultsDir,
       screenshotsFolder: runCfg.resultsDir,
       video: shouldRecordVideo(),
