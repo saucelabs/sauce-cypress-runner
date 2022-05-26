@@ -1,8 +1,6 @@
 jest.mock('fs');
-jest.mock('webdriverio');
 jest.mock('saucelabs');
 const fs = require('fs');
-const webdriverio = require('webdriverio');
 const SauceLabs = require('saucelabs');
 const SauceReporter = require('../../../src/sauce-reporter');
 
@@ -47,7 +45,6 @@ describe('SauceReporter', function () {
       createJobWorkaroundSpy = jest.spyOn(SauceReporter, 'createJobWorkaround');
       // eslint-disable-next-line require-await
       createJobWorkaroundSpy.mockImplementation(async () => 'fake-session-id');
-      webdriverio.remote.mockImplementation(function () {});
       prepareAssetsSpy = jest.spyOn(SauceReporter, 'prepareAssets');
       createJobWorkaroundSpy = jest.spyOn(SauceReporter, 'createJobWorkaround');
       createJobWorkaroundSpy.mockImplementation(async () => await 'fake-session-id');

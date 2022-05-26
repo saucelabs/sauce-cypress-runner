@@ -39,7 +39,6 @@
     "saucelabs": "4.7.5",
     "smart-buffer": "^4.1.0",
     "typescript": "^3.9.7",
-    "webdriverio": "^6.10.10",
     "xml-js": "^1.6.11",
     "yargs": "^16.2.0"
   },
