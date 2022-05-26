@@ -28,19 +28,6 @@ jobs:
           build-args: |
             BUILD_TAG=pipeline-test
 
-  build-ubuntu-bundle-and-test:
-    runs-on: ubuntu-latest
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v2
-      -
-        name: Bundle Directory
-        run: bash ./scripts/bundle.sh
-      -
-        name: List bundle contents
-        run: ls -R bundle/
-
   build-windows-bundle-and-test:
     runs-on: windows-latest
     steps:
