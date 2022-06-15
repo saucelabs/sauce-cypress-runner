@@ -11,18 +11,18 @@ sauce:
 defaults:
   mode: docker
 cypress:
-  configFile: cypress.json
-  version: 7.3.0
-
+  configFile: cypress.config.js
+  version: 10.1.0
+rootDir: ./
 suites:
-  - name: "kitchen-sink-1"
+  - name: "kitchen-sink-chrome"
     browser: "chrome"
     config:
-      testFiles: [ "examples/*.*" ]
-  - name: "kitchen-sink-2"
+      specPattern: [ "examples/*.*" ]
+  - name: "kitchen-sink-firefox"
     browser: "firefox"
     config:
-      testFiles: [ "examples/*.*" ]
+      specPattern: [ "examples/*.*" ]
 
 docker:
   image: saucelabs/stt-cypress-mocha-node:local

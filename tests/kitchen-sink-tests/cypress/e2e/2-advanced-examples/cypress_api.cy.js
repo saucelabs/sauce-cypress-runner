@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /// <reference types="cypress" />
 
 context('Cypress.Commands', function () {
@@ -18,7 +19,6 @@ context('Cypress.Commands', function () {
       method = method || 'log';
 
       // log the subject to the console
-      // @ts-ignore TS7017
       console[method]('The subject is', subject);
 
       // whatever we return becomes the new subject
@@ -27,8 +27,6 @@ context('Cypress.Commands', function () {
       return subject;
     });
 
-    // @ts-ignore TS2339
-    // eslint-disable-next-line
     cy.get('button').console('info').then(($button) => {
       // subject is still $button
     });
