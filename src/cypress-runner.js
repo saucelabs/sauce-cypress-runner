@@ -10,7 +10,7 @@ const {afterRunTestReport} = require('@saucelabs/cypress-plugin');
 const report = async (results = {}, statusCode, browserName, runCfg, suiteName, startTime, endTime, metrics) => {
   // Prepare the assets
   const runs = results.runs || [];
-  let specFiles = runs.map((run) => run.spec.name);
+  let specFiles = runs.map((run) => path.basename(run.spec.name));
 
   let failures = results.failures || results.totalFailed;
   let platformName = '';

@@ -146,7 +146,6 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics, testName
       { name: `${path.basename(specFile)}.xml`},
     ];
 
-
     // screenshotsFolder has the same name as spec file name
     const screenshotsFolder = path.join(resultsFolder, specFile);
     if (fs.existsSync(screenshotsFolder)) {

@@ -550,7 +550,7 @@ MochaJUnitReporter.prototype.writeXmlToDisk = function (xml, filePath, fileName)
     if (filePath.includes('[hash]')) {
       xmlOutFilePath = filePath.replace('[hash]', md5(xml));
     } else if (filePath.includes('[suite]')) {
-      xmlOutFilePath = filePath.replace('[suite]', fileName);
+      xmlOutFilePath = filePath.replace('[suite]', path.basename(fileName));
     }
 
     debug('writing file to', xmlOutFilePath);
