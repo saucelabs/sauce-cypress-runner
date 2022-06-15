@@ -72,11 +72,11 @@ const configureReporters = function (cypressCfg, runCfg, opts) {
     reporterEnabled: `spec, ${customReporter}, ${junitReporter}`,
     [[_.camelCase(customReporter), 'ReporterOptions'].join('')]: {
       mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: cypressCfg.integrationFolder || 'cypress/integration'
+      specRoot: cypressCfg.e2e.specPattern || 'cypress/e2e'
     },
     [[_.camelCase(junitReporter), 'ReporterOptions'].join('')]: {
       mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: cypressCfg.integrationFolder || 'cypress/integration'
+      specRoot: cypressCfg.e2e.specPattern || 'cypress/e2e'
     }
   };
 
@@ -123,7 +123,6 @@ const getCypressOpts = function (runCfg, suiteName) {
     throw new Error(`Unable to locate the cypress config file. Looked for '${getAbsolutePath(cypressCfgFile)}'.`);
   }
 
-  const cypressCfg = JSON.parse(fs.readFileSync(cypressCfgFile, 'utf8'));
 
   let headed = true;
   // suite.config.headless is kepts to keep backward compatibility.
@@ -138,8 +137,8 @@ const getCypressOpts = function (runCfg, suiteName) {
     headed,
     headless: !headed,
     config: {
-      testFiles: suite.config.testFiles,
-      ignoreTestFiles: suite.config.ignoreTestFiles || [],
+      specPattern: suite.config.specPattern,
+      excludeSpecPattern: suite.config.excludeSpecPattern || [],
       videosFolder: runCfg.resultsDir,
       screenshotsFolder: runCfg.resultsDir,
       video: shouldRecordVideo(),
@@ -155,6 +154,7 @@ const getCypressOpts = function (runCfg, suiteName) {
     opts.config.videoUploadOnPasses = true;
   }
 
+  const cypressCfg = require(cypressCfgFile);
   opts = configureReporters(cypressCfg, runCfg, opts);
 
   _.defaultsDeep(opts.config, suite.config);

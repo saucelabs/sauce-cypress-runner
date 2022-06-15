@@ -141,9 +141,9 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics, testName
 
   for (let specFile of specFiles) {
     const sauceAssets = [
-      { name: `${specFile}.mp4`},
-      { name: `${specFile}.json`},
-      { name: `${specFile}.xml`},
+      { name: `${path.basename(specFile)}.mp4`},
+      { name: `${path.basename(specFile)}.json`},
+      { name: `${path.basename(specFile)}.xml`},
     ];
 
 
