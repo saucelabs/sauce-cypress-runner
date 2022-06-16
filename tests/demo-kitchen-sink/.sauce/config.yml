@@ -11,10 +11,10 @@ sauce:
 
 cypress:
   configFile: cypress.config.js
-  version: 10.1.0
+  version: 9.7.0
 
 suites:
   - name: "kitchen-sink-1"
     browser: "chrome"
     config:
-      specPattern: [ "examples/*.*" ]
+      specPattern: [ "cypress/e2e/**/*.*" ]
