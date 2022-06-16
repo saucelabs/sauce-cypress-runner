@@ -1,6 +1,6 @@
 {
     "cypress": {
-        "configFile": "cypress.json"
+        "configFile": "cypress.config.js"
     },
     "suites": [
         {
@@ -8,7 +8,7 @@
             "browser": "chrome",
             "browserVersion": "",
             "config": {
-                "testFiles": [
+                "specPattern": [
                     "**/*.*"
                 ]
             }
