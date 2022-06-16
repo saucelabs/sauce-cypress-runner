@@ -5,10 +5,10 @@ Array [
   Array [
     Object {
       "cypress": Object {
-        "configFile": "fake-cypress.json",
+        "configFile": "../tests/unit/cypress.config",
       },
-      "path": "/fake/runner/path",
-      "resultsDir": "/fake/runner/__assets__",
+      "path": "",
+      "resultsDir": "__assets__",
       "suites": Array [
         Object {
           "config": Object {
@@ -43,22 +43,22 @@ Array [
         "env": Object {
           "HELLO": "WORLD",
         },
-        "ignoreTestFiles": Array [],
+        "excludeSpecPattern": Array [],
         "reporter": "MultiReporters.js",
         "reporterOptions": Object {
           "configFile": "sauce-reporter-config.json",
         },
-        "screenshotsFolder": "/fake/runner/__assets__",
-        "testFiles": undefined,
+        "screenshotsFolder": "__assets__",
+        "specPattern": undefined,
         "video": undefined,
         "videoCompression": false,
         "videoUploadOnPasses": false,
-        "videosFolder": "/fake/runner/__assets__",
+        "videosFolder": "__assets__",
       },
-      "configFile": "fake-cypress.json",
+      "configFile": "cypress.config",
       "headed": true,
       "headless": false,
-      "project": "/fake/runner",
+      "project": "../tests/unit",
     },
   ],
 ]
@@ -71,7 +71,7 @@ Array [
       "spec-a",
       "spec-b",
     ],
-    "/fake/runner/__assets__",
+    "__assets__",
     Array [
       "some metricz",
     ],
@@ -91,22 +91,22 @@ Array [
         "env": Object {
           "HELLO": "WORLD",
         },
-        "ignoreTestFiles": Array [],
+        "excludeSpecPattern": Array [],
         "reporter": "MultiReporters.js",
         "reporterOptions": Object {
           "configFile": "sauce-reporter-config.json",
         },
-        "screenshotsFolder": "/fake/runner/__assets__",
-        "testFiles": undefined,
+        "screenshotsFolder": "__assets__",
+        "specPattern": undefined,
         "video": undefined,
         "videoCompression": false,
         "videoUploadOnPasses": false,
-        "videosFolder": "/fake/runner/__assets__",
+        "videosFolder": "__assets__",
       },
-      "configFile": "fake-cypress.json",
+      "configFile": "cypress.config",
       "headed": true,
       "headless": false,
-      "project": "/fake/runner",
+      "project": "../tests/unit",
     },
   ],
 ]

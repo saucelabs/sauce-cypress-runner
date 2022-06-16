@@ -26,9 +26,11 @@ describe('.cypressRunner', function () {
   let oldEnv = { ...process.env };
   let cypressRunSpy;
   cypressRunSpy = jest.spyOn(cypress, 'run');
+  let fakeRunnerJson;
 
   beforeEach(function () {
     process.env = { ...oldEnv };
+    jest.resetModules();
     cypressRunSpy.mockClear();
     const cypressRunResults = {
       runs: [{spec: {name: 'spec-a'}}, {spec: {name: 'spec-b'}}],
@@ -37,9 +39,9 @@ describe('.cypressRunner', function () {
     cypress.run.mockImplementation(() => cypressRunResults);
     SauceReporter.prepareAssets.mockClear();
     SauceReporter.prepareAssets.mockImplementation(() => (['spec-a', 'spec-b']));
-    const fakeRunnerJson = {
+    fakeRunnerJson = {
       cypress: {
-        configFile: 'fake-cypress.json',
+        configFile: '../tests/unit/cypress.config',
       },
       suites: [
         {name: 'fake-suite', platformName: 'Windows 10', config: {env: {HELLO: 'WORLD'}}}
@@ -53,7 +55,6 @@ describe('.cypressRunner', function () {
     fs.access.mockImplementation((obj, constants, resolver) => resolver(null));
     utils.prepareNpmEnv.mockImplementation(() => 'some metricz');
     afterRunTestReport.mockImplementation(() => {});
-
     // Mock the dates so that it's deterministic
     const isoDateSpy = jest.spyOn(Date.prototype, 'toISOString');
     let day = 0;
@@ -71,13 +72,13 @@ describe('.cypressRunner', function () {
     cypress.run.mockImplementation(() => run);
     process.env.SAUCE_USERNAME = 'fake-sauce-username';
     process.env.SAUCE_ACCESS_KEY = 'fake-sauce-accesskey';
-    const status = await cypressRunner('/fake/runner/path', 'fake-suite', 2);
+    const status = await cypressRunner('', 'fake-suite', 2);
     expect(status).toEqual(false);
   });
   it('can call Cypress.run with basic args', async function () {
     process.env.SAUCE_USERNAME = 'fake-sauce-username';
     process.env.SAUCE_ACCESS_KEY = 'fake-sauce-accesskey';
-    await cypressRunner('/fake/runner/path', 'fake-suite', 1);
+    await cypressRunner('', 'fake-suite', 1);
     // Change reporter to not be fully-qualified path
     cypressRunSpy.mock.calls[0][0].config.reporter = path.basename(cypressRunSpy.mock.calls[0][0].config.reporter);
     cypressRunSpy.mock.calls[0][0].config.reporterOptions.configFile = path.basename(cypressRunSpy.mock.calls[0][0].config.reporterOptions.configFile);
@@ -86,7 +87,7 @@ describe('.cypressRunner', function () {
   });
   it('can hardcode the browser path', async function () {
     process.env.SAUCE_BROWSER = 'C:/User/App/browser.exe:chrome';
-    await cypressRunner('/fake/runner/path', 'fake-suite', 1);
+    await cypressRunner('', 'fake-suite', 1);
     const calledBrowser = cypressRunSpy.mock.calls[0][0].browser;
     expect(calledBrowser).toEqual('C:/User/App/browser.exe:chrome');
   });
@@ -94,7 +95,7 @@ describe('.cypressRunner', function () {
     process.env.SAUCE_USERNAME = 'bruno.alassia';
     process.env.SAUCE_ACCESS_KEY = 'i_l0ve_mayonnaise';
     process.env.SAUCE_BROWSER = 'firefox';
-    await cypressRunner('/fake/runner/path', 'fake-suite', 1);
+    await cypressRunner('', 'fake-suite', 1);
     expect(SauceReporter.sauceReporter.mock.calls).toMatchSnapshot();
   });
 
@@ -105,17 +106,17 @@ describe('.cypressRunner', function () {
 
     it('returns false if there are test failures', async function () {
       cypressRunSpy.mockImplementation(() => ({failures: 100}));
-      const status = await cypressRunner('/fake/runner/path', 'fake-suite', 1);
+      const status = await cypressRunner('', 'fake-suite', 1);
       expect(status).toEqual(false);
     });
     it('returns true if there are no test failures', async function () {
       cypressRunSpy.mockImplementation(() => ({failures: 0}));
-      const status = await cypressRunner('/fake/runner/path', 'fake-suite', 1);
+      const status = await cypressRunner('', 'fake-suite', 1);
       expect(status).toEqual(false);
     });
     it('should take config.env as argument (DEVX-477)', async function () {
       cypressRunSpy.mockImplementation(() => ({}));
-      await cypressRunner('/fake/runner/path', 'fake-suite', 1);
+      await cypressRunner('', 'fake-suite', 1);
       const { calls } = cypressRunSpy.mock;
 
       // Rename to basename to remove home dir
@@ -128,7 +129,7 @@ describe('.cypressRunner', function () {
         setTimeout(resolve, 10);
       });
       cypress.run.mockImplementation(() => run);
-      const status = await cypressRunner('/fake/runner/path', 'fake-suite', 1);
+      const status = await cypressRunner('', 'fake-suite', 1);
       expect(status).toEqual(false);
     });
   });

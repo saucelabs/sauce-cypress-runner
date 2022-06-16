@@ -72,11 +72,11 @@ const configureReporters = function (cypressCfg, runCfg, opts) {
     reporterEnabled: `spec, ${customReporter}, ${junitReporter}`,
     [[_.camelCase(customReporter), 'ReporterOptions'].join('')]: {
       mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: cypressCfg.e2e.specPattern || 'cypress/e2e'
+      specRoot: cypressCfg.e2e?.specPattern || 'cypress/e2e'
     },
     [[_.camelCase(junitReporter), 'ReporterOptions'].join('')]: {
       mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: cypressCfg.e2e.specPattern || 'cypress/e2e'
+      specRoot: cypressCfg.e2e?.specPattern || 'cypress/e2e'
     }
   };
 
@@ -122,7 +122,6 @@ const getCypressOpts = function (runCfg, suiteName) {
   if (!fs.existsSync(getAbsolutePath(cypressCfgFile))) {
     throw new Error(`Unable to locate the cypress config file. Looked for '${getAbsolutePath(cypressCfgFile)}'.`);
   }
-
 
   let headed = true;
   // suite.config.headless is kepts to keep backward compatibility.
@@ -235,4 +234,6 @@ if (require.main === module) {
 exports.cypressRunner = cypressRunner;
 exports.configureReporters = configureReporters;
 exports.getSuite = getSuite;
+exports.getCypressOpts = getCypressOpts;
 exports.setEnvironmentVariables = setEnvironmentVariables;
+exports.getCypressOpts = getCypressOpts;
