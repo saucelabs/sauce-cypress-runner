@@ -1,6 +1,7 @@
 apiVersion: v1alpha
 kind: cypress
 sauce:
+  concurrency: 5
   metadata:
     tags:
       - e2e
@@ -11,13 +12,16 @@ sauce:
 defaults:
   mode: sauce
 cypress:
-  configFile: cypress.json
-  version: 9.3.1
+  configFile: cypress.config.js
+  version: 9.7.0
 
+rootDir: ./
 suites:
   - name: "kitchen-sink on Sauce (MacOS)"
     platformName: "macOS 11.00"
     browser: "chrome"
     browserVersion: "98"
+    shard: spec
     config:
-      testFiles: [ "examples/*.*" ]
+      specPattern: [ "cypress/e2e/**/*.*" ]
+      excludeSpecPattern: ["cypress/e2e/failing/*.*"]

@@ -1,5 +1,7 @@
 apiVersion: v1alpha
 kind: cypress
+defaults:
+  mode: docker
 sauce:
   metadata:
     tags:
@@ -9,20 +11,23 @@ sauce:
     build: Release $CI_COMMIT_SHORT_SHA
   region: us-west-1
 defaults:
-  mode: docker
+  mode: sauce
 cypress:
   configFile: cypress.config.js
-  version: 10.1.0
+  version: 9.7.0
 rootDir: ./
 suites:
   - name: "kitchen-sink-chrome"
+    shard: spec
     browser: "chrome"
     config:
-      specPattern: [ "examples/*.*" ]
+      specPattern: [ "cypress/**/*.*" ]
+      excludeSpecPattern: ["cypress/e2e/failing/*.*"]
   - name: "kitchen-sink-firefox"
     browser: "firefox"
     config:
-      specPattern: [ "examples/*.*" ]
+      specPattern: [ "cypress/**/*.*" ]
+      excludeSpecPattern: ["cypress/e2e/failing/*.*"]
 
 docker:
   image: saucelabs/stt-cypress-mocha-node:local
