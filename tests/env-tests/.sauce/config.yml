@@ -9,13 +9,13 @@ sauce:
     - other tag
     build: Release $CI_COMMIT_SHORT_SHA
 cypress:
-  version: 5.6.0
-  configFile: cypress.json
+  version: 10.1.0
+  configFile: cypress.config.js
 suites:
 - name: saucy test
   browser: chrome
   config:
-    testFiles:
+    specPattern:
     - '**/*.*'
     env:
       VALUE: 'Some test value'

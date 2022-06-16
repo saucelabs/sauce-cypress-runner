@@ -1,6 +1,6 @@
 {
     "cypress": {
-        "configFile": "cypress.json"
+        "configFile": "cypress.config.js"
     },
     "env": {
     },
@@ -10,7 +10,7 @@
             "browser": "chrome",
             "browserVersion": "",
             "config": {
-                "testFiles": [
+                "specPattern": [
                     "**/*.*"
                 ],
                 "env": {
