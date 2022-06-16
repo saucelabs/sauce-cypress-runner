@@ -234,6 +234,4 @@ if (require.main === module) {
 exports.cypressRunner = cypressRunner;
 exports.configureReporters = configureReporters;
 exports.getSuite = getSuite;
-exports.getCypressOpts = getCypressOpts;
 exports.setEnvironmentVariables = setEnvironmentVariables;
-exports.getCypressOpts = getCypressOpts;
