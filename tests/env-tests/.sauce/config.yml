@@ -9,14 +9,14 @@ sauce:
     - other tag
     build: Release $CI_COMMIT_SHORT_SHA
 cypress:
-  version: 10.1.0
+  version: 9.7.0
   configFile: cypress.config.js
 suites:
 - name: saucy test
   browser: chrome
   config:
     specPattern:
-    - '**/*.*'
+    - 'cypress/e2e/**/*.*'
     env:
       VALUE: 'Some test value'
       FOO: bar
