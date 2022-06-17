@@ -10,20 +10,21 @@ sauce:
     build: Github Run $GITHUB_RUN_ID
 cypress:
   configFile: cypress.config.js
-  version: 10.1.0
+  version: 9.7.0
 rootDir: ./
-
+env:
+  foo: bar
 suites:
   - name: "Post Release Test (MacOS) 1/2"
     browser: "chrome"
     platformName: "macOS 11.00"
     config:
-      specPattern: [ "**/*.spec.js" ]
+      specPattern: [ "cypress/**/*.*" ]
   - name: "Post Release Test (MacOS) 2/2"
     browser: "firefox"
     platformName: "macOS 11.00"
     config:
-      specPattern: [ "**/*.spec.js" ]
+      specPattern: [ "cypress/**/*.*" ]
 
 notifications:
   slack:
