@@ -18,5 +18,5 @@ suites:
     platformName: "macOS 11.00"
     browser: "chrome"
     config:
-      specPattern: [ "*.spec.js" ]
+      specPattern: [ "cypress/**/*.*" ]
 

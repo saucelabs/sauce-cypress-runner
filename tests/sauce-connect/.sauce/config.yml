@@ -12,11 +12,11 @@ defaults:
   mode: sauce
 cypress:
   configFile: cypress.config.js
-  version: 10.1.0
+  version: 9.7.0
 
 suites:
   - name: "kitchen-sink on Sauce (Windows)"
     browser: "chrome"
     config:
-      specPattern: [ "*.spec.js" ]
+      specPattern: [ "cypress/**/*.*" ]
 
