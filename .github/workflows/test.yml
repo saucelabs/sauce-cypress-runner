@@ -195,4 +195,4 @@ jobs:
 
       - name: run integration test
         run: |
-          node . -r tests/config-tests/sauce-runner.json -s default
+          npm i; node . -r tests/config-tests/sauce-runner.json -s default
