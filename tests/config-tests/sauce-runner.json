@@ -2,14 +2,16 @@
     "cypress": {
         "configFile": "cypress.config.js"
     },
+    "rootDir": "./",
     "suites": [
         {
             "name": "default",
             "browser": "chrome",
             "browserVersion": "",
+            "headless": true,
             "config": {
                 "specPattern": [
-                    "**/*.*"
+                    "**/config.cy.js"
                 ]
             }
         }

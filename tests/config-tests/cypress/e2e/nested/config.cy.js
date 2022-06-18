@@ -1,13 +1,10 @@
-/// <reference types="cypress" />
-
 context('Actions', function () {
   beforeEach(function () {
     cy.visit('https://example.cypress.io/commands/actions');
   });
-
-  // https://on.cypress.io/interacting-with-elements
-
-  it('should use cypress.json', function () {
-    expect(Cypress.env('foo')).to.equal('bar');
+  it('.type() - type into a DOM element', function () {
+    // https://on.cypress.io/type
+    cy.get('.action-email')
+        .type('fake@email.com').should('have.value', 'fake@email.com');
   });
 });
