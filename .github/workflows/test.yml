@@ -181,18 +181,3 @@ jobs:
         run: |
           saucectl run --config .sauce/config_mac.yml --runner-version "url: https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/sauce-cypress-macos-${{ github.run_id }}.zip"
         working-directory: ./tests/sauce-connect/
-
-  run-integration:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout runner
-        uses: actions/checkout@v2
-
-      - name: Use Node.js v14.x
-        uses: actions/setup-node@v1
-        with:
-          node-version: 14.x
-
-      - name: run integration test
-        run: |
-          npm i; node . -r tests/config-tests/sauce-runner.json -s default

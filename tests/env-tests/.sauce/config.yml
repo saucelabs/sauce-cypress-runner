@@ -16,7 +16,7 @@ suites:
   browser: chrome
   config:
     specPattern:
-    - 'cypress/e2e/**/*.*'
+    - '**/env.cy.js'
     env:
       VALUE: 'Some test value'
       FOO: bar
