@@ -1,6 +1,6 @@
 {
     "cypress": {
-        "configFile": "cypress.config.js"
+        "configFile": "cypress.config.ts"
     },
     "rootDir": "./",
     "suites": [

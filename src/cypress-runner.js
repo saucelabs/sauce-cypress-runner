@@ -56,7 +56,7 @@ const report = async (results = {}, statusCode, browserName, runCfg, suiteName, 
 };
 
 // Configure reporters
-const configureReporters = function (cypressCfg, runCfg, opts) {
+const configureReporters = function (runCfg, opts) {
   // Enable cypress-multi-reporters plugin
   opts.config.reporter = path.join(__dirname, '../node_modules/cypress-multi-reporters/lib/MultiReporters.js');
   opts.config.reporterOptions = {
@@ -153,8 +153,7 @@ const getCypressOpts = function (runCfg, suiteName) {
     opts.config.videoUploadOnPasses = true;
   }
 
-  const cypressCfg = require(cypressCfgFile);
-  opts = configureReporters(cypressCfg, runCfg, opts);
+  opts = configureReporters(runCfg, opts);
 
   _.defaultsDeep(opts.config, suite.config);
   return opts;
