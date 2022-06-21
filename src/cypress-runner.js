@@ -72,11 +72,11 @@ const configureReporters = function (cypressCfg, runCfg, opts) {
     reporterEnabled: `spec, ${customReporter}, ${junitReporter}`,
     [[_.camelCase(customReporter), 'ReporterOptions'].join('')]: {
       mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: cypressCfg.e2e?.specPattern || 'cypress/e2e'
+      specRoot: runCfg.rootDir || 'cypress/e2e'
     },
     [[_.camelCase(junitReporter), 'ReporterOptions'].join('')]: {
       mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: cypressCfg.e2e?.specPattern || 'cypress/e2e'
+      specRoot: runCfg.rootDir || 'cypress/e2e'
     }
   };
 
