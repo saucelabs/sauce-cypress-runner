@@ -30,6 +30,8 @@
     "cypress-cucumber-preprocessor": "4.3.1",
     "cypress-mochawesome-reporter": "3.1.0",
     "cypress-multi-reporters": "1.6.0",
+    "cypress-xpath": "2.0.0",
+    "dotenv": "16.0.1",
     "fluent-ffmpeg": "^2.1.2",
     "glob": "^7.1.6",
     "js-yaml": "^3.14.1",
