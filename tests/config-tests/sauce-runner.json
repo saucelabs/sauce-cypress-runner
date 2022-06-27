@@ -9,8 +9,8 @@
             "browser": "chrome",
             "browserVersion": "",
             "headless": true,
-            "testingType": "e2e",
             "config": {
+                "testingType": "e2e",
                 "specPattern": [
                     "**/config.cy.js"
                 ]

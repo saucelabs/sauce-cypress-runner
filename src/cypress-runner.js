@@ -142,7 +142,7 @@ const getCypressOpts = function (runCfg, suiteName) {
     configFile: path.basename(cypressCfgFile),
     headed,
     headless: !headed,
-    testingType: suite.testingType || 'e2e',
+    testingType: suite.config.testingType || 'e2e',
     config: {
       specPattern: suite.config.specPattern,
       excludeSpecPattern: suite.config.excludeSpecPattern || [],
