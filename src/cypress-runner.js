@@ -66,17 +66,24 @@ const configureReporters = function (runCfg, opts) {
   const customReporter = path.join(__dirname, '../src/custom-reporter.js');
   const junitReporter = path.join(__dirname, '../node_modules/mocha-junit-reporter/index.js');
 
+  let defaultSpecRoot = '';
+  if (opts.testingType === 'e2e') {
+    defaultSpecRoot = 'cypress/e2e';
+  } else {
+    defaultSpecRoot = 'cypress/component';
+  }
+
   // Referencing "mocha-junit-reporter" using relative path will allow to have multiple instance of mocha-junit-reporter.
   // That permits to have a configuration specific to us, and in addition to keep customer's one.
   let reporterConfig = {
     reporterEnabled: `spec, ${customReporter}, ${junitReporter}`,
     [[_.camelCase(customReporter), 'ReporterOptions'].join('')]: {
       mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: runCfg.rootDir || 'cypress/e2e'
+      specRoot: defaultSpecRoot
     },
     [[_.camelCase(junitReporter), 'ReporterOptions'].join('')]: {
       mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: runCfg.rootDir || 'cypress/e2e'
+      specRoot: defaultSpecRoot
     }
   };
 
@@ -135,6 +142,7 @@ const getCypressOpts = function (runCfg, suiteName) {
     configFile: path.basename(cypressCfgFile),
     headed,
     headless: !headed,
+    testingType: suite.testingType || 'e2e',
     config: {
       specPattern: suite.config.specPattern,
       excludeSpecPattern: suite.config.excludeSpecPattern || [],

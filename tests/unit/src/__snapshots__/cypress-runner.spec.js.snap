@@ -59,6 +59,7 @@ Array [
       "headed": true,
       "headless": false,
       "project": "../tests/unit",
+      "testingType": "e2e",
     },
   ],
 ]
@@ -107,6 +108,7 @@ Array [
       "headed": true,
       "headless": false,
       "project": "../tests/unit",
+      "testingType": "e2e",
     },
   ],
 ]

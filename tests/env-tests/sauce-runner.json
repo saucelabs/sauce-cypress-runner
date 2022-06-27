@@ -9,6 +9,7 @@
             "name": "default",
             "browser": "chrome",
             "browserVersion": "",
+            "testingType": "e2e",
             "config": {
                 "specPattern": [
                     "**/env.cy.js"
