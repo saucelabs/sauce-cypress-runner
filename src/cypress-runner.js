@@ -67,10 +67,10 @@ const configureReporters = function (runCfg, opts) {
   const junitReporter = path.join(__dirname, '../node_modules/mocha-junit-reporter/index.js');
 
   let defaultSpecRoot = '';
-  if (opts.testingType === 'e2e') {
-    defaultSpecRoot = 'cypress/e2e';
-  } else {
+  if (opts.testingType === 'component') {
     defaultSpecRoot = 'cypress/component';
+  } else {
+    defaultSpecRoot = 'cypress/e2e';
   }
 
   // Referencing "mocha-junit-reporter" using relative path will allow to have multiple instance of mocha-junit-reporter.
