@@ -1,15 +1,18 @@
 {
     "cypress": {
-        "configFile": "cypress.json"
+        "configFile": "cypress.config.ts"
     },
+    "rootDir": "./",
     "suites": [
         {
             "name": "default",
             "browser": "chrome",
             "browserVersion": "",
+            "headless": true,
             "config": {
-                "testFiles": [
-                    "**/*.*"
+                "testingType": "e2e",
+                "specPattern": [
+                    "**/config.cy.js"
                 ]
             }
         }

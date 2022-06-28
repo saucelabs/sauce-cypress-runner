@@ -10,7 +10,7 @@ const {afterRunTestReport} = require('@saucelabs/cypress-plugin');
 const report = async (results = {}, statusCode, browserName, runCfg, suiteName, startTime, endTime, metrics) => {
   // Prepare the assets
   const runs = results.runs || [];
-  let specFiles = runs.map((run) => run.spec.name);
+  let specFiles = runs.map((run) => path.basename(run.spec.name));
 
   let failures = results.failures || results.totalFailed;
   let platformName = '';
@@ -56,7 +56,7 @@ const report = async (results = {}, statusCode, browserName, runCfg, suiteName, 
 };
 
 // Configure reporters
-const configureReporters = function (cypressCfg, runCfg, opts) {
+const configureReporters = function (runCfg, opts) {
   // Enable cypress-multi-reporters plugin
   opts.config.reporter = path.join(__dirname, '../node_modules/cypress-multi-reporters/lib/MultiReporters.js');
   opts.config.reporterOptions = {
@@ -66,17 +66,24 @@ const configureReporters = function (cypressCfg, runCfg, opts) {
   const customReporter = path.join(__dirname, '../src/custom-reporter.js');
   const junitReporter = path.join(__dirname, '../node_modules/mocha-junit-reporter/index.js');
 
+  let defaultSpecRoot = '';
+  if (opts.testingType === 'component') {
+    defaultSpecRoot = 'cypress/component';
+  } else {
+    defaultSpecRoot = 'cypress/e2e';
+  }
+
   // Referencing "mocha-junit-reporter" using relative path will allow to have multiple instance of mocha-junit-reporter.
   // That permits to have a configuration specific to us, and in addition to keep customer's one.
   let reporterConfig = {
     reporterEnabled: `spec, ${customReporter}, ${junitReporter}`,
     [[_.camelCase(customReporter), 'ReporterOptions'].join('')]: {
       mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: cypressCfg.integrationFolder || 'cypress/integration'
+      specRoot: defaultSpecRoot
     },
     [[_.camelCase(junitReporter), 'ReporterOptions'].join('')]: {
       mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: cypressCfg.integrationFolder || 'cypress/integration'
+      specRoot: defaultSpecRoot
     }
   };
 
@@ -123,8 +130,6 @@ const getCypressOpts = function (runCfg, suiteName) {
     throw new Error(`Unable to locate the cypress config file. Looked for '${getAbsolutePath(cypressCfgFile)}'.`);
   }
 
-  const cypressCfg = JSON.parse(fs.readFileSync(cypressCfgFile, 'utf8'));
-
   let headed = true;
   // suite.config.headless is kepts to keep backward compatibility.
   if (suite.headless || suite.config.headless) {
@@ -137,9 +142,10 @@ const getCypressOpts = function (runCfg, suiteName) {
     configFile: path.basename(cypressCfgFile),
     headed,
     headless: !headed,
+    testingType: suite.config.testingType || 'e2e',
     config: {
-      testFiles: suite.config.testFiles,
-      ignoreTestFiles: suite.config.ignoreTestFiles || [],
+      specPattern: suite.config.specPattern,
+      excludeSpecPattern: suite.config.excludeSpecPattern || [],
       videosFolder: runCfg.resultsDir,
       screenshotsFolder: runCfg.resultsDir,
       video: shouldRecordVideo(),
@@ -155,7 +161,7 @@ const getCypressOpts = function (runCfg, suiteName) {
     opts.config.videoUploadOnPasses = true;
   }
 
-  opts = configureReporters(cypressCfg, runCfg, opts);
+  opts = configureReporters(runCfg, opts);
 
   _.defaultsDeep(opts.config, suite.config);
   return opts;

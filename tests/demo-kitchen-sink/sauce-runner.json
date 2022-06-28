@@ -14,7 +14,7 @@
        "region": "eu-central-1"
     },
     "cypress": {
-       "configFile": "cypress.json",
+       "configFile": "cypress.config.js",
        "version": 5
     },
     "suites": [
@@ -22,7 +22,7 @@
           "name": "kitchen-sink-1",
           "browser": "chrome",
           "config": {
-             "testFiles": [
+             "specPattern": [
                 "examples/*.*"
              ]
           }
@@ -31,7 +31,7 @@
           "name": "kitchen-sink-2",
           "browser": "edge",
           "config": {
-             "testFiles": [
+             "specPattern": [
                 "examples/*.*"
              ]
           }
@@ -40,7 +40,7 @@
           "name": "kitchen-sink-3",
           "browser": "firefox",
           "config": {
-             "testFiles": [
+             "specPattern": [
                 "examples/*.*"
              ]
           }

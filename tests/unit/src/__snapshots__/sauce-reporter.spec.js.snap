@@ -13,9 +13,9 @@ Array [
   "console.log",
   "results/spec/file.test.js/fake/path/to/screenshot-1.png",
   "results/spec/file.test.js/fake/path/to/screenshot-2.png",
-  "results/spec/file.test.js.mp4",
-  "results/spec/file.test.js.json",
-  "results/spec/file.test.js.xml",
+  "results/file.test.js.mp4",
+  "results/file.test.js.json",
+  "results/file.test.js.xml",
   "results/video.mp4",
   "results/junit.xml",
 ]

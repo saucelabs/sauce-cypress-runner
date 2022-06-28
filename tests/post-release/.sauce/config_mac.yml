@@ -9,21 +9,22 @@ sauce:
       - post release
     build: Github Run $GITHUB_RUN_ID
 cypress:
-  configFile: cypress.json
-  version: 9.3.1
+  configFile: cypress.config.js
+  version: 9.7.0
 rootDir: ./
-
+env:
+  foo: bar
 suites:
   - name: "Post Release Test (MacOS) 1/2"
     browser: "chrome"
     platformName: "macOS 11.00"
     config:
-      testFiles: [ "**/*.spec.js" ]
+      specPattern: [ "cypress/**/*.*" ]
   - name: "Post Release Test (MacOS) 2/2"
     browser: "firefox"
     platformName: "macOS 11.00"
     config:
-      testFiles: [ "**/*.spec.js" ]
+      specPattern: [ "cypress/**/*.*" ]
 
 notifications:
   slack:

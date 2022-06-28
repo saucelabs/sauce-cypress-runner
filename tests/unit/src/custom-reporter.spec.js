@@ -47,7 +47,7 @@ describe('Custom Reporter', function () {
       fs.writeFileSync.mockImplementation(function () {});
       writeXmlToDisk(xml, filepath, filename);
       expect(fs.writeFileSync.mock.calls).toEqual([
-        ['/path/to/subdir-a/subdir-b/test.spec.js.xml', xml, 'utf-8'],
+        ['/path/to/test.spec.js.xml', xml, 'utf-8'],
       ]);
     });
   });

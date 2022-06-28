@@ -1,5 +1,7 @@
 apiVersion: v1alpha
 kind: Cypress
+defaults:
+  mode: sauce
 sauce:
   region: us-west-1
   metadata:
@@ -8,16 +10,17 @@ sauce:
       - release team
       - kitchen-sink
     build: Release $CI_COMMIT_SHORT_SHA
-
+rootDir: ./
 cypress:
-  version: 1
-  configFile: cypress.json
+  version: 9.7.0
+  configFile: cypress.config.js
 
 suites:
   - name: "cypress failing test"
     browser: "chrome"
+    shard: "spec"
     config:
-      testFiles: [ "failing/*.*" ]
+      specPattern: [ "cypress/e2e/failing/**" ]
 
 docker:
   image: saucelabs/stt-cypress-mocha-node:local

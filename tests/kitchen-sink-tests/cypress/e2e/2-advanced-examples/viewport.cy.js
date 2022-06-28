@@ -1,3 +1,4 @@
+/* eslint-disable cypress/no-unnecessary-waiting */
 /// <reference types="cypress" />
 
 context('Viewport', function () {
@@ -25,7 +26,6 @@ context('Viewport', function () {
     // We added a cy.wait() between each viewport change so you can see
     // the change otherwise it is a little too fast to see :)
 
-    /* eslint-disable */
     cy.viewport('macbook-15');
     cy.wait(200);
     cy.viewport('macbook-13');
@@ -53,9 +53,8 @@ context('Viewport', function () {
     cy.wait(200);
     cy.viewport('iphone-4', 'landscape');
     cy.wait(200);
-    /* eslint-enable */
 
     // The viewport will be reset back to the default dimensions
-    // in between tests (the  default can be set in cypress.json)
+    // in between tests (the  default can be set in cypress.config.{js|ts})
   });
 });

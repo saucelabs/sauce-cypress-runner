@@ -1,6 +1,7 @@
 apiVersion: v1alpha
 kind: cypress
 sauce:
+  concurrency: 10
   metadata:
     tags:
       - e2e
@@ -11,12 +12,14 @@ sauce:
 defaults:
   mode: sauce
 cypress:
-  configFile: cypress.json
-  version: 8.3.0
-
+  configFile: cypress.config.js
+  version: 9.7.0
+rootDir: ./
 suites:
   - name: "kitchen-sink on Sauce (Windows)"
     platformName: "Windows 10"
+    shard: spec
     browser: "chrome"
     config:
-      testFiles: [ "examples/*.*" ]
+      specPattern: [ "cypress/e2e/**/*.*" ]
+      excludeSpecPattern: ["cypress/e2e/failing/*.*"]
