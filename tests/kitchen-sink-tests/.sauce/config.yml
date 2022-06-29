@@ -1,4 +1,4 @@
-apiVersion: v1alpha
+apiVersion: v1
 kind: cypress
 defaults:
   mode: docker
@@ -10,8 +10,6 @@ sauce:
       - kitchen-sink
     build: Release $CI_COMMIT_SHORT_SHA
   region: us-west-1
-defaults:
-  mode: sauce
 cypress:
   configFile: cypress.config.js
   version: 9.7.0
@@ -21,11 +19,13 @@ suites:
     shard: spec
     browser: "chrome"
     config:
+      testingType: "e2e"
       specPattern: [ "cypress/**/*.*" ]
       excludeSpecPattern: ["cypress/e2e/failing/*.*"]
   - name: "kitchen-sink-firefox"
     browser: "firefox"
     config:
+      testingType: "e2e"
       specPattern: [ "cypress/**/*.*" ]
       excludeSpecPattern: ["cypress/e2e/failing/*.*"]
 

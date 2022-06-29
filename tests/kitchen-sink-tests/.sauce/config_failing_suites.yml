@@ -1,4 +1,4 @@
-apiVersion: v1alpha
+apiVersion: v1
 kind: Cypress
 defaults:
   mode: sauce
@@ -20,6 +20,7 @@ suites:
     browser: "chrome"
     shard: "spec"
     config:
+      testingType: "e2e"
       specPattern: [ "cypress/e2e/failing/**" ]
 
 docker:

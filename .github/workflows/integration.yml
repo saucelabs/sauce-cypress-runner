@@ -17,8 +17,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install dependencies
-        run: npm ci --production
+      - name: Install saucectl
+        run: npm i saucectl
       - name: Run integration tests
         env:
           SAUCE_CYPRESS_VIDEO_RECORDING: false

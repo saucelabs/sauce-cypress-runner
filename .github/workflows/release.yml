@@ -343,7 +343,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Install Deps
-        run: npm ci
+        run: npm i saucectl
       - name: Parse release version
         id: parse_version
         run: |
@@ -366,7 +366,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Install Deps
-        run: npm ci
+        run: npm i saucectl
       - name: Parse release version
         id: parse_version
         run: |

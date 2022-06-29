@@ -68,7 +68,7 @@ jobs:
       - name: Update Release version
         run: npm version --no-git-tag-version 1.0.0
 
-      - run: npm ci --production
+      - run: npm i saucectl
 
       - name: Bundle Directory
         run: bash ./scripts/bundle.sh
@@ -123,7 +123,7 @@ jobs:
       - name: Update Release version
         run: npm version --no-git-tag-version 1.0.0
 
-      - run: npm ci --production
+      - run: npm i saucectl
 
       - name: Bundle Directory
         run: bash ./scripts/bundle.sh

@@ -1,4 +1,4 @@
-apiVersion: v1alpha
+apiVersion: v1
 kind: cypress
 sauce:
   region: us-west-1
@@ -21,11 +21,13 @@ suites:
     browser: "chrome"
     platformName: "Windows 10"
     config:
+      testingType: "e2e"
       specPattern: [ "cypress/**/*.cy.js" ]
   - name: "Post Release Test (Windows) 2/2"
     browser: "firefox"
     platformName: "Windows 10"
     config:
+      testingType: "e2e"
       specPattern: [ "cypress/**/*.cy.js" ]
 
 notifications:
