@@ -3,6 +3,7 @@ kind: cypress
 defaults:
   mode: docker
 sauce:
+  concurrency: 3
   metadata:
     tags:
       - e2e
@@ -16,18 +17,18 @@ cypress:
 rootDir: ./
 suites:
   - name: "kitchen-sink-chrome"
-    shard: spec
     browser: "chrome"
     config:
       testingType: "e2e"
-      specPattern: [ "cypress/**/*.*" ]
+      specPattern: [ "cypress/e2e/**/*.*" ]
       excludeSpecPattern: ["cypress/e2e/failing/*.*"]
-  - name: "kitchen-sink-firefox"
-    browser: "firefox"
-    config:
-      testingType: "e2e"
-      specPattern: [ "cypress/**/*.*" ]
-      excludeSpecPattern: ["cypress/e2e/failing/*.*"]
-
+#
+#  - name: "kitchen-sink-firefox"
+#    browser: "firefox"
+#    config:
+#      testingType: "e2e"
+#      specPattern: [ "cypress/e2e/**/*.*" ]
+#      excludeSpecPattern: ["cypress/e2e/failing/*.*"]
+#
 docker:
   image: saucelabs/stt-cypress-mocha-node:local
