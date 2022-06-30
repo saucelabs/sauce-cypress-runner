@@ -23,5 +23,6 @@ suites:
     browserVersion: "98"
     shard: spec
     config:
-      specPattern: [ "cypress/e2e/**/*.*" ]
-      excludeSpecPattern: ["cypress/e2e/failing/*.*"]
+      testingType: "e2e"
+      specPattern: [ "**/*cy.js" ]
+      excludeSpecPattern: ["**/failing/*.*"]

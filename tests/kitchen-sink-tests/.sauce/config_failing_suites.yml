@@ -21,7 +21,7 @@ suites:
     shard: "spec"
     config:
       testingType: "e2e"
-      specPattern: [ "cypress/e2e/failing/**" ]
+      specPattern: [ "**/failing/**" ]
 
 docker:
   image: saucelabs/stt-cypress-mocha-node:local

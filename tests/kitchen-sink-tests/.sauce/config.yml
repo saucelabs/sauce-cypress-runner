@@ -20,8 +20,8 @@ suites:
     browser: "chrome"
     config:
       testingType: "e2e"
-      specPattern: [ "cypress/e2e/**/*.*" ]
-      excludeSpecPattern: ["cypress/e2e/failing/*.*"]
+      specPattern: [ "**/*cy.js" ]
+      excludeSpecPattern: ["**/failing/*.*"]
 #
 #  - name: "kitchen-sink-firefox"
 #    browser: "firefox"
