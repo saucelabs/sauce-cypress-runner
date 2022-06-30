@@ -33,9 +33,10 @@ jobs:
         run: |
           sudo chown -R 1000:1000 ./tests/kitchen-sink-tests/cypress
 
+      - name: Install saucectl
+        run: npm i saucectl
+
       - name: Run kitchen sink test
-        uses: saucelabs/saucectl-run-action@v1
-        with:
-          working-directory: ./tests/kitchen-sink-tests
-          sauce-username: ${{ secrets.SAUCE_USERNAME }}
-          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
+        working-directory: ./tests/kitchen-sink-tests
+        run: |
+          npx saucectl run -c .sauce/config.yml
