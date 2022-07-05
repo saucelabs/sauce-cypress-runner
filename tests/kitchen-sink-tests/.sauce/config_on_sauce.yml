@@ -18,7 +18,6 @@ rootDir: ./
 suites:
   - name: "kitchen-sink on Sauce (Windows)"
     platformName: "Windows 10"
-    shard: spec
     browser: "chrome"
     config:
       testingType: "e2e"
