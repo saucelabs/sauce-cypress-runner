@@ -1,4 +1,4 @@
-apiVersion: v1
+piVersion: v1
 kind: cypress
 sauce:
   concurrency: 10
@@ -22,4 +22,4 @@ suites:
     config:
       testingType: "e2e"
       specPattern: [ "**/*cy.js" ]
-      excludeSpecPattern: ["**/failing/*.*"]
+      excludeSpecPattern: ["cypress/e2e/failing/todo.cy.js"]
