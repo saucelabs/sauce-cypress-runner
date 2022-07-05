@@ -22,7 +22,8 @@ suites:
       testingType: "e2e"
       specPattern: [ "**/*cy.js" ]
       excludeSpecPattern: ["**/failing/*.*"]
-#
+
+# disable firefox test due to https://github.com/cypress-io/cypress/issues/22231
 #  - name: "kitchen-sink-firefox"
 #    browser: "firefox"
 #    config:
@@ -30,5 +31,6 @@ suites:
 #      specPattern: [ "cypress/e2e/**/*.*" ]
 #      excludeSpecPattern: ["cypress/e2e/failing/*.*"]
 #
+
 docker:
   image: saucelabs/stt-cypress-mocha-node:local

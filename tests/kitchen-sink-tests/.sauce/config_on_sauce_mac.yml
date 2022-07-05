@@ -21,7 +21,6 @@ suites:
     platformName: "macOS 11.00"
     browser: "chrome"
     browserVersion: "98"
-    shard: spec
     config:
       testingType: "e2e"
       specPattern: [ "**/*cy.js" ]
