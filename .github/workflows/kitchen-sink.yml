@@ -29,10 +29,9 @@ jobs:
           tags: |
             saucelabs/stt-cypress-mocha-node:local
 
-      - name: Install saucectl
-        run: npm i saucectl
-
       - name: Run kitchen sink test
-        working-directory: ./tests/kitchen-sink-tests
-        run: |
-          npx saucectl run -c .sauce/config.yml
+        uses: saucelabs/saucectl-run-action@v1
+        with:
+          working-directory: ./tests/kitchen-sink-tests
+          sauce-username: ${{ secrets.SAUCE_USERNAME }}
+          sauce-access-key: ${{ secrets.SAUCE_ACCESS_KEY }}
