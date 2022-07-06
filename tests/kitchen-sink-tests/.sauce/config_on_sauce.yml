@@ -1,4 +1,4 @@
-apiVersion: v1alpha
+apiVersion: v1
 kind: cypress
 sauce:
   concurrency: 10
@@ -18,8 +18,8 @@ rootDir: ./
 suites:
   - name: "kitchen-sink on Sauce (Windows)"
     platformName: "Windows 10"
-    shard: spec
     browser: "chrome"
     config:
-      specPattern: [ "cypress/e2e/**/*.*" ]
-      excludeSpecPattern: ["cypress/e2e/failing/*.*"]
+      testingType: "e2e"
+      specPattern: [ "**/*cy.js" ]
+      excludeSpecPattern: ["cypress/e2e/failing/todo.cy.js"]

@@ -1,4 +1,4 @@
-apiVersion: v1alpha
+apiVersion: v1
 kind: cypress
 sauce:
   concurrency: 5
@@ -21,7 +21,7 @@ suites:
     platformName: "macOS 11.00"
     browser: "chrome"
     browserVersion: "98"
-    shard: spec
     config:
-      specPattern: [ "cypress/e2e/**/*.*" ]
-      excludeSpecPattern: ["cypress/e2e/failing/*.*"]
+      testingType: "e2e"
+      specPattern: [ "**/*cy.js" ]
+      excludeSpecPattern: ["cypress/e2e/failing/todo.cy.js"]

@@ -68,7 +68,7 @@ jobs:
       - name: Update Release version
         run: npm version --no-git-tag-version 1.0.0
 
-      - run: npm ci --production
+      - run: npm i saucectl -g
 
       - name: Bundle Directory
         run: bash ./scripts/bundle.sh
@@ -87,7 +87,7 @@ jobs:
       - name: Test on Sauce
         working-directory: ./tests/kitchen-sink-tests
         run: |
-          npx saucectl run --config .sauce/config_on_sauce.yml --runner-version "url: https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/sauce-cypress-runner-${{ github.run_id }}.zip"
+          saucectl run --config .sauce/config_on_sauce.yml --runner-version "url: https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/sauce-cypress-runner-${{ github.run_id }}.zip"
 
   build-mac-bundle-and-test:
     runs-on: macos-latest
@@ -123,7 +123,7 @@ jobs:
       - name: Update Release version
         run: npm version --no-git-tag-version 1.0.0
 
-      - run: npm ci --production
+      - run: npm i saucectl
 
       - name: Bundle Directory
         run: bash ./scripts/bundle.sh

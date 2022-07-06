@@ -1,4 +1,4 @@
-apiVersion: v1alpha
+apiVersion: v1
 kind: cypress
 sauce:
   metadata:
@@ -18,5 +18,6 @@ suites:
   - name: "kitchen-sink on Sauce (Windows)"
     browser: "chrome"
     config:
+      testingType: "e2e"
       specPattern: [ "cypress/**/*.*" ]
 

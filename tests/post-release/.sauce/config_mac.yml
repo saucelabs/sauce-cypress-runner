@@ -1,4 +1,4 @@
-apiVersion: v1alpha
+apiVersion: v1
 kind: cypress
 sauce:
   region: us-west-1
@@ -19,11 +19,13 @@ suites:
     browser: "chrome"
     platformName: "macOS 11.00"
     config:
+      testingType: "e2e"
       specPattern: [ "cypress/**/*.*" ]
   - name: "Post Release Test (MacOS) 2/2"
     browser: "firefox"
     platformName: "macOS 11.00"
     config:
+      testingType: "e2e"
       specPattern: [ "cypress/**/*.*" ]
 
 notifications:

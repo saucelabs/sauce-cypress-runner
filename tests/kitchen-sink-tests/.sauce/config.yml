@@ -1,8 +1,9 @@
-apiVersion: v1alpha
+apiVersion: v1
 kind: cypress
 defaults:
   mode: docker
 sauce:
+  concurrency: 3
   metadata:
     tags:
       - e2e
@@ -10,24 +11,26 @@ sauce:
       - kitchen-sink
     build: Release $CI_COMMIT_SHORT_SHA
   region: us-west-1
-defaults:
-  mode: sauce
 cypress:
   configFile: cypress.config.js
   version: 9.7.0
 rootDir: ./
 suites:
   - name: "kitchen-sink-chrome"
-    shard: spec
     browser: "chrome"
     config:
-      specPattern: [ "cypress/**/*.*" ]
-      excludeSpecPattern: ["cypress/e2e/failing/*.*"]
-  - name: "kitchen-sink-firefox"
-    browser: "firefox"
-    config:
-      specPattern: [ "cypress/**/*.*" ]
-      excludeSpecPattern: ["cypress/e2e/failing/*.*"]
+      testingType: "e2e"
+      specPattern: [ "**/*cy.js" ]
+      excludeSpecPattern: ["**/failing/*.*"]
+
+# disable firefox test due to https://github.com/cypress-io/cypress/issues/22231
+#  - name: "kitchen-sink-firefox"
+#    browser: "firefox"
+#    config:
+#      testingType: "e2e"
+#      specPattern: [ "cypress/e2e/**/*.*" ]
+#      excludeSpecPattern: ["cypress/e2e/failing/*.*"]
+#
 
 docker:
   image: saucelabs/stt-cypress-mocha-node:local
