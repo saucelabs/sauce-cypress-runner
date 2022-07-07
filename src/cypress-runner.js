@@ -163,7 +163,6 @@ const getCypressOpts = function (runCfg, suiteName) {
 
   opts = configureReporters(runCfg, opts);
 
-  _.defaultsDeep(opts.config, suite.config);
   return opts;
 };
 
