@@ -115,6 +115,9 @@ const setEnvironmentVariables = function (runCfg, suiteName) {
   const suite = getSuite(runCfg, suiteName);
   const envVars = getEnv(suite);
 
+  process.env.SAUCE_SUITE_NAME = suite.name;
+  process.env.SAUCE_ARTIFACTS_DIRECTORY = runCfg.artifacts?.download?.directory;
+
   for (const [key, value] of Object.entries(envVars)) {
     process.env[key] = value;
   }
