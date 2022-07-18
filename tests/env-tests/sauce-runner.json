@@ -1,26 +1,37 @@
 {
-    "cypress": {
-        "configFile": "cypress.config.js"
-    },
-    "env": {
-    },
-    "suites": [
-        {
-            "name": "default",
-            "browser": "chrome",
-            "browserVersion": "",
-            "config": {
-                "testingType": "e2e",
-                "specPattern": [
-                    "**/env.cy.js"
-                ],
-                "env": {
-                    "FOO": "bar",
-                    "host": "https://training.staging.saucelabs.net/",
-                    "HELLO": "WORLD",
-                    "VALUE": "$TEST_VALUE"
-                }
-            }
+  "cypress": {
+    "configFile": "cypress.config.js"
+  },
+  "env": {
+    
+  },
+  "suites": [
+    {
+      "name": "default",
+      "browser": "chrome",
+      "browserVersion": "",
+      "config": {
+        "testingType": "e2e",
+        "specPattern": [
+          "**/env.cy.js"
+        ],
+        "env": {
+          "FOO": "bar",
+          "host": "https://training.staging.saucelabs.net/",
+          "HELLO": "WORLD",
+          "VALUE": "$TEST_VALUE"
         }
-    ]
+      }
+    }
+  ],
+  "artifacts": {
+    "download": {
+      "match": [
+        "console.log"
+      ],
+      "when": "always",
+      "directory": "./artifacts/"
+    },
+    "cleanup": false
+  }
 }
