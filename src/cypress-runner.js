@@ -115,6 +115,9 @@ const setEnvironmentVariables = function (runCfg, suiteName) {
   const suite = getSuite(runCfg, suiteName);
   const envVars = getEnv(suite);
 
+  process.env.CYPRESS_SAUCE_SUITE_NAME = suite.name;
+  process.env.CYPRESS_SAUCE_ARTIFACTS_DIRECTORY = runCfg.resultsDir;
+
   for (const [key, value] of Object.entries(envVars)) {
     process.env[key] = value;
   }
