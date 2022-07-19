@@ -6,6 +6,7 @@ context('Actions', function () {
     expect(Cypress.env('VALUE')).to.equal('Some test value');
     expect(Cypress.env('host')).to.equal('https://training.staging.saucelabs.net/');
     expect(Cypress.env('SAUCE_SUITE_NAME')).to.equal('default');
+    expect(Cypress.env('SAUCE_ARTIFACTS_DIRECTORY')).to.equal('');
     cy.visit(Cypress.env('host'));
     cy.title().should('eq', 'Sauce School Training | Sauce Labs');
   });
