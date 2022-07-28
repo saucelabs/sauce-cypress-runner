@@ -20,7 +20,6 @@ suites:
   - name: "kitchen-sink - chrome - on Sauce (MacOS)"
     platformName: "macOS 12"
     browser: "chrome"
-    shard: concurrency
     config:
       testingType: "e2e"
       specPattern: [ "**/*cy.js" ]
