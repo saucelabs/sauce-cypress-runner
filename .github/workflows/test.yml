@@ -34,7 +34,7 @@ jobs:
           build-args: |
             BUILD_TAG=pipeline-test
 
-  build-windows-bundle-and-test:
+  build-windows-bundle:
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -68,7 +68,6 @@ jobs:
       - name: Update Release version
         run: npm version --no-git-tag-version 1.0.0
 
-      - run: npm i saucectl -g
 
       - name: Bundle Directory
         run: bash ./scripts/bundle.sh
@@ -84,12 +83,29 @@ jobs:
         run: |
           gsutil cp ./sauce-cypress-runner.zip gs://${{ secrets.GCS_RUNNER_BUCKET }}/sauce-cypress-runner-${{ github.run_id }}.zip
 
+  windows-bundle-test:
+    needs: [build-windows-bundle]
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+      - name: Use Node.js v14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+      - run: npm i saucectl -g
+
       - name: Test on Sauce
         working-directory: ./tests/kitchen-sink-tests
         run: |
           saucectl run --config .sauce/config_on_sauce.yml --runner-version "url: https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/sauce-cypress-runner-${{ github.run_id }}.zip"
 
-  build-mac-bundle-and-test:
+  build-mac-bundle:
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -123,7 +139,6 @@ jobs:
       - name: Update Release version
         run: npm version --no-git-tag-version 1.0.0
 
-      - run: npm i saucectl
 
       - name: Bundle Directory
         run: bash ./scripts/bundle.sh
@@ -134,6 +149,23 @@ jobs:
       - name: Upload to GCS
         run: |
           gsutil cp ./sauce-cypress-macos.zip gs://${{ secrets.GCS_RUNNER_BUCKET }}/sauce-cypress-macos-${{ github.run_id }}.zip
+
+  mac-bundle-test:
+    needs: [build-mac-bundle]
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+      - name: Use Node.js v14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+      - run: npm i saucectl
 
       - name: Test on Sauce (Kitchen Sink)
         working-directory: ./tests/kitchen-sink-tests
