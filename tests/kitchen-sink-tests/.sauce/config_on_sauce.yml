@@ -16,9 +16,18 @@ cypress:
   version: 9.7.0
 rootDir: ./
 suites:
-  - name: "kitchen-sink on Sauce (Windows)"
-    platformName: "Windows 10"
+  - name: "kitchen-sink - chrome - on Sauce (Windows)"
+    platformName: "Windows 11"
     browser: "chrome"
+    shard: concurrency
+    config:
+      testingType: "e2e"
+      specPattern: [ "**/*cy.js" ]
+      excludeSpecPattern: ["cypress/e2e/failing/todo.cy.js"]
+  - name: "kitchen-sink - firefox - on Sauce (Windows)"
+    platformName: "Windows 11"
+    browser: "chrome"
+    shard: concurrency
     config:
       testingType: "e2e"
       specPattern: [ "**/*cy.js" ]

@@ -17,11 +17,20 @@ cypress:
 
 rootDir: ./
 suites:
-  - name: "kitchen-sink on Sauce (MacOS)"
-    platformName: "macOS 11.00"
+  - name: "kitchen-sink - chrome - on Sauce (MacOS)"
+    platformName: "macOS 12"
     browser: "chrome"
-    browserVersion: "98"
     config:
       testingType: "e2e"
       specPattern: [ "**/*cy.js" ]
       excludeSpecPattern: ["cypress/e2e/failing/todo.cy.js"]
+
+# commented mac + firefox test for failed to connect to the browser
+#  - name: "kitchen-sink - firefox - on Sauce (MacOS)"
+#    platformName: "macOS 12"
+#    browser: "firefox"
+#    shard: concurrency
+#    config:
+#      testingType: "e2e"
+#      specPattern: [ "**/*cy.js" ]
+#      excludeSpecPattern: ["cypress/e2e/failing/todo.cy.js"]

@@ -19,13 +19,13 @@ env:
 suites:
   - name: "Post Release Test (Windows) 1/2"
     browser: "chrome"
-    platformName: "Windows 10"
+    platformName: "Windows 11"
     config:
       testingType: "e2e"
       specPattern: [ "cypress/**/*.cy.js" ]
   - name: "Post Release Test (Windows) 2/2"
     browser: "firefox"
-    platformName: "Windows 10"
+    platformName: "Windows 11"
     config:
       testingType: "e2e"
       specPattern: [ "cypress/**/*.cy.js" ]
