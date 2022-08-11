@@ -214,6 +214,7 @@ const cypressRunner = async function (runCfgPath, suiteName, timeoutSec, preExec
     }, timeoutSec * 1000);
   });
 
+  process.env.DEBUG = 'cypress:server:browsers:cri-client*,cypress-verbose:server:browsers:cri-client*,cypress:server:browsers:browser-cri-client';
   let results = await Promise.race([timeoutPromise, cypress.run(cypressOpts)]);
   clearTimeout(timeout);
   const statusCode = results ? 0 : 1;
