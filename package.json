@@ -33,7 +33,7 @@
     "@shelex/cypress-allure-plugin": "2.28.0",
     "@testing-library/cypress": "8.0.3",
     "babel-loader": "8.2.5",
-    "cypress": "10.3.1",
+    "cypress": "10.7.0",
     "cypress-file-upload": "5.0.8",
     "cypress-mochawesome-reporter": "3.2.0",
     "cypress-multi-reporters": "1.6.0",
