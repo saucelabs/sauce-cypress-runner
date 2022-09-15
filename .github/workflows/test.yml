@@ -43,10 +43,10 @@ jobs:
           ref: ${{ github.ref }}
           fetch-depth: 0
 
-      - name: Use Node.js v14.x
+      - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: 16
 
       - name: Set up Python 3.9
         uses: actions/setup-python@v2
@@ -93,10 +93,10 @@ jobs:
           ref: ${{ github.ref }}
           fetch-depth: 0
 
-      - name: Use Node.js v14.x
+      - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: 16
 
       - run: npm i saucectl -g
 
@@ -114,10 +114,10 @@ jobs:
           ref: ${{ github.ref }}
           fetch-depth: 0
 
-      - name: Use Node.js v14.x
+      - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: 16
 
       - name: Set up Python 3.9
         uses: actions/setup-python@v2
@@ -160,10 +160,10 @@ jobs:
           ref: ${{ github.ref }}
           fetch-depth: 0
 
-      - name: Use Node.js v14.x
+      - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: 16
 
       - run: npm i saucectl
 
@@ -183,10 +183,10 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Use Node.js v14.x
+      - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: 16
 
       - name: Install saucectl
         run: npm install -g saucectl

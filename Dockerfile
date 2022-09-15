@@ -4,7 +4,7 @@ WORKDIR /home/seluser
 
 USER seluser
 
-ENV NODE_VERSION=14.18.1
+ENV NODE_VERSION=16.17.0
 ENV NVM_VERSION=0.39.0
 ENV IMAGE_NAME=saucelabs/stt-cypress-mocha-node
 
