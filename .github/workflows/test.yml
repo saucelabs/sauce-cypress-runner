@@ -72,6 +72,10 @@ jobs:
       - name: Bundle Directory
         run: bash ./scripts/bundle.sh
 
+      - name: Override Dependencies
+        run: npm i get-port@6.1.2 --no-save
+        working-directory: bundle/cache/10.7.0/Cypress/resources/app/node_modules
+
       - name: Archive bundle
         uses: azure/powershell@v1
         with:
@@ -142,6 +146,10 @@ jobs:
 
       - name: Bundle Directory
         run: bash ./scripts/bundle.sh
+
+      - name: Override Dependencies
+        run: npm i get-port@6.1.2 --no-save
+        working-directory: bundle/cache/10.7.0/Cypress.app/Contents/Resources/app/node_modules
 
       - name: Archive bundle
         run: zip --symlinks -r sauce-cypress-macos.zip bundle/
