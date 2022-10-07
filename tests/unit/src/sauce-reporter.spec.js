@@ -101,17 +101,5 @@ describe('SauceReporter', function () {
       prepareAssetsSpy.mockReturnValue(['asset/one', 'asset/two']);
       expect(await SauceReporter.sauceReporter(fakeRunConfig, 'build', 'browser', ['asset/one', 'asset/two'], 0, start, end)).toBeUndefined();
     });
-    it ('should create job via global data store', async function () {
-      process.env.ENABLE_DATA_STORE = 'true';
-      prepareAssetsSpy.mockReturnValue(['asset/one', 'asset/two']);
-      await SauceReporter.sauceReporter(fakeRunConfig, 'build', 'browser', ['asset/one', 'asset/two'], 0, start, end);
-      expect(createJobSpy.mock.calls).toMatchSnapshot();
-    });
-    it ('should fail when global data store throws error', async function () {
-      process.env.ENABLE_DATA_STORE = 'true';
-      prepareAssetsSpy.mockReturnValue(['asset/one', 'asset/two']);
-      await SauceReporter.sauceReporter(fakeRunConfig, 'build', 'browser', ['asset/one', 'asset/two'], 0, start, end);
-      expect(createJobSpy).toBeCalled();
-    });
   });
 });

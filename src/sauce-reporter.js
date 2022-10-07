@@ -15,59 +15,6 @@ const SauceReporter = {};
 // Path has to match the value of the Dockerfile label com.saucelabs.job-info !
 SauceReporter.SAUCECTL_OUTPUT_FILE = '/tmp/output.json';
 
-
-// NOTE: this function is not available currently.
-// It will be ready once data store API actually works.
-// Keep these pieces of code for future integration.
-SauceReporter.createJobShell = async (api, suiteName, tags, browserName) => {
-  const body = {
-    name: suiteName,
-    acl: [
-      {
-        type: 'username',
-        value: process.env.SAUCE_USERNAME
-      }
-    ],
-    //'start_time: startTime,
-    //'end_time: endTime,
-    source: 'vdc', // will use devx
-    platform: 'webdriver', // will use cypress
-    status: 'complete',
-    live: false,
-    metadata: {},
-    tags,
-    attributes: {
-      container: false,
-      browser: browserName,
-      browser_version: '*',
-      commands_not_successful: 1, // to be removed
-      devx: true,
-      os: 'test', // need collect
-      performance_enabled: 'true', // to be removed
-      public: 'team',
-      record_logs: true, // to be removed
-      record_mp4: 'true', // to be removed
-      record_screenshots: 'true', // to be removed
-      record_video: 'true', // to be removed
-      video_url: 'test', // remove
-      log_url: 'test' // remove
-    }
-  };
-
-  let sessionId;
-  await api.createResultJob(
-    body
-  ).then(
-    (resp) => {
-      sessionId = resp.id;
-    },
-    (e) => console.error('Create job failed: ', e.stack)
-  );
-
-  return sessionId || 0;
-};
-
-
 // TODO Tian: this method is a temporary solution for creating jobs via test-composer.
 // Once the global data store is ready, this method will be deprecated.
 SauceReporter.createJobWorkaround = async (api, suiteName, metadata, browserName, passed, startTime, endTime, saucectlVersion) => {
@@ -205,12 +152,7 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
   });
 
   let reportingSucceeded = false;
-  let sessionId;
-  if (process.env.ENABLE_DATA_STORE) {
-    sessionId = await SauceReporter.createJobShell(api, suiteName, metadata.tags, browserName);
-  } else {
-    sessionId = await SauceReporter.createJobWorkaround(api, suiteName, metadata, browserName, failures === 0, startTime, endTime, saucectlVersion);
-  }
+  let sessionId = await SauceReporter.createJobWorkaround(api, suiteName, metadata, browserName, failures === 0, startTime, endTime, saucectlVersion);
 
   if (!sessionId) {
     console.error('Unable to retrieve test entry. Assets won\'t be uploaded.');
