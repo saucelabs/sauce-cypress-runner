@@ -1,5 +1,5 @@
 jest.mock('fs');
-jest.mock('saucelabs');
+jest.mock('@saucelabs/testcomposer');
 const fs = require('fs');
 const SauceLabs = require('saucelabs');
 const SauceReporter = require('../../../src/sauce-reporter');

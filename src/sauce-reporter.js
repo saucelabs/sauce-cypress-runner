@@ -1,23 +1,20 @@
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
-const SauceLabs = require('saucelabs').default;
 const _ = require('lodash');
 const ffmpeg = require('fluent-ffmpeg');
-const { promisify } = require('util');
+const {promisify} = require('util');
 const ffprobe = promisify(ffmpeg.ffprobe);
-const { updateExportedValue } = require('sauce-testrunner-utils').saucectl;
-const { shouldRecordVideo, escapeXML } = require('sauce-testrunner-utils');
+const {updateExportedValue} = require('sauce-testrunner-utils').saucectl;
+const {shouldRecordVideo, escapeXML} = require('sauce-testrunner-utils');
 const convert = require('xml-js');
-
+const {TestComposer} = require('@saucelabs/testcomposer');
 const SauceReporter = {};
 
 // Path has to match the value of the Dockerfile label com.saucelabs.job-info !
 SauceReporter.SAUCECTL_OUTPUT_FILE = '/tmp/output.json';
 
-// TODO Tian: this method is a temporary solution for creating jobs via test-composer.
-// Once the global data store is ready, this method will be deprecated.
-SauceReporter.createJobWorkaround = async (api, suiteName, metadata, browserName, passed, startTime, endTime, saucectlVersion) => {
+SauceReporter.createJob = async (testComposer, suiteName, metadata, browserName, passed, startTime, endTime) => {
   let browserVersion = '*';
   switch (browserName.toLowerCase()) {
     case 'firefox':
@@ -30,36 +27,27 @@ SauceReporter.createJobWorkaround = async (api, suiteName, metadata, browserName
       browserVersion = '*';
   }
 
-  const body = {
+  let job;
+  await testComposer.createReport({
     name: suiteName,
-    user: process.env.SAUCE_USERNAME,
     startTime,
     endTime,
     framework: 'cypress',
-    frameworkVersion: process.env.CYPRESS_VERSION,
-    status: 'complete',
-    suite: suiteName,
-    errors: [],
+    frameworkVersion: this.cypressDetails?.cypressVersion || '0.0.0',
     passed,
     tags: metadata.tags,
     build: metadata.build,
     browserName,
     browserVersion,
     platformName: process.env.IMAGE_NAME + ':' + process.env.IMAGE_TAG,
-    saucectlVersion,
-  };
-
-  let sessionId;
-  await api.createJob(
-    body
-  ).then(
+  }).then(
     (resp) => {
-      sessionId = resp.ID;
+      job = resp;
     },
     (e) => console.error('Create job failed: ', e.stack)
   );
 
-  return sessionId || 0;
+  return job;
 };
 
 SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics, testName, browserName, platformName) => {
@@ -88,9 +76,9 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics, testName
 
   for (let specFile of specFiles) {
     const sauceAssets = [
-      { name: `${path.basename(specFile)}.mp4`},
-      { name: `${path.basename(specFile)}.json`},
-      { name: `${path.basename(specFile)}.xml`},
+      {name: `${path.basename(specFile)}.mp4`},
+      {name: `${path.basename(specFile)}.json`},
+      {name: `${path.basename(specFile)}.xml`},
     ];
 
     // screenshotsFolder has the same name as spec file name
@@ -138,70 +126,55 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics, testName
 };
 
 SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, failures, startTime, endTime) => {
-  const { sauce = {} } = runCfg;
-  const { metadata = {} } = sauce;
+  const {sauce = {}} = runCfg;
+  const {metadata = {}} = sauce;
   const region = sauce.region || 'us-west-1';
-  const tld = region === 'staging' ? 'net' : 'com';
-  const saucectlVersion = process.env.SAUCE_SAUCECTL_VERSION;
 
-  const api = new SauceLabs({
-    user: process.env.SAUCE_USERNAME,
-    key: process.env.SAUCE_ACCESS_KEY,
+  let pkgVersion = 'unknown';
+  try {
+    const pkgData = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf-8'));
+    pkgVersion = pkgData.version;
+    // eslint-disable-next-line no-empty
+  } catch (e) {
+  }
+
+  const testComposer = new TestComposer({
+    username: process.env.SAUCE_USERNAME,
+    accessKey: process.env.SAUCE_ACCESS_KEY,
     region,
-    tld
+    headers: {'User-Agent': `cypress-runner/${pkgVersion}`}
   });
 
-  let reportingSucceeded = false;
-  let sessionId = await SauceReporter.createJobWorkaround(api, suiteName, metadata, browserName, failures === 0, startTime, endTime, saucectlVersion);
+  let job = await SauceReporter.createJob(testComposer, suiteName, metadata, browserName, failures === 0, startTime, endTime);
 
-  if (!sessionId) {
-    console.error('Unable to retrieve test entry. Assets won\'t be uploaded.');
-    updateExportedValue(SauceReporter.SAUCECTL_OUTPUT_FILE, { reportingSucceeded });
+  if (!job) {
+    console.error('Failed to report tests. Assets won\'t be uploaded.');
+    updateExportedValue(SauceReporter.SAUCECTL_OUTPUT_FILE, {reportingSucceeded: false});
     return;
   }
 
+  const assetStreams = assets.map((filepath) => ({
+    filename: path.basename(filepath),
+    data: fs.createReadStream(filepath)
+  }));
+
   // upload assets
-  await Promise.all([
-    api.uploadJobAssets(
-        sessionId,
-        { files: assets },
-    ).then(
-        (resp) => {
-          if (resp.errors) {
-            for (let err of resp.errors) { console.error(err); }
-          }
-        },
-        (e) => console.log('Upload failed:', e.stack)
-    )
-  ]);
+  await testComposer.uploadAssets(
+    job.id,
+    assetStreams
+  ).then(
+    (resp) => {
+      if (resp.errors) {
+        for (const err of resp.errors) {
+          console.error('Failed to upload asset:', err);
+        }
+      }
+    },
+    (e) => console.error('Failed to upload assets:', e.message)
+  );
 
-  // set appropriate job status
-  await Promise.all([
-    api.updateJob(process.env.SAUCE_USERNAME, sessionId, {
-      name: suiteName,
-      passed: failures === 0
-    }).then(
-        () => {},
-        (e) => console.log('Failed to update job status', e)
-    )
-  ]);
-  reportingSucceeded = true;
-
-  let domain;
-
-  switch (region) {
-    case 'us-west-1':
-      domain = 'saucelabs.com';
-      break;
-    default:
-      domain = `${region}.saucelabs.${tld}`;
-      break;
-  }
-
-  const jobDetailsUrl = `https://app.${domain}/tests/${sessionId}`;
-  console.log(`\nOpen job details page: ${jobDetailsUrl}\n`);
-
-  updateExportedValue(SauceReporter.SAUCECTL_OUTPUT_FILE, { jobDetailsUrl, reportingSucceeded });
+  console.log(`\nOpen job details page: ${job.url}\n`);
+  updateExportedValue(SauceReporter.SAUCECTL_OUTPUT_FILE, {jobDetailsUrl: job.url, reportingSucceeded: !!job});
 };
 
 SauceReporter.mergeVideos = async (videos, target) => {
@@ -218,14 +191,14 @@ SauceReporter.mergeVideos = async (videos, target) => {
       cmd.input(video);
     }
     cmd
-        .on('error', function (err) {
-          console.log('Failed to merge videos: ' + err.message);
-          reject();
-        })
-        .on('end', function () {
-          resolve();
-        })
-        .mergeToFile(target, os.tmpdir());
+      .on('error', function (err) {
+        console.log('Failed to merge videos: ' + err.message);
+        reject();
+      })
+      .on('end', function () {
+        resolve();
+      })
+      .mergeToFile(target, os.tmpdir());
   });
 };
 
