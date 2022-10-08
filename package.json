@@ -45,7 +45,6 @@
     "lodash": "4.17.21",
     "mocha-junit-reporter": "^2.0.0",
     "sauce-testrunner-utils": "0.6.1",
-    "saucelabs": "4.7.5",
     "typescript": "4.7.4",
     "webpack": "5.73.0",
     "xml-js": "^1.6.11",
