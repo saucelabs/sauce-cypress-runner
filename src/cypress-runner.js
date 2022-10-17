@@ -117,6 +117,10 @@ const setEnvironmentVariables = function (runCfg, suiteName) {
 
   process.env.CYPRESS_SAUCE_SUITE_NAME = suite.name;
   process.env.CYPRESS_SAUCE_ARTIFACTS_DIRECTORY = runCfg.resultsDir;
+  // NOTE: For experimental webkit support, cypress uses playwright-webkit
+  // and setting PLAYWRIGHT_BROWSERS_PATH=0 tells playwright to look in
+  // node_modules/playwright-core/.local-browsers for its browsers.
+  process.env.PLAYWRIGHT_BROWSERS_PATH = '0';
 
   for (const [key, value] of Object.entries(envVars)) {
     process.env[key] = value;

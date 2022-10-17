@@ -66,6 +66,7 @@
     "husky": "^4.3.6",
     "jest": "^26.6.3",
     "mocha": "^8.2.1",
+    "playwright-webkit": "1.27.1",
     "release-it": "^14.4.0"
   },
   "husky": {
