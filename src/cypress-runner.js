@@ -165,7 +165,7 @@ const getCypressOpts = function (runCfg, suiteName) {
   }
 
   opts = configureReporters(runCfg, opts);
-  opts = configureWebkitSupport(process.env, opts, suite);
+  configureWebkitSupport(process.env, opts, suite);
 
   return opts;
 };
@@ -187,8 +187,6 @@ function configureWebkitSupport (env, opts, suite) {
   if (browser.toLowerCase().includes('webkit')) {
     opts.browser = 'webkit';
   }
-
-  return opts;
 }
 
 const canAccessFolder = async function (file) {
