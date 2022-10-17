@@ -165,17 +165,17 @@ const getCypressOpts = function (runCfg, suiteName) {
   }
 
   opts = configureReporters(runCfg, opts);
-  configureWebkitSupport(process.env, opts, suite);
+  configureWebkitOptions(process.env, opts, suite);
 
   return opts;
 };
 
 /**
- * Setup the runner for experimental webkit support
+ * Configure the runner for experimental webkit support
  * @param {object} opts - Cypress options
  * @param {object} suite - The suite to run, parsed from the runner config
  */
-function configureWebkitSupport (env, opts, suite) {
+function configureWebkitOptions (env, opts, suite) {
   // NOTE: For experimental webkit support
   // cypress uses playwright-webkit and setting PLAYWRIGHT_BROWSERS_PATH=0
   // tells playwright to look in node_modules/playwright-core/.local-browsers
