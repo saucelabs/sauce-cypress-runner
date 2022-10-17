@@ -117,10 +117,6 @@ const setEnvironmentVariables = function (runCfg, suiteName) {
 
   process.env.CYPRESS_SAUCE_SUITE_NAME = suite.name;
   process.env.CYPRESS_SAUCE_ARTIFACTS_DIRECTORY = runCfg.resultsDir;
-  // NOTE: For experimental webkit support, cypress uses playwright-webkit
-  // and setting PLAYWRIGHT_BROWSERS_PATH=0 tells playwright to look in
-  // node_modules/playwright-core/.local-browsers for its browsers.
-  process.env.PLAYWRIGHT_BROWSERS_PATH = '0';
 
   for (const [key, value] of Object.entries(envVars)) {
     process.env[key] = value;
@@ -169,9 +165,31 @@ const getCypressOpts = function (runCfg, suiteName) {
   }
 
   opts = configureReporters(runCfg, opts);
+  opts = configureWebkitSupport(process.env, opts, suite);
 
   return opts;
 };
+
+/**
+ * Setup the runner for experimental webkit support
+ * @param {object} opts - Cypress options
+ * @param {object} suite - The suite to run, parsed from the runner config
+ */
+function configureWebkitSupport (env, opts, suite) {
+  // NOTE: For experimental webkit support
+  // cypress uses playwright-webkit and setting PLAYWRIGHT_BROWSERS_PATH=0
+  // tells playwright to look in node_modules/playwright-core/.local-browsers
+  // for its browsers.
+  env.PLAYWRIGHT_BROWSERS_PATH = '0';
+
+  const browser = suite.browser ?? '';
+  // NOTE: Since webkit is bundled with the runner, never use the value of process.env.SAUCE_BROWSER
+  if (browser.toLowerCase().includes('webkit')) {
+    opts.browser = 'webkit';
+  }
+
+  return opts;
+}
 
 const canAccessFolder = async function (file) {
   const fsAccess = util.promisify(fs.access);
