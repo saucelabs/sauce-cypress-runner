@@ -17,20 +17,14 @@ rootDir: ./
 env:
   foo: bar
 suites:
-  - name: "Post Release Test (Windows) 1/3"
+  - name: "Post Release Test (Windows) 1/2"
     browser: "chrome"
     platformName: "Windows 11"
     config:
       testingType: "e2e"
       specPattern: [ "cypress/**/*.cy.js" ]
-  - name: "Post Release Test (Windows) 2/3"
+  - name: "Post Release Test (Windows) 2/2"
     browser: "firefox"
-    platformName: "Windows 11"
-    config:
-      testingType: "e2e"
-      specPattern: [ "cypress/**/*.cy.js" ]
-  - name: "Post Release Test (Windows) 3/3"
-    browser: "webkit"
     platformName: "Windows 11"
     config:
       testingType: "e2e"
