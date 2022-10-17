@@ -117,8 +117,8 @@ jobs:
 
       - name: Override Dependencies
         run: | 
-          rm -r bundle/cache/10.7.0/Cypress/resources/app/node_modules/get-port
-          cp -r vendor/get-port bundle/cache/10.7.0/Cypress/resources/app/node_modules
+          rm -r bundle/cache/10.10.0/Cypress/resources/app/node_modules/get-port
+          cp -r vendor/get-port bundle/cache/10.10.0/Cypress/resources/app/node_modules
 
       - name: Archive bundle
         uses: azure/powershell@v1
@@ -194,8 +194,8 @@ jobs:
 
       - name: Override Dependencies
         run: |
-          rm -r bundle/cache/10.7.0/Cypress.app/Contents/Resources/app/node_modules/get-port
-          cp -r vendor/get-port bundle/cache/10.7.0/Cypress.app/Contents/Resources/app/node_modules
+          rm -r bundle/cache/10.10.0/Cypress.app/Contents/Resources/app/node_modules/get-port
+          cp -r vendor/get-port bundle/cache/10.10.0/Cypress.app/Contents/Resources/app/node_modules
 
       - name: Archive bundle
         run: zip --symlinks -r sauce-cypress-macos.zip bundle/
