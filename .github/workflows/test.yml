@@ -157,6 +157,11 @@ jobs:
         run: |
           saucectl run --config .sauce/config_on_sauce.yml --runner-version "url: https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/sauce-cypress-runner-${{ github.run_id }}.zip"
 
+      - name: Test on Sauce (experimental webkit)
+        working-directory: ./tests/post-release
+        run: |
+          saucectl run --config .sauce/config_win.yml --runner-version "url: https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/sauce-cypress-runner-${{ github.run_id }}.zip"
+
   build-mac-bundle:
     runs-on: macos-latest
     needs: [test]
