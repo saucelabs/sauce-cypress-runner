@@ -165,9 +165,29 @@ const getCypressOpts = function (runCfg, suiteName) {
   }
 
   opts = configureReporters(runCfg, opts);
+  configureWebkitOptions(process.env, opts, suite);
 
   return opts;
 };
+
+/**
+ * Configure the runner for experimental webkit support
+ * @param {object} opts - Cypress options
+ * @param {object} suite - The suite to run, parsed from the runner config
+ */
+function configureWebkitOptions (env, opts, suite) {
+  // NOTE: For experimental webkit support
+  // cypress uses playwright-webkit and setting PLAYWRIGHT_BROWSERS_PATH=0
+  // tells playwright to look in node_modules/playwright-core/.local-browsers
+  // for its browsers.
+  env.PLAYWRIGHT_BROWSERS_PATH = '0';
+
+  const browser = suite.browser ?? '';
+  // NOTE: Since webkit is bundled with the runner, never use the value of process.env.SAUCE_BROWSER
+  if (browser.toLowerCase().includes('webkit')) {
+    opts.browser = 'webkit';
+  }
+}
 
 const canAccessFolder = async function (file) {
   const fsAccess = util.promisify(fs.access);

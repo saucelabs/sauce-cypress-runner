@@ -11,7 +11,8 @@ cp "$(which node)" bundle/
 
 pushd bundle/
 npm cache clean --force
-npm ci --production
+PLAYWRIGHT_BROWSERS_PATH=0 npm ci --production
+PLAYWRIGHT_BROWSERS_PATH=0 npx playwright install-deps webkit
 ./node ./node_modules/cypress/bin/cypress verify
 # TODO: Add "saucectl" tests here
 popd

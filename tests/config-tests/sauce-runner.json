@@ -15,6 +15,18 @@
                     "**/config.cy.js"
                 ]
             }
+        },
+        {
+            "name": "webkit",
+            "browser": "webkit",
+            "browserVersion": "",
+            "headless": true,
+            "config": {
+                "testingType": "e2e",
+                "specPattern": [
+                    "**/config.cy.js"
+                ]
+            }
         }
     ]
 }
