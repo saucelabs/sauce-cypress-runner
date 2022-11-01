@@ -78,6 +78,7 @@ jobs:
         with:
           cache-from: saucelabs/stt-cypress-mocha-node:latest
           push: false
+          load: true
           build-args: |
             BUILD_TAG=pipeline-test
           tags: |
