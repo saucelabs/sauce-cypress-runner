@@ -8,37 +8,51 @@ on:
 env:
   SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
   SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
+  NODE_VERSION: 16
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run unit-test
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit Test
+        run: npm run unit-test
 
   integration:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      - name: Install dependencies
+
+      - name: Install Dependencies
         run: npm ci --production
         env:
           PLAYWRIGHT_BROWSERS_PATH: 0
-      - name: Install webkit deps
+
+      - name: Install Webkit Dependencies
         run: npx playwright install-deps webkit
-      - name: Run integration tests
+
+      - name: Integration Tests
         env:
           SAUCE_CYPRESS_VIDEO_RECORDING: false
         run: bash tests/integration/integration-tests.sh
@@ -50,7 +64,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
+      - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v2
 
       - name: Login to DockerHub
@@ -62,19 +76,16 @@ jobs:
       - name: Build docker image
         uses: docker/build-push-action@v3
         with:
-          cache-from: |
-            saucelabs/stt-cypress-mocha-node:latest
+          cache-from: saucelabs/stt-cypress-mocha-node:latest
           push: false
+          load: true
           build-args: |
             BUILD_TAG=pipeline-test
-          load: true
-          context: .
-          file: ./Dockerfile
           tags: |
             saucelabs/stt-cypress-mocha-node:local
 
-      - name: Run kitchen sink test
-        uses: saucelabs/saucectl-run-action@v1
+      - name: Kitchen Sink Tests
+        uses: saucelabs/saucectl-run-action@v2
         with:
           working-directory: ./tests/kitchen-sink-tests
           sauce-username: ${{ secrets.SAUCE_USERNAME }}
@@ -86,21 +97,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          ref: ${{ github.ref }}
-          fetch-depth: 0
 
-      - name: Use Node.js
+      - name: Use Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
 
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v2
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: '3.11'
 
-      - name: Authenticate gcloud
+      - name: Google Cloud Login
         uses: 'google-github-actions/auth@v0'
         with:
           credentials_json: '${{ secrets.GCS_RUNNER_SA_KEY }}'
@@ -112,9 +121,8 @@ jobs:
         env:
           CLOUDSDK_PYTHON: ${{env.pythonLocation}}\python.exe
 
-      - name: Update Release version
+      - name: Update Release Version
         run: npm version --no-git-tag-version 1.0.0
-
 
       - name: Bundle Directory
         run: bash ./scripts/bundle.sh
@@ -124,7 +132,7 @@ jobs:
           rm -r bundle/cache/10.10.0/Cypress/resources/app/node_modules/get-port
           cp -r vendor/get-port bundle/cache/10.10.0/Cypress/resources/app/node_modules
 
-      - name: Archive bundle
+      - name: Archive Bundle
         uses: azure/powershell@v1
         with:
           inlineScript: |
@@ -141,16 +149,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          ref: ${{ github.ref }}
-          fetch-depth: 0
 
-      - name: Use Node.js
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
 
-      - run: npm i saucectl -g
+      - name: Setup saucectl
+        run: npm i saucectl -g
 
       - name: Test on Sauce
         working-directory: ./tests/kitchen-sink-tests
@@ -163,21 +170,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          ref: ${{ github.ref }}
-          fetch-depth: 0
 
-      - name: Use Node.js
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
 
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v2
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.9
+          python-version: '3.11'
 
-      - name: Authenticate gcloud
+      - name: Google Cloud Login
         uses: 'google-github-actions/auth@v0'
         with:
           credentials_json: '${{ secrets.GCS_RUNNER_SA_KEY }}'
@@ -189,7 +194,7 @@ jobs:
         env:
           CLOUDSDK_PYTHON: ${{env.pythonLocation}}/python
 
-      - name: Update Release version
+      - name: Update Release Version
         run: npm version --no-git-tag-version 1.0.0
 
 
@@ -201,7 +206,7 @@ jobs:
           rm -r bundle/cache/10.10.0/Cypress.app/Contents/Resources/app/node_modules/get-port
           cp -r vendor/get-port bundle/cache/10.10.0/Cypress.app/Contents/Resources/app/node_modules
 
-      - name: Archive bundle
+      - name: Archive Bundle
         run: zip --symlinks -r sauce-cypress-macos.zip bundle/
 
       - name: Upload to GCS
@@ -214,16 +219,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          ref: ${{ github.ref }}
-          fetch-depth: 0
 
-      - name: Use Node.js
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
 
-      - run: npm i saucectl
+      - name: Setup saucectl
+        run: npm i saucectl
 
       - name: Test on Sauce (Kitchen Sink)
         working-directory: ./tests/kitchen-sink-tests
@@ -237,16 +241,17 @@ jobs:
       - name: Checkout runner
         uses: actions/checkout@v3
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.11'
 
-      - name: Use Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
 
-      - name: Install saucectl
+      - name: Setup saucectl
         run: npm install -g saucectl
 
       - name: Run web-page
@@ -260,14 +265,14 @@ jobs:
           username: ${{ secrets.SAUCE_USERNAME }}
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
           tunnelIdentifier: github-cypress-sc-check-tunnel
-          scVersion: 4.7.1
+          scVersion: 4.8.1
 
-      - name: run saucectl (Windows)
+      - name: Run saucectl (Windows)
         run: |
           saucectl run --config .sauce/config.yml --runner-version "url: https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/sauce-cypress-runner-${{ github.run_id }}.zip"
         working-directory: ./tests/sauce-connect/
 
-      - name: run saucectl (MacOS)
+      - name: Run saucectl (MacOS)
         run: |
           saucectl run --config .sauce/config_mac.yml --runner-version "url: https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/sauce-cypress-macos-${{ github.run_id }}.zip"
         working-directory: ./tests/sauce-connect/
