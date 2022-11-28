@@ -139,16 +139,20 @@ const getCypressOpts = function (runCfg, suiteName) {
     headed = false;
   }
 
+  const testingType = suite.config.testingType || 'e2e';
+
   let opts = {
     project: path.dirname(cypressCfgFile),
     browser: process.env.SAUCE_BROWSER || suite.browser || 'chrome',
     configFile: path.basename(cypressCfgFile),
     headed,
     headless: !headed,
-    testingType: suite.config.testingType || 'e2e',
+    testingType,
     config: {
-      specPattern: suite.config.specPattern,
-      excludeSpecPattern: suite.config.excludeSpecPattern || [],
+      [testingType]: {
+        specPattern: suite.config.specPattern,
+        excludeSpecPattern: suite.config.excludeSpecPattern || [],
+      },
       videosFolder: runCfg.resultsDir,
       screenshotsFolder: runCfg.resultsDir,
       video: shouldRecordVideo(),
