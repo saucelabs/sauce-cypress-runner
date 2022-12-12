@@ -1,14 +1,14 @@
 /// <reference types="cypress" />
 
-context('Local Storage', function () {
+context('Local Storage / Session Storage', function () {
   beforeEach(function () {
-    cy.visit('https://example.cypress.io/commands/local-storage');
+    cy.visit('https://example.cypress.io/commands/storage');
   });
-  // Although local storage is automatically cleared
+  // Although localStorage is automatically cleared
   // in between tests to maintain a clean state
-  // sometimes we need to clear the local storage manually
+  // sometimes we need to clear localStorage manually
 
-  it('cy.clearLocalStorage() - clear all data in local storage', function () {
+  it('cy.clearLocalStorage() - clear all data in localStorage for the current origin', function () {
     // https://on.cypress.io/clearlocalstorage
     cy.get('.ls-btn').click().should(() => {
       expect(localStorage.getItem('prop1')).to.eq('red');
@@ -29,7 +29,7 @@ context('Local Storage', function () {
       expect(localStorage.getItem('prop3')).to.eq('magenta');
     });
 
-    // Clear key matching string in Local Storage
+    // Clear key matching string in localStorage
     cy.clearLocalStorage('prop1').should((ls) => {
       expect(ls.getItem('prop1')).to.be.null;
       expect(ls.getItem('prop2')).to.eq('blue');
@@ -42,11 +42,35 @@ context('Local Storage', function () {
       expect(localStorage.getItem('prop3')).to.eq('magenta');
     });
 
-    // Clear keys matching regex in Local Storage
+    // Clear keys matching regex in localStorage
     cy.clearLocalStorage(/prop1|2/).should((ls) => {
       expect(ls.getItem('prop1')).to.be.null;
       expect(ls.getItem('prop2')).to.be.null;
       expect(ls.getItem('prop3')).to.eq('magenta');
+    });
+  });
+
+  it('cy.clearAllLocalStorage() - clear all data in localStorage for all origins', function () {
+    // https://on.cypress.io/clearalllocalstorage
+    cy.get('.ls-btn').click();
+
+    // clearAllLocalStorage() yields null
+    cy.clearAllLocalStorage().should(() => {
+      expect(sessionStorage.getItem('prop1')).to.be.null;
+      expect(sessionStorage.getItem('prop2')).to.be.null;
+      expect(sessionStorage.getItem('prop3')).to.be.null;
+    });
+  });
+
+  it('cy.clearAllSessionStorage() - clear all data in sessionStorage for all origins', function () {
+    // https://on.cypress.io/clearallsessionstorage
+    cy.get('.ls-btn').click();
+
+    // clearAllSessionStorage() yields null
+    cy.clearAllSessionStorage().should(() => {
+      expect(sessionStorage.getItem('prop4')).to.be.null;
+      expect(sessionStorage.getItem('prop5')).to.be.null;
+      expect(sessionStorage.getItem('prop6')).to.be.null;
     });
   });
 });
