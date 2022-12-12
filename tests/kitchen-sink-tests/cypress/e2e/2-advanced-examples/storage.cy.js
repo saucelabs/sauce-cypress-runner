@@ -49,28 +49,4 @@ context('Local Storage / Session Storage', function () {
       expect(ls.getItem('prop3')).to.eq('magenta');
     });
   });
-
-  it('cy.clearAllLocalStorage() - clear all data in localStorage for all origins', function () {
-    // https://on.cypress.io/clearalllocalstorage
-    cy.get('.ls-btn').click();
-
-    // clearAllLocalStorage() yields null
-    cy.clearAllLocalStorage().should(() => {
-      expect(sessionStorage.getItem('prop1')).to.be.null;
-      expect(sessionStorage.getItem('prop2')).to.be.null;
-      expect(sessionStorage.getItem('prop3')).to.be.null;
-    });
-  });
-
-  it('cy.clearAllSessionStorage() - clear all data in sessionStorage for all origins', function () {
-    // https://on.cypress.io/clearallsessionstorage
-    cy.get('.ls-btn').click();
-
-    // clearAllSessionStorage() yields null
-    cy.clearAllSessionStorage().should(() => {
-      expect(sessionStorage.getItem('prop4')).to.be.null;
-      expect(sessionStorage.getItem('prop5')).to.be.null;
-      expect(sessionStorage.getItem('prop6')).to.be.null;
-    });
-  });
 });
