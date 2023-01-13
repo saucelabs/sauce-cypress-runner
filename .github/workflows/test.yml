@@ -133,7 +133,7 @@ jobs:
 
       - name: Override Dependencies
         run: |
-          rm -r bundle/cache/${{ env.cypress_version }}/Cypress/resources/app/node_modules/get-port
+          rm -r bundle/Cache/${{ env.cypress_version }}/Cypress/resources/app/node_modules/get-port
           cp -r vendor/get-port bundle/cache/${{ env.cypress_version }}/Cypress/resources/app/node_modules
 
       - name: Archive Bundle
@@ -212,11 +212,8 @@ jobs:
 
       - name: Override Dependencies
         run: |
-          ls -l bundle/cache/${{ env.cypress_version }}/Cypress
-          ls -l bundle/cache/${{ env.cypress_version }}/Cypress/resources
-          ls -l bundle/cache/${{ env.cypress_version }}/Cypress/resources/app
-          rm -r bundle/cache/${{ env.cypress_version }}/Cypress/resources/app/node_modules/get-port
-          cp -r vendor/get-port bundle/cache/${{ env.cypress_version }}/Cypress/resources/app/node_modules
+          rm -r bundle/Cache/${{ env.cypress_version }}/Cypress.app/Contents/Resources/app/node_modules/get-port
+          cp -r vendor/get-port bundle/Cache/${{ env.cypress_version }}/Cypress.app/Contents/Resources/app/node_modules/
 
       - name: Archive Bundle
         run: zip --symlinks -r sauce-cypress-macos.zip bundle/
