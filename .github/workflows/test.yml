@@ -129,6 +129,7 @@ jobs:
 
       - name: Get Cypress Version
         run: |
+          Write-Output "cypress_version=$((Get-Content ./package.json -Raw | ConvertFrom-Json).dependencies.cypress)"
           Write-Output "cypress_version=$((Get-Content ./package.json -Raw | ConvertFrom-Json).dependencies.cypress)" >> $GITHUB_ENV
 
       - name: Override Dependencies
