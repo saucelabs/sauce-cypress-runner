@@ -129,12 +129,12 @@ jobs:
 
       - name: Get Cypress Version
         run: |
-          Write-Output "CYPRESS_VERSION=$((Get-Content ./package.json -Raw | ConvertFrom-Json).dependencies.cypress)"
+          Write-Output "cypress_version=$((Get-Content ./package.json -Raw | ConvertFrom-Json).dependencies.cypress)"
 
       - name: Override Dependencies
         run: |
-          rm -r bundle/cache/${CYPRESS_VERSION}/Cypress/resources/app/node_modules/get-port
-          cp -r vendor/get-port bundle/cache/${CYPRESS_VERSION}/Cypress/resources/app/node_modules
+          rm -r bundle/cache/${{ env.cypress_version }}/Cypress/resources/app/node_modules/get-port
+          cp -r vendor/get-port bundle/cache/${{ env.cypress_version }}/Cypress/resources/app/node_modules
 
       - name: Archive Bundle
         uses: azure/powershell@v1
@@ -212,8 +212,8 @@ jobs:
 
       - name: Override Dependencies
         run: |
-          rm -r bundle/cache/${CYPRESS_VERSION}/Cypress/resources/app/node_modules/get-port
-          cp -r vendor/get-port bundle/cache/${CYPRESS_VERSION}/Cypress/resources/app/node_modules
+          rm -r bundle/cache/${{ env.cypress_version }}/Cypress/resources/app/node_modules/get-port
+          cp -r vendor/get-port bundle/cache/${{ env.cypress_version }}/Cypress/resources/app/node_modules
 
       - name: Archive Bundle
         run: zip --symlinks -r sauce-cypress-macos.zip bundle/
