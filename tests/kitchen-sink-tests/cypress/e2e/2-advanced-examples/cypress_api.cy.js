@@ -2,7 +2,7 @@
 
 context('Cypress.Commands', function () {
   beforeEach(function () {
-    cy.visit('http://localhost:8080/cypress-api');
+    cy.visit('https://example.cypress.io/cypress-api');
   });
 
   // https://on.cypress.io/custom-commands
@@ -36,7 +36,7 @@ context('Cypress.Commands', function () {
 
 context('Cypress.Cookies', function () {
   beforeEach(function () {
-    cy.visit('http://localhost:8080/cypress-api');
+    cy.visit('https://example.cypress.io/cypress-api');
   });
 
   // https://on.cypress.io/cookies
@@ -55,7 +55,7 @@ context('Cypress.Cookies', function () {
 
 context('Cypress.arch', function () {
   beforeEach(function () {
-    cy.visit('http://localhost:8080/cypress-api');
+    cy.visit('https://example.cypress.io/cypress-api');
   });
 
   it('Get CPU architecture name of underlying OS', function () {
@@ -66,7 +66,7 @@ context('Cypress.arch', function () {
 
 context('Cypress.config()', function () {
   beforeEach(function () {
-    cy.visit('http://localhost:8080/cypress-api');
+    cy.visit('https://example.cypress.io/cypress-api');
   });
 
   it('Get and set configuration options', function () {
@@ -96,7 +96,7 @@ context('Cypress.config()', function () {
 
 context('Cypress.dom', function () {
   beforeEach(function () {
-    cy.visit('http://localhost:8080/cypress-api');
+    cy.visit('https://example.cypress.io/cypress-api');
   });
 
   // https://on.cypress.io/dom
@@ -112,7 +112,7 @@ context('Cypress.dom', function () {
 
 context('Cypress.env()', function () {
   beforeEach(function () {
-    cy.visit('http://localhost:8080/cypress-api');
+    cy.visit('https://example.cypress.io/cypress-api');
   });
 
   // We can set environment variables for highly dynamic values
@@ -141,7 +141,7 @@ context('Cypress.env()', function () {
 
 context('Cypress.log', function () {
   beforeEach(function () {
-    cy.visit('http://localhost:8080/cypress-api');
+    cy.visit('https://example.cypress.io/cypress-api');
   });
 
   it('Control what is printed to the Command Log', function () {
@@ -151,7 +151,7 @@ context('Cypress.log', function () {
 
 context('Cypress.platform', function () {
   beforeEach(function () {
-    cy.visit('http://localhost:8080/cypress-api');
+    cy.visit('https://example.cypress.io/cypress-api');
   });
 
   it('Get underlying OS name', function () {
@@ -162,7 +162,7 @@ context('Cypress.platform', function () {
 
 context('Cypress.version', function () {
   beforeEach(function () {
-    cy.visit('http://localhost:8080/cypress-api');
+    cy.visit('https://example.cypress.io/cypress-api');
   });
 
   it('Get current version of Cypress being run', function () {
@@ -173,7 +173,7 @@ context('Cypress.version', function () {
 
 context('Cypress.spec', function () {
   beforeEach(function () {
-    cy.visit('http://localhost:8080/cypress-api');
+    cy.visit('https://example.cypress.io/cypress-api');
   });
 
   it('Get current spec information', function () {

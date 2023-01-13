@@ -2,7 +2,7 @@
 
 context('Waiting', function () {
   beforeEach(function () {
-    cy.visit('http://localhost:8080/commands/waiting');
+    cy.visit('https://example.cypress.io/commands/waiting');
   });
   // BE CAREFUL of adding unnecessary wait times.
   // https://on.cypress.io/best-practices#Unnecessary-Waiting

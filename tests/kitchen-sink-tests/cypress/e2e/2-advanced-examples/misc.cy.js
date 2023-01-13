@@ -2,7 +2,7 @@
 
 context('Misc', function () {
   beforeEach(function () {
-    cy.visit('http://localhost:8080/commands/misc');
+    cy.visit('https://example.cypress.io/commands/misc');
   });
 
   it('.end() - end the command chain', function () {

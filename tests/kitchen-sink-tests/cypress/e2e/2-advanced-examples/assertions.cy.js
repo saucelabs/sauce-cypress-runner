@@ -2,7 +2,7 @@
 
 context('Assertions', function () {
   beforeEach(function () {
-    cy.visit('http://localhost:8080/commands/assertions');
+    cy.visit('https://example.cypress.io/commands/assertions');
   });
 
   describe('Implicit Assertions', function () {
