@@ -133,7 +133,7 @@ jobs:
           echo "CYPRESS_VERSION=${CYPRESS_VERSION}" >> $GITHUB_ENV
 
       - name: Override Dependencies
-        run: | 
+        run: |
           rm -r bundle/cache/${CYPRESS_VERSION}/Cypress/resources/app/node_modules/get-port
           cp -r vendor/get-port bundle/cache/${CYPRESS_VERSION}/Cypress/resources/app/node_modules
 
@@ -206,10 +206,15 @@ jobs:
       - name: Bundle Directory
         run: bash ./scripts/bundle.sh
 
+      - name: Get Cypress Version
+        run: |
+          CYPRESS_VERSION=$(jq -r '.dependencies["cypress"]' < package.json)
+          echo "CYPRESS_VERSION=${CYPRESS_VERSION}" >> $GITHUB_ENV
+
       - name: Override Dependencies
         run: |
-          rm -r bundle/cache/11.2.0/Cypress.app/Contents/Resources/app/node_modules/get-port
-          cp -r vendor/get-port bundle/cache/11.2.0/Cypress.app/Contents/Resources/app/node_modules
+          rm -r bundle/cache/${CYPRESS_VERSION}/Cypress/resources/app/node_modules/get-port
+          cp -r vendor/get-port bundle/cache/${CYPRESS_VERSION}/Cypress/resources/app/node_modules
 
       - name: Archive Bundle
         run: zip --symlinks -r sauce-cypress-macos.zip bundle/
