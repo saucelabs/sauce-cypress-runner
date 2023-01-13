@@ -27,6 +27,7 @@ context('Spies, Stubs, and Clock', function () {
        * @param x {any}
       */
       foo (x) {
+        /* eslint-disable-next-line no-console */
         console.log('obj.foo called with', x);
       },
     };
@@ -55,6 +56,7 @@ context('Spies, Stubs, and Clock', function () {
        * @param b {string}
       */
       foo (a, b) {
+        // eslint-disable-next-line no-console
         console.log('a', a, 'b', b);
       },
     };

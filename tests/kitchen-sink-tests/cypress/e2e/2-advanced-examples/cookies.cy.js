@@ -19,7 +19,7 @@ context('Cookies', function () {
     cy.getCookie('token').should('have.property', 'value', '123ABC');
   });
 
-  it('cy.getCookies() - get browser cookies', function () {
+  it('cy.getCookies() - get browser cookies for the current domain', function () {
     // https://on.cypress.io/getcookies
     cy.getCookies().should('be.empty');
 
@@ -34,6 +34,32 @@ context('Cookies', function () {
       expect(cookies[0]).to.have.property('secure', false);
       expect(cookies[0]).to.have.property('domain');
       expect(cookies[0]).to.have.property('path');
+    });
+  });
+
+  it('cy.getAllCookies() - get all browser cookies', function () {
+    // https://on.cypress.io/getallcookies
+    cy.getAllCookies().should('be.empty');
+
+    cy.setCookie('key', 'value');
+    cy.setCookie('key', 'value', { domain: '.example.com' });
+
+    // cy.getAllCookies() yields an array of cookies
+    cy.getAllCookies().should('have.length', 2).should((cookies) => {
+      // each cookie has these properties
+      expect(cookies[0]).to.have.property('name', 'key');
+      expect(cookies[0]).to.have.property('value', 'value');
+      expect(cookies[0]).to.have.property('httpOnly', false);
+      expect(cookies[0]).to.have.property('secure', false);
+      expect(cookies[0]).to.have.property('domain');
+      expect(cookies[0]).to.have.property('path');
+
+      expect(cookies[1]).to.have.property('name', 'key');
+      expect(cookies[1]).to.have.property('value', 'value');
+      expect(cookies[1]).to.have.property('httpOnly', false);
+      expect(cookies[1]).to.have.property('secure', false);
+      expect(cookies[1]).to.have.property('domain', '.example.com');
+      expect(cookies[1]).to.have.property('path');
     });
   });
 
@@ -61,7 +87,7 @@ context('Cookies', function () {
     cy.getCookie('token').should('be.null');
   });
 
-  it('cy.clearCookies() - clear browser cookies', function () {
+  it('cy.clearCookies() - clear browser cookies for the current domain', function () {
     // https://on.cypress.io/clearcookies
     cy.getCookies().should('be.empty');
 
@@ -73,5 +99,20 @@ context('Cookies', function () {
     cy.clearCookies();
 
     cy.getCookies().should('be.empty');
+  });
+
+  it('cy.clearAllCookies() - clear all browser cookies', function () {
+    // https://on.cypress.io/clearallcookies
+    cy.getAllCookies().should('be.empty');
+
+    cy.setCookie('key', 'value');
+    cy.setCookie('key', 'value', { domain: '.example.com' });
+
+    cy.getAllCookies().should('have.length', 2);
+
+    // cy.clearAllCookies() yields null
+    cy.clearAllCookies();
+
+    cy.getAllCookies().should('be.empty');
   });
 });

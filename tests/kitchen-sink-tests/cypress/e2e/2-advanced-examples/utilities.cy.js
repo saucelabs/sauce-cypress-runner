@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /// <reference types="cypress" />
 
 context('Utilities', function () {
@@ -31,7 +30,7 @@ context('Utilities', function () {
     cy.get('.utility-blob').then(($div) =>
       // https://github.com/nolanlawson/blob-util#imgSrcToDataURL
       // get the dataUrl string for the javascript-logo
-      Cypress.Blob.imgSrcToDataURL('https://example.cypress.io/assets/img/javascript-logo.png', undefined, 'anonymous')
+      Cypress.Blob.imgSrcToDataURL('/assets/img/javascript-logo.png', undefined, 'anonymous')
       .then((dataUrl) => {
         // create an <img> element and set its src to the dataUrl
         let img = Cypress.$('<img />', { src: dataUrl });
@@ -86,6 +85,7 @@ context('Utilities', function () {
      */
     function waitOneSecond () {
       // return a promise that resolves after 1 second
+      // eslint-disable-next-line no-unused-vars
       return new Cypress.Promise((resolve, reject) => {
         setTimeout(() => {
           // set waited to true

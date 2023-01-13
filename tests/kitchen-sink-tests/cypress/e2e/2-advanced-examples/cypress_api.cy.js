@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /// <reference types="cypress" />
 
 context('Cypress.Commands', function () {
@@ -19,6 +18,7 @@ context('Cypress.Commands', function () {
       method = method || 'log';
 
       // log the subject to the console
+      // eslint-disable-next-line no-console
       console[method]('The subject is', subject);
 
       // whatever we return becomes the new subject
@@ -27,6 +27,7 @@ context('Cypress.Commands', function () {
       return subject;
     });
 
+    // eslint-disable-next-line no-unused-vars
     cy.get('button').console('info').then(($button) => {
       // subject is still $button
     });
@@ -49,24 +50,6 @@ context('Cypress.Cookies', function () {
     cy.setCookie('fakeCookie', '123ABC');
     cy.clearCookie('fakeCookie');
     cy.setCookie('fakeCookie', '123ABC');
-  });
-
-  it('.preserveOnce() - preserve cookies by key', function () {
-    // normally cookies are reset after each test
-    cy.getCookie('fakeCookie').should('not.be.ok');
-
-    // preserving a cookie will not clear it when
-    // the next test starts
-    cy.setCookie('lastCookie', '789XYZ');
-    Cypress.Cookies.preserveOnce('lastCookie');
-  });
-
-  it('.defaults() - set defaults for all cookies', function () {
-    // now any cookie with the name 'session_id' will
-    // not be cleared before each new test runs
-    Cypress.Cookies.defaults({
-      preserve: 'session_id',
-    });
   });
 });
 

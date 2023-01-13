@@ -127,10 +127,14 @@ jobs:
       - name: Bundle Directory
         run: bash ./scripts/bundle.sh
 
+      - name: Get Cypress Version
+        run: |
+          Write-Output "cypress_version=$((Get-Content ./package.json -Raw | ConvertFrom-Json).dependencies.cypress)" >> $env:GITHUB_ENV
+
       - name: Override Dependencies
-        run: | 
-          rm -r bundle/cache/11.2.0/Cypress/resources/app/node_modules/get-port
-          cp -r vendor/get-port bundle/cache/11.2.0/Cypress/resources/app/node_modules
+        run: |
+          rm -r bundle/Cache/${{ env.cypress_version }}/Cypress/resources/app/node_modules/get-port
+          cp -r vendor/get-port bundle/cache/${{ env.cypress_version }}/Cypress/resources/app/node_modules
 
       - name: Archive Bundle
         uses: azure/powershell@v1
@@ -201,10 +205,15 @@ jobs:
       - name: Bundle Directory
         run: bash ./scripts/bundle.sh
 
+      - name: Get Cypress Version
+        run: |
+          CYPRESS_VERSION=$(< package-lock.json jq -r '.dependencies["cypress"].version')
+          echo "cypress_version=$CYPRESS_VERSION" >> $GITHUB_ENV
+
       - name: Override Dependencies
         run: |
-          rm -r bundle/cache/11.2.0/Cypress.app/Contents/Resources/app/node_modules/get-port
-          cp -r vendor/get-port bundle/cache/11.2.0/Cypress.app/Contents/Resources/app/node_modules
+          rm -r bundle/Cache/${{ env.cypress_version }}/Cypress.app/Contents/Resources/app/node_modules/get-port
+          cp -r vendor/get-port bundle/Cache/${{ env.cypress_version }}/Cypress.app/Contents/Resources/app/node_modules/
 
       - name: Archive Bundle
         run: zip --symlinks -r sauce-cypress-macos.zip bundle/
