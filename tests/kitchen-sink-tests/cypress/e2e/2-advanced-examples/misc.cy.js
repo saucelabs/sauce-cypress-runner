@@ -1,25 +1,25 @@
 /// <reference types="cypress" />
 
-context('Misc', () => {
-  beforeEach(() => {
-    cy.visit('http://localhost:8080/commands/misc')
-  })
+context('Misc', function () {
+  beforeEach(function () {
+    cy.visit('http://localhost:8080/commands/misc');
+  });
 
-  it('.end() - end the command chain', () => {
+  it('.end() - end the command chain', function () {
     // https://on.cypress.io/end
 
     // cy.end is useful when you want to end a chain of commands
     // and force Cypress to re-query from the root element
     cy.get('.misc-table').within(() => {
       // ends the current chain and yields null
-      cy.contains('Cheryl').click().end()
+      cy.contains('Cheryl').click().end();
 
       // queries the entire table again
-      cy.contains('Charles').click()
-    })
-  })
+      cy.contains('Charles').click();
+    });
+  });
 
-  it('cy.exec() - execute a system command', () => {
+  it('cy.exec() - execute a system command', function () {
     // execute a system command.
     // so you can take actions necessary for
     // your test outside the scope of Cypress.
@@ -28,58 +28,58 @@ context('Misc', () => {
     // we can use Cypress.platform string to
     // select appropriate command
     // https://on.cypress/io/platform
-    cy.log(`Platform ${Cypress.platform} architecture ${Cypress.arch}`)
+    cy.log(`Platform ${Cypress.platform} architecture ${Cypress.arch}`);
 
     // on CircleCI Windows build machines we have a failure to run bash shell
     // https://github.com/cypress-io/cypress/issues/5169
     // so skip some of the tests by passing flag "--env circle=true"
-    const isCircleOnWindows = Cypress.platform === 'win32' && Cypress.env('circle')
+    const isCircleOnWindows = Cypress.platform === 'win32' && Cypress.env('circle');
 
     if (isCircleOnWindows) {
-      cy.log('Skipping test on CircleCI')
+      cy.log('Skipping test on CircleCI');
 
-      return
+      return;
     }
 
     // cy.exec problem on Shippable CI
     // https://github.com/cypress-io/cypress/issues/6718
-    const isShippable = Cypress.platform === 'linux' && Cypress.env('shippable')
+    const isShippable = Cypress.platform === 'linux' && Cypress.env('shippable');
 
     if (isShippable) {
-      cy.log('Skipping test on ShippableCI')
+      cy.log('Skipping test on ShippableCI');
 
-      return
+      return;
     }
 
     cy.exec('echo Jane Lane')
-      .its('stdout').should('contain', 'Jane Lane')
+      .its('stdout').should('contain', 'Jane Lane');
 
     if (Cypress.platform === 'win32') {
       cy.exec(`print ${Cypress.config('configFile')}`)
-        .its('stderr').should('be.empty')
+        .its('stderr').should('be.empty');
     } else {
       cy.exec(`cat ${Cypress.config('configFile')}`)
-        .its('stderr').should('be.empty')
+        .its('stderr').should('be.empty');
 
       cy.exec('pwd')
-        .its('code').should('eq', 0)
+        .its('code').should('eq', 0);
     }
-  })
+  });
 
-  it('cy.focused() - get the DOM element that has focus', () => {
+  it('cy.focused() - get the DOM element that has focus', function () {
     // https://on.cypress.io/focused
-    cy.get('.misc-form').find('#name').click()
-    cy.focused().should('have.id', 'name')
+    cy.get('.misc-form').find('#name').click();
+    cy.focused().should('have.id', 'name');
 
-    cy.get('.misc-form').find('#description').click()
-    cy.focused().should('have.id', 'description')
-  })
+    cy.get('.misc-form').find('#description').click();
+    cy.focused().should('have.id', 'description');
+  });
 
   context('Cypress.Screenshot', function () {
-    it('cy.screenshot() - take a screenshot', () => {
+    it('cy.screenshot() - take a screenshot', function () {
       // https://on.cypress.io/screenshot
-      cy.screenshot('my-image')
-    })
+      cy.screenshot('my-image');
+    });
 
     it('Cypress.Screenshot.defaults() - change default config of screenshots', function () {
       Cypress.Screenshot.defaults({
@@ -91,14 +91,14 @@ context('Misc', () => {
         screenshotOnRunFailure: true,
         onBeforeScreenshot () { },
         onAfterScreenshot () { },
-      })
-    })
-  })
+      });
+    });
+  });
 
-  it('cy.wrap() - wrap an object', () => {
+  it('cy.wrap() - wrap an object', function () {
     // https://on.cypress.io/wrap
     cy.wrap({ foo: 'bar' })
       .should('have.property', 'foo')
-      .and('include', 'bar')
-  })
-})
+      .and('include', 'bar');
+  });
+});
