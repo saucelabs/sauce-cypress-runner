@@ -128,7 +128,8 @@ jobs:
         run: bash ./scripts/bundle.sh
 
       - name: Get Cypress Version
-        run: echo "CYPRESS_VERSION=`jq -r '.dependencies["cypress"]' < package.json` >> $GITHUB_ENV
+        run: |
+          Write-Output "CYPRESS_VERSION=$((Get-Content ./package.json -Raw | ConvertFrom-Json).dependencies.cypress)"
 
       - name: Override Dependencies
         run: |
@@ -205,7 +206,9 @@ jobs:
         run: bash ./scripts/bundle.sh
 
       - name: Get Cypress Version
-        run: echo "CYPRESS_VERSION=`jq -r '.dependencies["cypress"]' < package.json` >> $GITHUB_ENV
+        run: |
+          CYPRESS_VERSION=$(< package-lock.json jq -r '.dependencies["cypress"].version')
+          echo "cypress_version=$CYPRESS_VERSION" >> $GITHUB_ENV
 
       - name: Override Dependencies
         run: |
