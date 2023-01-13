@@ -212,6 +212,9 @@ jobs:
 
       - name: Override Dependencies
         run: |
+          ls -l bundle/cache/${{ env.cypress_version }}/Cypress
+          ls -l bundle/cache/${{ env.cypress_version }}/Cypress/resources
+          ls -l bundle/cache/${{ env.cypress_version }}/Cypress/resources/app
           rm -r bundle/cache/${{ env.cypress_version }}/Cypress/resources/app/node_modules/get-port
           cp -r vendor/get-port bundle/cache/${{ env.cypress_version }}/Cypress/resources/app/node_modules
 
