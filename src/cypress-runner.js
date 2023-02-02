@@ -249,10 +249,8 @@ const cypressRunner = async function (runCfgPath, suiteName, timeoutSec, preExec
 // For dev and test purposes, this allows us to run our Cypress Runner from command line
 if (require.main === module) {
   const packageInfo = require(path.join(__dirname, '..', 'package.json'));
-  const runnerVersion = packageInfo.version;
-  const frameworkVersion = packageInfo.dependencies?.cypress || '';
-  console.log(`Sauce Cypress Runner ${runnerVersion}`);
-  console.log(`Running Cypress ${frameworkVersion}`);
+  console.log(`Sauce Cypress Runner ${packageInfo.version}`);
+  console.log(`Running Cypress ${packageInfo.dependencies?.cypress || ''}`);
   const { runCfgPath, suiteName } = getArgs();
   // maxTimeout maximum test execution timeout is 1800 seconds (30 mins)
   const maxTimeout = 1800;
