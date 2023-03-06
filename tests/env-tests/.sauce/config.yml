@@ -9,7 +9,7 @@ sauce:
     - other tag
     build: Release $CI_COMMIT_SHORT_SHA
 cypress:
-  version: 9.7.0
+  version: 12.3.0
   configFile: cypress.config.js
 suites:
 - name: saucy test

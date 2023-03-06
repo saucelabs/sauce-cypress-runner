@@ -12,7 +12,7 @@ defaults:
   mode: sauce
 cypress:
   configFile: cypress.config.js
-  version: 9.3.1
+  version: 12.3.0
 suites:
   - name: "kitchen-sink on Sauce (MacOS)"
     platformName: "macOS 11.00"
