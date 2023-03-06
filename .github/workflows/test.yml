@@ -52,7 +52,10 @@ jobs:
       - name: Install Webkit Dependencies
         run: npx playwright install-deps webkit
 
-      - run: ls -l /opt/hostedtoolcache/node/16.19.1/x64/
+      - run: |
+          ls -l /opt/hostedtoolcache/node/16.19.1/x64/lib/
+          ls -l /opt/hostedtoolcache/node/16.19.1/x64/lib/npm
+          exit 0
 
       - name: Get NPM path
         run: echo "NPM_CLI_PATH=`which npm | sed 's/bin\/npm/lib\/npm.js/'`" >> $GITHUB_ENV
