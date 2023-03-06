@@ -251,6 +251,11 @@ jobs:
         run: |
           npx saucectl run --config .sauce/config_on_sauce_mac.yml --runner-version "url: https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/sauce-cypress-macos-${{ github.run_id }}.zip"
 
+      - name: post-release Tests
+        working-directory: ./tests/post-release
+        run: |
+          npx saucectl run --runner-version "url: https://github.com/saucelabs/sauce-cypress-runner/releases/download/${{ steps.parse_version.outputs.version }}/sauce-cypress-macos-amd64.zip" --config ./.sauce/config_mac.yml
+
   run-bundle-with-sauce-connect:
     runs-on: ubuntu-latest
     needs: [build-windows-bundle, build-mac-bundle]
@@ -293,8 +298,3 @@ jobs:
         run: |
           saucectl run --config .sauce/config_mac.yml --runner-version "url: https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/sauce-cypress-macos-${{ github.run_id }}.zip"
         working-directory: ./tests/sauce-connect/
-
-      - name: post-release Tests
-        working-directory: ./tests/post-release
-        run: |
-          npx saucectl run --runner-version "url: https://github.com/saucelabs/sauce-cypress-runner/releases/download/${{ steps.parse_version.outputs.version }}/sauce-cypress-macos-amd64.zip" --config ./.sauce/config_mac.yml
