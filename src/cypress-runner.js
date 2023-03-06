@@ -198,7 +198,7 @@ const canAccessFolder = async function (file) {
   await fsAccess(file, fs.constants.R_OK | fs.constants.W_OK);
 };
 
-const cypressRunner = async function (runCfgPath, suiteName, timeoutSec, preExecTimeoutSec) {
+const cypressRunner = async function (nodeBin, runCfgPath, suiteName, timeoutSec, preExecTimeoutSec) {
   runCfgPath = getAbsolutePath(runCfgPath);
   const runCfg = await loadRunConfig(runCfgPath);
   runCfg.path = runCfgPath;
@@ -213,8 +213,12 @@ const cypressRunner = async function (runCfgPath, suiteName, timeoutSec, preExec
 
   setEnvironmentVariables(runCfg, suiteName);
 
+  // Define node/npm path for execution
+  const npmBin = path.join(path.dirname(nodeBin), 'node_modules', 'npm', 'bin', 'npm-cli.js');
+  const nodeCtx = { nodePath: nodeBin, npmPath: npmBin };
+
   let metrics = [];
-  let npmMetrics = await prepareNpmEnv(runCfg);
+  let npmMetrics = await prepareNpmEnv(runCfg, nodeCtx);
   metrics.push(npmMetrics);
   let cypressOpts = getCypressOpts(runCfg, suiteName);
   let startTime = new Date().toISOString();
@@ -251,12 +255,12 @@ if (require.main === module) {
   const packageInfo = require(path.join(__dirname, '..', 'package.json'));
   console.log(`Sauce Cypress Runner ${packageInfo.version}`);
   console.log(`Running Cypress ${packageInfo.dependencies?.cypress || ''}`);
-  const { runCfgPath, suiteName } = getArgs();
+  const { nodeBin, runCfgPath, suiteName } = getArgs();
   // maxTimeout maximum test execution timeout is 1800 seconds (30 mins)
   const maxTimeout = 1800;
   const maxPreExecTimeout = 300;
 
-  cypressRunner(runCfgPath, suiteName, maxTimeout, maxPreExecTimeout)
+  cypressRunner(nodeBin, runCfgPath, suiteName, maxTimeout, maxPreExecTimeout)
       // eslint-disable-next-line promise/prefer-await-to-then
       .then((passed) => process.exit(passed ? 0 : 1))
       // eslint-disable-next-line promise/prefer-await-to-callbacks
