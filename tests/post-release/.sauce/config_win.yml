@@ -34,3 +34,7 @@ notifications:
   slack:
     channels: ["devx"]
     send: fail
+
+npm:
+  packages:
+    cypress-plugin-steps: '1.1.0'
