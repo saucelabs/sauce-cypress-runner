@@ -214,8 +214,10 @@ const cypressRunner = async function (nodeBin, runCfgPath, suiteName, timeoutSec
   setEnvironmentVariables(runCfg, suiteName);
 
   // Define node/npm path for execution
-  const npmBin = path.join(path.dirname(nodeBin), 'node_modules', 'npm', 'bin', 'npm-cli.js');
+  console.log(process.env);
+  const npmBin = process.env.NPM_CLI_PATH || path.join(path.dirname(nodeBin), 'node_modules', 'npm', 'bin', 'npm-cli.js');
   const nodeCtx = { nodePath: nodeBin, npmPath: npmBin };
+  console.log(`Context: ${nodeCtx.nodePath} / ${nodeCtx.npmPath}`);
 
   let metrics = [];
   let npmMetrics = await prepareNpmEnv(runCfg, nodeCtx);

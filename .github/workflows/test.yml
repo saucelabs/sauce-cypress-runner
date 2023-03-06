@@ -52,9 +52,13 @@ jobs:
       - name: Install Webkit Dependencies
         run: npx playwright install-deps webkit
 
+      - name: Get NPM path
+        run: echo "NPM_CLI_PATH=`which npm | sed 's/bin\/npm/lib\/npm.js/'`" >> $GITHUB_ENV
+
       - name: Integration Tests
         env:
           SAUCE_CYPRESS_VIDEO_RECORDING: false
+          CYPRESS_VERSION: ${{ env.NPM_CLI_PATH }}
         run: bash tests/integration/integration-tests.sh
 
   docker:
