@@ -13,8 +13,6 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
-require('cypress-plugin-steps');
-
 // Import commands.js using ES2015 syntax:
 import './commands';
 
