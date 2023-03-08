@@ -52,6 +52,9 @@ jobs:
       - name: Install Webkit Dependencies
         run: npx playwright install-deps webkit
 
+      - name: Get NPM path
+        run: echo "NPM_CLI_PATH=`which npm | sed 's/bin\/npm/lib\/node_modules\/npm\/bin\/npm-cli.js/'`" >> $GITHUB_ENV
+
       - name: Integration Tests
         env:
           SAUCE_CYPRESS_VIDEO_RECORDING: false
@@ -163,10 +166,10 @@ jobs:
       - name: Setup saucectl
         run: npm i saucectl -g
 
-      - name: Test on Sauce
-        working-directory: ./tests/kitchen-sink-tests
+      - name: Test on Sauce (Post-Release)
+        working-directory: ./tests/post-release
         run: |
-          saucectl run --config .sauce/config_on_sauce.yml --runner-version "url: https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/sauce-cypress-runner-${{ github.run_id }}.zip"
+          npx saucectl run --runner-version "url: https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/sauce-cypress-runner-${{ github.run_id }}.zip" --config ./.sauce/config_win.yml
 
   build-mac-bundle:
     runs-on: macos-latest
@@ -238,10 +241,10 @@ jobs:
       - name: Setup saucectl
         run: npm i saucectl
 
-      - name: Test on Sauce (Kitchen Sink)
-        working-directory: ./tests/kitchen-sink-tests
+      - name: Test on Sauce (Post-Release)
+        working-directory: ./tests/post-release
         run: |
-          npx saucectl run --config .sauce/config_on_sauce_mac.yml --runner-version "url: https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/sauce-cypress-macos-${{ github.run_id }}.zip"
+          npx saucectl run --runner-version "url: https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/sauce-cypress-macos-${{ github.run_id }}.zip" --config ./.sauce/config_mac.yml
 
   run-bundle-with-sauce-connect:
     runs-on: ubuntu-latest
