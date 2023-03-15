@@ -21,6 +21,6 @@ suites:
     env:
       VALUE: 'Some test value'
       FOO: bar
-      host: https://training.staging.saucelabs.net/
+      host: https://saucelabs.com/
 docker:
   fileTransfer: mount
