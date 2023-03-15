@@ -89,6 +89,8 @@ jobs:
 
       - name: Kitchen Sink Tests
         uses: saucelabs/saucectl-run-action@v3
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         with:
           working-directory: ./tests/kitchen-sink-tests
           sauce-username: ${{ secrets.SAUCE_USERNAME }}
