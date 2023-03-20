@@ -240,7 +240,7 @@ jobs:
             --config ./.sauce/config.yml \
             --select-suite "${{ matrix.os }} - ${{ matrix.browser }}"
 
-  bundle-tests-with-sauce-connect:
+  bundle-tests-with-sc:
     needs: [build-windows-bundle, build-mac-bundle]
     strategy:
       fail-fast: false
