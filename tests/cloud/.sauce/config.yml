@@ -99,7 +99,3 @@ notifications:
   slack:
     channels: ["devx-slack-notifications"]
     send: fail
-
-npm:
-  packages:
-    cypress-plugin-steps: '1.1.0'
