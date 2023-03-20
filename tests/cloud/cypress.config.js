@@ -5,5 +5,6 @@ module.exports = defineConfig({
   // the e2e or component configuration
   e2e: {
     supportFile: 'cypress/support/e2e.js',
+    experimentalWebKitSupport: true,
   },
 });

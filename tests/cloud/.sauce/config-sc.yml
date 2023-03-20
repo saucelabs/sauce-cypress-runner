@@ -76,19 +76,19 @@ suites:
       specPattern: [ "cypress/**/*.cy.js" ]
 
   # macOS 12 Tests
-  - name: "macOS11 - Chrome"
+  - name: "macOS12 - Chrome"
     browser: "chrome"
     platformName: "macOS 12"
     config:
       testingType: "e2e"
       specPattern: [ "cypress/**/*.cy.js" ]
-  - name: "macOS11 - Firefox"
+  - name: "macOS12 - Firefox"
     browser: "firefox"
     platformName: "macOS 12"
     config:
       testingType: "e2e"
       specPattern: [ "cypress/**/*.cy.js" ]
-  - name: "macOS11 - Webkit"
+  - name: "macOS12 - Webkit"
     browser: "webkit"
     platformName: "macOS 12"
     config:
