@@ -213,6 +213,7 @@ jobs:
       matrix:
         os: [Win10, Win11, macOS11, macOS12]
         browser: [Chrome, Firefox, Webkit]
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -247,6 +248,7 @@ jobs:
       matrix:
         os: [Win10, Win11, macOS11, macOS12]
         browser: [Chrome, Firefox, Webkit]
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
       - name: Checkout runner
