@@ -213,6 +213,14 @@ jobs:
       matrix:
         os: [Win10, Win11, macOS11, macOS12]
         browser: [Chrome, Firefox, Webkit]
+      # FIXME: Remove those exclusions when Webkit working fine
+      exclude:
+        - os: Win10
+          browser: Webkit
+        - os: Win11
+          browser: Webkit
+        - os: macOS11
+          browser: Webkit
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -248,6 +256,14 @@ jobs:
       matrix:
         os: [Win10, Win11, macOS11, macOS12]
         browser: [Chrome, Firefox, Webkit]
+      # FIXME: Remove those exclusions when Webkit working fine
+      exclude:
+        - os: Win10
+          browser: Webkit
+        - os: Win11
+          browser: Webkit
+        - os: macOS11
+          browser: Webkit
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
