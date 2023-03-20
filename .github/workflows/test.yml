@@ -60,7 +60,7 @@ jobs:
           SAUCE_CYPRESS_VIDEO_RECORDING: false
         run: bash tests/integration/integration-tests.sh
 
-  docker:
+  docker-kitchen-sink:
     runs-on: ubuntu-latest
     needs: [test]
     steps:
