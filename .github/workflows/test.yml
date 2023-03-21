@@ -211,7 +211,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [Win10, Win11, macOS11, macOS12]
+        os: [Win10, Win11, macOS11, macOS12, macOS13]
         browser: [Chrome, Firefox, Webkit]
         # FIXME: Remove those exclusions when Webkit working fine
         exclude:
@@ -254,7 +254,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [Win10, Win11, macOS11, macOS12]
+        os: [Win10, Win11, macOS11, macOS12, macOS13]
         browser: [Chrome, Firefox, Webkit]
         # FIXME: Remove those exclusions when Webkit working fine
         exclude:

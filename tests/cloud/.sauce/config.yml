@@ -95,6 +95,26 @@ suites:
       testingType: "e2e"
       specPattern: [ "cypress/e2e/no-sc/**/*.cy.js" ]
 
+  # macOS 13 Tests
+  - name: "macOS13 - Chrome"
+    browser: "chrome"
+    platformName: "macOS 13"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/no-sc/**/*.cy.js" ]
+  - name: "macOS13 - Firefox"
+    browser: "firefox"
+    platformName: "macOS 13"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/no-sc/**/*.cy.js" ]
+  - name: "macOS13 - Webkit"
+    browser: "webkit"
+    platformName: "macOS 13"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/no-sc/**/*.cy.js" ]
+
 notifications:
   slack:
     channels: ["devx-slack-notifications"]
