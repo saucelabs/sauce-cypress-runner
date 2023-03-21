@@ -1,0 +1,101 @@
+apiVersion: v1
+kind: cypress
+sauce:
+  region: us-west-1
+  concurrency: 2
+  metadata:
+    tags:
+      - e2e
+      - post release
+    build: Github Run $GITHUB_RUN_ID
+cypress:
+  configFile: cypress.config.js
+  version: 12.6.0
+rootDir: ./
+env:
+  foo: bar
+suites:
+  # Windows 10 Tests
+  - name: "Win10 - Chrome"
+    browser: "chrome"
+    platformName: "Windows 10"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/**/*.cy.js" ]
+  - name: "Win10 - Firefox"
+    browser: "firefox"
+    platformName: "Windows 10"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/**/*.cy.js" ]
+  - name: "Win10 - Webkit"
+    browser: "webkit"
+    platformName: "Windows 10"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/**/*.cy.js" ]
+
+  # Windows 11 Tests
+  - name: "Win11 - Chrome"
+    browser: "chrome"
+    platformName: "Windows 11"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/**/*.cy.js" ]
+  - name: "Win11 - Firefox"
+    browser: "firefox"
+    platformName: "Windows 11"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/**/*.cy.js" ]
+  - name: "Win11 - Webkit"
+    browser: "webkit"
+    platformName: "Windows 11"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/**/*.cy.js" ]
+
+  # macOS 11.00 Tests
+  - name: "macOS11 - Chrome"
+    browser: "chrome"
+    platformName: "macOS 11.00"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/**/*.cy.js" ]
+  - name: "macOS11 - Firefox"
+    browser: "firefox"
+    platformName: "macOS 11.00"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/**/*.cy.js" ]
+  - name: "macOS11 - Webkit"
+    browser: "webkit"
+    platformName: "macOS 11.00"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/**/*.cy.js" ]
+
+  # macOS 12 Tests
+  - name: "macOS12 - Chrome"
+    browser: "chrome"
+    platformName: "macOS 12"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/**/*.cy.js" ]
+  - name: "macOS12 - Firefox"
+    browser: "firefox"
+    platformName: "macOS 12"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/**/*.cy.js" ]
+  - name: "macOS12 - Webkit"
+    browser: "webkit"
+    platformName: "macOS 12"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/**/*.cy.js" ]
+
+notifications:
+  slack:
+    channels: ["devx-slack-notifications"]
+    send: fail
