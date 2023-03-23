@@ -32,8 +32,7 @@ const report = async (results = {}, statusCode, browserName, runCfg, suiteName, 
 
   try {
     const reportJSON = await afterRunTestReport(results);
-    console.log('reportJSON: ', reportJSON);
-    if (reportJSON && reportJSON.toFile) {
+    if (reportJSON) {
       const filepath = path.join(runCfg.resultsDir, 'sauce-test-report.json');
       reportJSON.toFile(filepath);
       assets.push(filepath);
