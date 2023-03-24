@@ -59,7 +59,7 @@
     "@types/jest": "^26.0.19",
     "@types/jquery": "^3.5.5",
     "@types/mocha": "^8.2.0",
-    "@types/node": "^16.11.7",
+    "@types/node": "^18.15.7",
     "bluebird": "^3.7.2",
     "eslint": "^7.15.0",
     "eslint-config-appium": "^4.5.0",

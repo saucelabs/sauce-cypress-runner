@@ -1,10 +1,10 @@
-FROM saucelabs/testrunner-image:v0.3.0
+FROM saucelabs/testrunner-image:v0.4.0
 
 WORKDIR /home/seluser
 
 USER seluser
 
-ENV NODE_VERSION=16.17.0
+ENV NODE_VERSION=18.15.0
 ENV NVM_VERSION=0.39.0
 ENV IMAGE_NAME=saucelabs/stt-cypress-mocha-node
 
@@ -23,7 +23,7 @@ ENV PATH="/home/seluser/bin:/home/seluser/.nvm/versions/node/v${NODE_VERSION}/bi
 
 COPY package.json .
 COPY package-lock.json .
-RUN npm ci --production
+RUN npm ci --omit=dev
 
 RUN mkdir -p ~/__project__
 
