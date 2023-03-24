@@ -31,10 +31,12 @@ const report = async (results = {}, statusCode, browserName, runCfg, suiteName, 
   );
 
   try {
-    let reportJSON = afterRunTestReport(results);
-    const filepath = path.join(runCfg.resultsDir, 'sauce-test-report.json');
-    reportJSON.toFile(filepath);
-    assets.push(filepath);
+    const reportJSON = await afterRunTestReport(results);
+    if (reportJSON) {
+      const filepath = path.join(runCfg.resultsDir, 'sauce-test-report.json');
+      reportJSON.toFile(filepath);
+      assets.push(filepath);
+    }
   } catch (e) {
     console.error('Failed to serialize test results: ', e);
   }
