@@ -163,7 +163,7 @@ jobs:
 
           $selectedAsset = $null
           Foreach ($asset in $selectedRelease.assets) {
-            if ($asset.name -eq "sauce-cypress-runner.zip") {
+            if ($asset.name -eq "cypress-windows-amd64.zip") {
               $selectedAsset = $asset
             }
           }
@@ -213,7 +213,7 @@ jobs:
         uses: azure/powershell@v1
         with:
           inlineScript: |
-            Compress-Archive bundle/ sauce-cypress-runner-win-amd64.zip
+            Compress-Archive bundle/ cypress-windows-amd64.zip
           azPSVersion: '3.1.0'
 
       - name: Upload Release Asset
@@ -221,10 +221,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          gh release upload ${{ steps.prep.outputs.version }} sauce-cypress-runner-win-amd64.zip
-          mv sauce-cypress-runner-win-amd64.zip sauce-cypress-runner.zip
-          # Legacy Filename
-          gh release upload ${{ steps.prep.outputs.version }} sauce-cypress-runner.zip
+          gh release upload ${{ steps.prep.outputs.version }} cypress-windows-amd64.zip
 
   release-macos-bundle:
     runs-on: macos-latest
@@ -247,7 +244,7 @@ jobs:
 
           ASSET_ID=$(curl -s -H "Authorization: token ${{ github.token }}" \
                       https://api.github.com/repos/${{ github.repository }}/releases | \
-                      jq -r "[.[] | select(.body | contains(\"- jobId: ${{ github.run_id }}\\n\"))] | first | .assets | .[] | select(.name == \"sauce-testcafe-macos.zip\") | .id | select(. != null)")
+                      jq -r "[.[] | select(.body | contains(\"- jobId: ${{ github.run_id }}\\n\"))] | first | .assets | .[] | select(.name == \"cypress-macos-amd64.zip\") | .id | select(. != null)")
 
 
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
@@ -288,17 +285,14 @@ jobs:
 
       - name: Archive Bundle
         if: ${{ steps.prep.outputs.asset_id == '' }}
-        run: zip --symlinks -r sauce-cypress-macos-amd64.zip bundle/
+        run: zip --symlinks -r cypress-macos-amd64.zip bundle/
 
       - name: Upload Release Asset
         if: ${{ steps.prep.outputs.asset_id == '' }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          gh release upload ${{ steps.prep.outputs.version }} sauce-cypress-macos-amd64.zip
-          mv sauce-cypress-macos-amd64.zip sauce-cypress-macos.zip
-          # Legacy Filename
-          gh release upload ${{ steps.prep.outputs.version }} sauce-cypress-macos.zip
+          gh release upload ${{ steps.prep.outputs.version }} cypress-macos-amd64.zip
 
   publish-release:
     runs-on: ubuntu-latest
@@ -350,7 +344,7 @@ jobs:
       - name: Cloud Tests
         working-directory: ./tests/post-release
         run: |
-          npx saucectl run --runner-version "url: https://github.com/saucelabs/sauce-cypress-runner/releases/download/${{ steps.parse_version.outputs.version }}/sauce-cypress-runner-win-amd64.zip" --config ./.sauce/config_win.yml
+          npx saucectl run --runner-version "url: https://github.com/saucelabs/sauce-cypress-runner/releases/download/${{ steps.parse_version.outputs.version }}/cypress-windows-amd64.zip" --config ./.sauce/config_win.yml
 
   post-release-macos-tests:
     runs-on: ubuntu-latest
@@ -377,4 +371,4 @@ jobs:
       - name: Cloud Tests
         working-directory: ./tests/post-release
         run: |
-          npx saucectl run --runner-version "url: https://github.com/saucelabs/sauce-cypress-runner/releases/download/${{ steps.parse_version.outputs.version }}/sauce-cypress-macos-amd64.zip" --config ./.sauce/config_mac.yml
+          npx saucectl run --runner-version "url: https://github.com/saucelabs/sauce-cypress-runner/releases/download/${{ steps.parse_version.outputs.version }}/cypress-macos-amd64.zip" --config ./.sauce/config_mac.yml
