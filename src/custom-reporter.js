@@ -555,6 +555,7 @@ MochaJUnitReporter.prototype.writeXmlToDisk = function (xml, filePath, fileName)
       console.log('replacing============');
       console.log('replacing============');
       xmlOutFilePath = filePath.replace('[suite]', path.basename(fileName));
+      console.log('xmlOutFilePath: ', xmlOutFilePath);
     }
 
     debug('writing file to', xmlOutFilePath);
