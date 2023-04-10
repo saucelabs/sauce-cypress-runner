@@ -550,6 +550,10 @@ MochaJUnitReporter.prototype.writeXmlToDisk = function (xml, filePath, fileName)
     if (filePath.includes('[hash]')) {
       xmlOutFilePath = filePath.replace('[hash]', md5(xml));
     } else if (filePath.includes('[suite]')) {
+      console.log('replacing============');
+      console.log('replacing============');
+      console.log('replacing============');
+      console.log('replacing============');
       xmlOutFilePath = filePath.replace('[suite]', path.basename(fileName));
     }
 
