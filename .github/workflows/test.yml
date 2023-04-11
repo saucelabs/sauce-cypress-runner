@@ -300,7 +300,6 @@ jobs:
           username: ${{ secrets.SAUCE_USERNAME }}
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
           tunnelIdentifier: github-cypress-sc-check-tunnel-${{ matrix.os }}-${{ matrix.browser }}
-          scVersion: 4.8.1
 
       - name: Test on Sauce (+ Sauce-Connect)
         working-directory: ./tests/cloud/
