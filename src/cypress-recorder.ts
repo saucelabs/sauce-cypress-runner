@@ -1,14 +1,14 @@
 
-const fs = require('fs');
-const path = require('path');
-const stream = require('stream');
-const childProcess = require('child_process');
+import fs from 'fs';
+import path from 'path';
+import stream from 'stream';
+import childProcess from 'child_process';
 
 function cypressRecorder () {
   // console.log is saved out of reportsDir since it is cleared on startup.
   const fd = fs.openSync(path.join(process.cwd(), 'console.log'), 'w+', 0o644);
-  const ws = stream.Writable({
-    write (data, encoding, cb) { fs.write(fd, data, undefined, encoding, cb); },
+  const ws = new stream.Writable({
+    write(data, encoding, cb) { fs.write(fd, data, undefined, encoding, cb); },
   });
 
   const [nodeBin] = process.argv;
