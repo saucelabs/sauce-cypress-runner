@@ -8,7 +8,7 @@ function cypressRecorder () {
   // console.log is saved out of reportsDir since it is cleared on startup.
   const fd = fs.openSync(path.join(process.cwd(), 'console.log'), 'w+', 0o644);
   const ws = new stream.Writable({
-    write(data, encoding, cb) { fs.write(fd, data, undefined, encoding, cb); },
+    write (data, encoding, cb) { fs.write(fd, data, undefined, encoding, cb); },
   });
 
   const [nodeBin] = process.argv;
