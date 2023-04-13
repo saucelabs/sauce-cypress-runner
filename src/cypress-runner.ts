@@ -1,20 +1,20 @@
-const { sauceReporter, prepareAssets } = require('./sauce-reporter');
-const path = require('path');
-const fs = require('fs');
+import { sauceReporter, prepareAssets } from './sauce-reporter';
+import path from 'path';
+import fs from 'fs';
 const { shouldRecordVideo, getAbsolutePath, loadRunConfig, prepareNpmEnv, getArgs, getEnv, preExec } = require('sauce-testrunner-utils');
-const cypress = require('cypress');
-const util = require('util');
-const _ = require('lodash');
-const {afterRunTestReport} = require('@saucelabs/cypress-plugin');
+import cypress from 'cypress';
+import util from 'util';
+import _ from 'lodash';
+import { afterRunTestReport } from '@saucelabs/cypress-plugin';
 
 import { RunConfig, Results, CypressConfig, Suite } from './types';
 
-const report = async (results: Results = {} as Results, statusCode: number, browserName: string, runCfg: RunConfig, suiteName: string, startTime: string, endTime: string, metrics: any[]) => {
+const report = async (results: CypressCommandLine.CypressRunResult, statusCode: number, browserName: string, runCfg: RunConfig, suiteName: string, startTime: string, endTime: string, metrics: any[]) => {
   // Prepare the assets
   const runs = results.runs || [];
   let specFiles = runs.map((run) => path.basename(run.spec.name));
 
-  let failures = results.failures || results.totalFailed;
+  let failures = results.totalFailed;
   let platformName = '';
   for (let c of runCfg.suites) {
     if (c.name === suiteName) {
@@ -33,7 +33,7 @@ const report = async (results: Results = {} as Results, statusCode: number, brow
   );
 
   try {
-    const reportJSON = await afterRunTestReport(results);
+    const reportJSON = await afterRunTestReport(results as unknown as CypressCommandLine.CypressRunResult);
     if (reportJSON) {
       const filepath = path.join(runCfg.resultsDir, 'sauce-test-report.json');
       reportJSON.toFile(filepath);
@@ -232,7 +232,7 @@ const cypressRunner = async function (nodeBin: string, runCfgPath: string, suite
   // Execute pre-exec steps
   if (!await preExec.run(suite, preExecTimeoutSec)) {
     let endTime = new Date().toISOString();
-    await report({} as Results, 0, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
+    await report({} as CypressCommandLine.CypressRunResult, 0, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
     return;
   }
 
@@ -246,12 +246,12 @@ const cypressRunner = async function (nodeBin: string, runCfgPath: string, suite
     }, timeoutSec * 1000);
   });
 
-  let results = await Promise.race([timeoutPromise, cypress.run(cypressOpts)]);
+  let results = await Promise.race([timeoutPromise, cypress.run(cypressOpts as CypressCommandLine.CypressRunOptions)]);
   clearTimeout(timeout);
   const statusCode = results ? 0 : 1;
   let endTime = new Date().toISOString();
 
-  return await report(results, statusCode, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
+  return await report(results as CypressCommandLine.CypressRunResult, statusCode, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
 };
 
 // For dev and test purposes, this allows us to run our Cypress Runner from command line

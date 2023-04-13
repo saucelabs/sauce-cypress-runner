@@ -13,5 +13,8 @@
     },
     "env": {
         "jest/globals": true
-    }
+    },
+    "ignorePatterns": [
+        "lib/"
+    ]
 }
