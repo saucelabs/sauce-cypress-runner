@@ -7,7 +7,9 @@ const util = require('util');
 const _ = require('lodash');
 const {afterRunTestReport} = require('@saucelabs/cypress-plugin');
 
-const report = async (results = {}, statusCode, browserName, runCfg, suiteName, startTime, endTime, metrics) => {
+import { RunConfig, Results, CypressConfig, Suite } from './types';
+
+const report = async (results: Results = {} as Results, statusCode: number, browserName: string, runCfg: RunConfig, suiteName: string, startTime: string, endTime: string, metrics: any[]) => {
   // Prepare the assets
   const runs = results.runs || [];
   let specFiles = runs.map((run) => path.basename(run.spec.name));
@@ -58,7 +60,7 @@ const report = async (results = {}, statusCode, browserName, runCfg, suiteName, 
 };
 
 // Configure reporters
-const configureReporters = function (runCfg, opts) {
+const configureReporters = function (runCfg: RunConfig, opts: any) {
   // Enable cypress-multi-reporters plugin
   opts.config.reporter = path.join(__dirname, '../node_modules/cypress-multi-reporters/lib/MultiReporters.js');
   opts.config.reporterOptions = {
@@ -103,7 +105,7 @@ const configureReporters = function (runCfg, opts) {
   return opts;
 };
 
-const getSuite = function (runCfg, suiteName) {
+const getSuite = function (runCfg: RunConfig, suiteName: string) {
   const suites = runCfg.suites || [];
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
   if (!suite) {
@@ -113,7 +115,7 @@ const getSuite = function (runCfg, suiteName) {
   return suite;
 };
 
-const setEnvironmentVariables = function (runCfg, suiteName) {
+const setEnvironmentVariables = function (runCfg: RunConfig, suiteName: string) {
   const suite = getSuite(runCfg, suiteName);
   const envVars = getEnv(suite);
 
@@ -121,11 +123,11 @@ const setEnvironmentVariables = function (runCfg, suiteName) {
   process.env.CYPRESS_SAUCE_ARTIFACTS_DIRECTORY = runCfg.resultsDir;
 
   for (const [key, value] of Object.entries(envVars)) {
-    process.env[key] = value;
+    process.env[key] = value as string;
   }
 };
 
-const getCypressOpts = function (runCfg, suiteName) {
+const getCypressOpts = function (runCfg: RunConfig, suiteName: string) {
   // Get user settings from suites.
   const suite = getSuite(runCfg, suiteName);
   const projectDir = path.dirname(getAbsolutePath(runCfg.path));
@@ -143,7 +145,7 @@ const getCypressOpts = function (runCfg, suiteName) {
 
   const testingType = suite.config.testingType || 'e2e';
 
-  let opts = {
+  let opts: CypressConfig = {
     project: path.dirname(cypressCfgFile),
     browser: process.env.SAUCE_BROWSER || suite.browser || 'chrome',
     configFile: path.basename(cypressCfgFile),
@@ -181,7 +183,7 @@ const getCypressOpts = function (runCfg, suiteName) {
  * @param {object} opts - Cypress options
  * @param {object} suite - The suite to run, parsed from the runner config
  */
-function configureWebkitOptions (env, opts, suite) {
+function configureWebkitOptions (env: NodeJS.ProcessEnv, opts: CypressConfig, suite: Suite) {
   // NOTE: For experimental webkit support
   // cypress uses playwright-webkit and setting PLAYWRIGHT_BROWSERS_PATH=0
   // tells playwright to look in node_modules/playwright-core/.local-browsers
@@ -195,12 +197,12 @@ function configureWebkitOptions (env, opts, suite) {
   }
 }
 
-const canAccessFolder = async function (file) {
+const canAccessFolder = async function (file: string) {
   const fsAccess = util.promisify(fs.access);
   await fsAccess(file, fs.constants.R_OK | fs.constants.W_OK);
 };
 
-const cypressRunner = async function (nodeBin, runCfgPath, suiteName, timeoutSec, preExecTimeoutSec) {
+const cypressRunner = async function (nodeBin: string, runCfgPath: string, suiteName: string, timeoutSec: number, preExecTimeoutSec: number): Promise<boolean> {
   runCfgPath = getAbsolutePath(runCfgPath);
   const runCfg = await loadRunConfig(runCfgPath);
   runCfg.path = runCfgPath;
@@ -230,17 +232,17 @@ const cypressRunner = async function (nodeBin, runCfgPath, suiteName, timeoutSec
   // Execute pre-exec steps
   if (!await preExec.run(suite, preExecTimeoutSec)) {
     let endTime = new Date().toISOString();
-    await report([], 0, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
+    await report({} as Results, 0, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
     return;
   }
 
   // saucectl suite.timeout is in nanoseconds
   timeoutSec = suite.timeout / 1000000000 || timeoutSec;
-  let timeout;
+  let timeout: NodeJS.Timeout;
   const timeoutPromise = new Promise((resolve) => {
     timeout = setTimeout(() => {
       console.error(`Test timed out after ${timeoutSec} seconds`);
-      resolve();
+      resolve(false);
     }, timeoutSec * 1000);
   });
 
