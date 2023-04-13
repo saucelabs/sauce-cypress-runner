@@ -57,6 +57,8 @@ export type ResultPathContainer = {
   resultsDir: string;
 };
 
+// XML Types
+
 export type XmlSuiteAttributes = {
   time?: number | string;
   failures?: number;
@@ -100,3 +102,13 @@ export type XmlTestCaseContainer = {
 export type XmlSuite = {
   testsuite?: (XmlSuiteAttrContainer | XmlProperties | XmlTestCaseContainer)[];
 } & XmlSuiteAttrContainer;
+
+export type HasXmlSuite = {
+  testsuites: XmlSuite;
+};
+
+// Type SauceReporter
+export type Metrics = {
+  name: string;
+  data: any;
+};

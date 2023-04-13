@@ -7,9 +7,9 @@ import util from 'util';
 import _ from 'lodash';
 import { afterRunTestReport } from '@saucelabs/cypress-plugin';
 
-import { RunConfig, CypressConfig, Suite, ResultPathContainer } from './types';
+import { RunConfig, CypressConfig, Suite, ResultPathContainer, Metrics } from './types';
 
-async function report(results: CypressCommandLine.CypressRunResult, statusCode: number, browserName: string, runCfg: RunConfig, suiteName: string, startTime: string, endTime: string, metrics: any[]) {
+async function report(results: CypressCommandLine.CypressRunResult, statusCode: number, browserName: string, runCfg: RunConfig, suiteName: string, startTime: string, endTime: string, metrics: Metrics[]) {
   // Prepare the assets
   const runs = results.runs || [];
   let specFiles = runs.map((run) => path.basename(run.spec.name));
@@ -221,7 +221,7 @@ async function cypressRunner(nodeBin: string, runCfgPath: string, suiteName: str
   const npmBin = process.env.NPM_CLI_PATH || path.join(path.dirname(nodeBin), 'node_modules', 'npm', 'bin', 'npm-cli.js');
   const nodeCtx = { nodePath: nodeBin, npmPath: npmBin };
 
-  let metrics = [];
+  let metrics = [] as Metrics[];
   let npmMetrics = await prepareNpmEnv(runCfg, nodeCtx);
   metrics.push(npmMetrics);
   let cypressOpts = getCypressOpts(runCfg, suiteName);
