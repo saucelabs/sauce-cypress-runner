@@ -21,7 +21,9 @@
         "jest/globals": true
     },
     "ignorePatterns": [
-        "lib/"
+        "lib/",
+        "tests/**/cypress.config.js",
+        "tests/**/*.cy.js"
     ],
     "root": true,
     "settings": {
