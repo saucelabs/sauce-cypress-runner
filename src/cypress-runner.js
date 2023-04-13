@@ -1,107 +1,9 @@
-const { sauceReporter, prepareAssets } = require('./sauce-reporter');
 const path = require('path');
 const fs = require('fs');
 const { shouldRecordVideo, getAbsolutePath, loadRunConfig, prepareNpmEnv, getArgs, getEnv, preExec } = require('sauce-testrunner-utils');
 const cypress = require('cypress');
 const util = require('util');
-const _ = require('lodash');
 const {afterRunTestReport} = require('@saucelabs/cypress-plugin');
-
-const report = async (results = {}, statusCode, browserName, runCfg, suiteName, startTime, endTime, metrics) => {
-  // Prepare the assets
-  const runs = results.runs || [];
-  let specFiles = runs.map((run) => path.basename(run.spec.name));
-
-  let failures = results.failures || results.totalFailed;
-  let platformName = '';
-  for (let c of runCfg.suites) {
-    if (c.name === suiteName) {
-      platformName = c.platformName;
-      break;
-    }
-  }
-
-  let assets = await prepareAssets(
-      specFiles,
-      runCfg.resultsDir,
-      metrics,
-      suiteName,
-      browserName,
-      platformName,
-  );
-
-  try {
-    const reportJSON = await afterRunTestReport(results);
-    if (reportJSON) {
-      const filepath = path.join(runCfg.resultsDir, 'sauce-test-report.json');
-      reportJSON.toFile(filepath);
-      assets.push(filepath);
-    }
-  } catch (e) {
-    console.error('Failed to serialize test results: ', e);
-  }
-
-  const passed = failures === 0 && statusCode === 0;
-  // Run in cloud mode
-  if (process.env.SAUCE_VM) {
-    return passed;
-  }
-  if (!(process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY)) {
-    console.log('Skipping asset uploads! Remember to setup your SAUCE_USERNAME/SAUCE_ACCESS_KEY');
-    return passed;
-  }
-  // Run in docker mode
-  if (process.env.SAUCE_USERNAME !== '' && process.env.SAUCE_ACCESS_KEY !== '') {
-    await sauceReporter(runCfg, suiteName, browserName, assets, failures, startTime, endTime);
-  }
-  return passed;
-};
-
-// Configure reporters
-const configureReporters = function (runCfg, opts) {
-  // Enable cypress-multi-reporters plugin
-  opts.config.reporter = path.join(__dirname, '../node_modules/cypress-multi-reporters/lib/MultiReporters.js');
-  opts.config.reporterOptions = {
-    configFile: path.join(__dirname, '..', 'sauce-reporter-config.json'),
-  };
-
-  const customReporter = path.join(__dirname, '../src/custom-reporter.js');
-  const junitReporter = path.join(__dirname, '../node_modules/mocha-junit-reporter/index.js');
-
-  let defaultSpecRoot = '';
-  if (opts.testingType === 'component') {
-    defaultSpecRoot = 'cypress/component';
-  } else {
-    defaultSpecRoot = 'cypress/e2e';
-  }
-
-  // Referencing "mocha-junit-reporter" using relative path will allow to have multiple instance of mocha-junit-reporter.
-  // That permits to have a configuration specific to us, and in addition to keep customer's one.
-  let reporterConfig = {
-    reporterEnabled: `spec, ${customReporter}, ${junitReporter}`,
-    [[_.camelCase(customReporter), 'ReporterOptions'].join('')]: {
-      mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: defaultSpecRoot
-    },
-    [[_.camelCase(junitReporter), 'ReporterOptions'].join('')]: {
-      mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: defaultSpecRoot
-    }
-  };
-
-  // Adding custom reporters
-  if (runCfg && runCfg.cypress && runCfg.cypress.reporters) {
-    for (const reporter of runCfg.cypress.reporters) {
-      const cfgFieldName = [_.camelCase(reporter.name), 'ReporterOptions'].join('');
-      reporterConfig.reporterEnabled = `${reporterConfig.reporterEnabled}, ${reporter.name}`;
-      reporterConfig[cfgFieldName] = reporter.options || {};
-    }
-  }
-
-  // Save reporters config
-  fs.writeFileSync(path.join(__dirname, '..', 'sauce-reporter-config.json'), JSON.stringify(reporterConfig));
-  return opts;
-};
 
 const getSuite = function (runCfg, suiteName) {
   const suites = runCfg.suites || [];
@@ -170,7 +72,6 @@ const getCypressOpts = function (runCfg, suiteName) {
     opts.config.videoUploadOnPasses = true;
   }
 
-  opts = configureReporters(runCfg, opts);
   configureWebkitOptions(process.env, opts, suite);
 
   return opts;
@@ -223,14 +124,11 @@ const cypressRunner = async function (nodeBin, runCfgPath, suiteName, timeoutSec
   let npmMetrics = await prepareNpmEnv(runCfg, nodeCtx);
   metrics.push(npmMetrics);
   let cypressOpts = getCypressOpts(runCfg, suiteName);
-  let startTime = new Date().toISOString();
   const suites = runCfg.suites || [];
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
 
   // Execute pre-exec steps
   if (!await preExec.run(suite, preExecTimeoutSec)) {
-    let endTime = new Date().toISOString();
-    await report([], 0, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
     return;
   }
 
@@ -247,9 +145,20 @@ const cypressRunner = async function (nodeBin, runCfgPath, suiteName, timeoutSec
   let results = await Promise.race([timeoutPromise, cypress.run(cypressOpts)]);
   clearTimeout(timeout);
   const statusCode = results ? 0 : 1;
-  let endTime = new Date().toISOString();
+  const failures = results.failures || results.totalFailed;
+  const passed = failures === 0 && statusCode === 0;
 
-  return await report(results, statusCode, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
+  try {
+    const reportJSON = await afterRunTestReport(results);
+    if (reportJSON) {
+      const filepath = path.join(runCfg.resultsDir, 'sauce-test-report.json');
+      reportJSON.toFile(filepath);
+    }
+  } catch (e) {
+    console.error('Failed to serialize test results: ', e);
+  }
+
+  return passed;
 };
 
 // For dev and test purposes, this allows us to run our Cypress Runner from command line
@@ -273,6 +182,5 @@ if (require.main === module) {
 }
 
 exports.cypressRunner = cypressRunner;
-exports.configureReporters = configureReporters;
 exports.getSuite = getSuite;
 exports.setEnvironmentVariables = setEnvironmentVariables;

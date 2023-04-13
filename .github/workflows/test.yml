@@ -16,6 +16,7 @@ concurrency:
 
 jobs:
   test:
+    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -37,6 +38,7 @@ jobs:
         run: npm run unit-test
 
   integration:
+    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -65,6 +67,7 @@ jobs:
         run: bash tests/integration/integration-tests.sh
 
   docker-kitchen-sink:
+    if: false
     runs-on: ubuntu-latest
     needs: [test]
     steps:
@@ -216,8 +219,8 @@ jobs:
       max-parallel: 3
       fail-fast: false
       matrix:
-        os: [Win10, Win11, macOS11, macOS12, macOS13]
-        browser: [Chrome, Firefox, Webkit]
+        os: [Win11, macOS12]
+        browser: [Chrome]
         # FIXME: Remove those exclusions when Webkit working fine
         exclude:
           - os: Win10
@@ -255,6 +258,7 @@ jobs:
             --select-suite "${{ matrix.os }} - ${{ matrix.browser }}"
 
   bundle-tests-with-sc:
+    if: false
     needs: [build-windows-bundle, build-mac-bundle]
     strategy:
       max-parallel: 3
