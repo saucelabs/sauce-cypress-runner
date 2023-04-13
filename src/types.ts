@@ -56,3 +56,47 @@ export type Results = {
 export type ResultPathContainer = {
   resultsDir: string;
 };
+
+export type XmlSuiteAttributes = {
+  time?: number | string;
+  failures?: number;
+  skipped?: number;
+  tests: number;
+  errors?: number;
+  file?: string;
+  package?: string;
+  name?: string;
+  hostname?: string;
+  id?: string;
+};
+
+export type XmlSuiteAttrContainer = {
+  _attr: XmlSuiteAttributes;
+};
+
+type XmlTestCaseAttributes = {
+  time: number | string;
+  failures?: number;
+  skipped?: number;
+  classname?: string;
+  name?: string;
+};
+
+export type XmlProperties = {
+  properties: any;
+};
+
+export type XmlTestCase = {
+  _attr?: XmlTestCaseAttributes;
+  'system-out'?: any;
+  'system-err'?: any;
+  failure?: any;
+};
+
+export type XmlTestCaseContainer = {
+  testcase: XmlTestCase[];
+};
+
+export type XmlSuite = {
+  testsuite?: (XmlSuiteAttrContainer | XmlProperties | XmlTestCaseContainer)[];
+} & XmlSuiteAttrContainer;

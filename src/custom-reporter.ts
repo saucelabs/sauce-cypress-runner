@@ -12,6 +12,8 @@ import md5 from 'md5';
 import stripAnsi from 'strip-ansi';
 import EventEmitter from 'events';
 
+import { XmlProperties, XmlSuite, XmlSuiteAttrContainer, XmlSuiteAttributes, XmlTestCaseContainer } from './types';
+
 const Base = Mocha.reporters.Base;
 const debug = Debug('mocha-junit-reporter');
 
@@ -321,12 +323,12 @@ MochaJUnitReporter.prototype.getTestsuiteData = function (suite: any) {
     name: this._generateSuiteTitle(suite),
     timestamp: new Date().toISOString().slice(0, -5),
     tests: suite.tests.length
-  };
-  let testSuite = { testsuite: [{ _attr }] };
+  } as XmlSuiteAttributes;
+  let testSuite = { testsuite: [{ _attr }] } as XmlSuite;
 
 
   if (suite.file) {
-    testSuite.testsuite[0]._attr.file = suite.file;
+    (testSuite.testsuite[0] as XmlSuiteAttrContainer)._attr.file = suite.file;
   }
 
   let properties = generateProperties(this._options);
@@ -363,7 +365,7 @@ MochaJUnitReporter.prototype.getTestcaseData = function (test: any, err: any): o
         classname: flipClassAndName ? name : classname
       }
     }]
-  };
+  } as XmlTestCaseContainer;
 
   // We need to merge console.logs and attachments into one <system-out> -
   //  see JUnit schema (only accepts 1 <system-out> per test).
@@ -434,7 +436,7 @@ MochaJUnitReporter.prototype.flush = function (testsuites: any[], specFile: stri
 /**
  * Produces an XML string from the given test data.
  */
-MochaJUnitReporter.prototype.getXml = function (testsuites: any[]): string {
+MochaJUnitReporter.prototype.getXml = function (testsuites: XmlSuite[]): string {
   let totalSuitesTime = 0;
   let totalTests = 0;
   let stats = this._runner.stats;
@@ -442,7 +444,7 @@ MochaJUnitReporter.prototype.getXml = function (testsuites: any[]): string {
   let hasProperties = (!!this._options.properties) || antMode;
 
   testsuites.forEach(function (suite) {
-    let _suiteAttr = suite.testsuite[0]._attr;
+    let _suiteAttr = (suite.testsuite[0] as XmlSuiteAttrContainer)._attr;
     // testsuite is an array: [attrs, properties?, testcase, testcase, …]
     // we want to make sure that we are grabbing test cases at the correct index
     let _casesIndex = hasProperties ? 2 : 1;
@@ -454,13 +456,13 @@ MochaJUnitReporter.prototype.getXml = function (testsuites: any[]): string {
     _suiteAttr.skipped = 0;
 
     let suiteTime = 0;
-    _cases.forEach(function (testcase) {
+    _cases.forEach(function (testcase: XmlTestCaseContainer) {
       let lastNode = testcase.testcase[testcase.testcase.length - 1];
 
       _suiteAttr.skipped += Number('skipped' in lastNode);
       _suiteAttr.failures += Number('failure' in lastNode);
-      suiteTime += testcase.testcase[0]._attr.time;
-      testcase.testcase[0]._attr.time = testcase.testcase[0]._attr.time.toFixed(4);
+      suiteTime += testcase.testcase[0]._attr.time as number;
+      testcase.testcase[0]._attr.time = (testcase.testcase[0]._attr.time as number).toFixed(4);
     });
     _suiteAttr.time = suiteTime.toFixed(4);
 
@@ -472,7 +474,7 @@ MochaJUnitReporter.prototype.getXml = function (testsuites: any[]): string {
         });
       });
       missingProps.forEach(function (prop) {
-        let obj = {};
+        let obj = {} as XmlProperties;
         obj[prop] = [];
         suite.testsuite.push(obj);
       });
@@ -495,7 +497,7 @@ MochaJUnitReporter.prototype.getXml = function (testsuites: any[]): string {
         tests: totalTests,
         failures: stats.failures
       }
-    };
+    } as XmlSuite;
     if (stats.pending) {
       rootSuite._attr.skipped = stats.pending;
     }
@@ -517,8 +519,7 @@ MochaJUnitReporter.prototype.writeSauceJsonToDisk = function (sauceJson: any, fi
     debug('writing file to', filePath);
     mkdirp.sync(path.dirname(filePath));
     try {
-      // FIXME: Find solution
-      fs.writeFileSync(filePath, JSON.stringify(sauceJson, ' ', 2), 'utf-8');
+      fs.writeFileSync(filePath, JSON.stringify(sauceJson, undefined, 2), 'utf-8');
     } catch (exc) {
       console.error(exc);
       debug('problem writing results: ' + exc);
