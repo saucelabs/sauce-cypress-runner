@@ -9,7 +9,7 @@ import { afterRunTestReport } from '@saucelabs/cypress-plugin';
 
 import { RunConfig, CypressConfig, Suite, ResultPathContainer } from './types';
 
-const report = async (results: CypressCommandLine.CypressRunResult, statusCode: number, browserName: string, runCfg: RunConfig, suiteName: string, startTime: string, endTime: string, metrics: any[]) => {
+async function report(results: CypressCommandLine.CypressRunResult, statusCode: number, browserName: string, runCfg: RunConfig, suiteName: string, startTime: string, endTime: string, metrics: any[]) {
   // Prepare the assets
   const runs = results.runs || [];
   let specFiles = runs.map((run) => path.basename(run.spec.name));
@@ -24,12 +24,12 @@ const report = async (results: CypressCommandLine.CypressRunResult, statusCode: 
   }
 
   let assets = await prepareAssets(
-      specFiles,
-      runCfg.resultsDir,
-      metrics,
-      suiteName,
-      browserName,
-      platformName,
+    specFiles,
+    runCfg.resultsDir,
+    metrics,
+    suiteName,
+    browserName,
+    platformName
   );
 
   try {
@@ -57,10 +57,10 @@ const report = async (results: CypressCommandLine.CypressRunResult, statusCode: 
     await sauceReporter(runCfg, suiteName, browserName, assets, failures, startTime, endTime);
   }
   return passed;
-};
+}
 
 // Configure reporters
-const configureReporters = function (runCfg: RunConfig, opts: any) {
+function configureReporters(runCfg: RunConfig, opts: any) {
   // Enable cypress-multi-reporters plugin
   opts.config.reporter = path.join(__dirname, '../node_modules/cypress-multi-reporters/lib/MultiReporters.js');
   opts.config.reporterOptions = {
@@ -103,9 +103,9 @@ const configureReporters = function (runCfg: RunConfig, opts: any) {
   // Save reporters config
   fs.writeFileSync(path.join(__dirname, '..', 'sauce-reporter-config.json'), JSON.stringify(reporterConfig));
   return opts;
-};
+}
 
-const getSuite = function (runCfg: RunConfig, suiteName: string) {
+function getSuite(runCfg: RunConfig, suiteName: string) {
   const suites = runCfg.suites || [];
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
   if (!suite) {
@@ -113,9 +113,9 @@ const getSuite = function (runCfg: RunConfig, suiteName: string) {
     throw new Error(`Could not find suite named '${suiteName}'; available suites=${JSON.stringify(suiteNames)}`);
   }
   return suite;
-};
+}
 
-const setEnvironmentVariables = function (runCfg: RunConfig, suiteName: string) {
+function setEnvironmentVariables(runCfg: RunConfig, suiteName: string) {
   const suite = getSuite(runCfg, suiteName);
   const envVars = getEnv(suite);
 
@@ -125,9 +125,9 @@ const setEnvironmentVariables = function (runCfg: RunConfig, suiteName: string) 
   for (const [key, value] of Object.entries(envVars)) {
     process.env[key] = value as string;
   }
-};
+}
 
-const getCypressOpts = function (runCfg: RunConfig, suiteName: string) {
+function getCypressOpts(runCfg: RunConfig, suiteName: string) {
   // Get user settings from suites.
   const suite = getSuite(runCfg, suiteName);
   const projectDir = path.dirname(getAbsolutePath(runCfg.path));
@@ -176,7 +176,7 @@ const getCypressOpts = function (runCfg: RunConfig, suiteName: string) {
   configureWebkitOptions(process.env, opts, suite);
 
   return opts;
-};
+}
 
 /**
  * Configure the runner for experimental webkit support
@@ -197,12 +197,12 @@ function configureWebkitOptions (env: NodeJS.ProcessEnv, opts: CypressConfig, su
   }
 }
 
-const canAccessFolder = async function (file: string) {
+async function canAccessFolder(file: string) {
   const fsAccess = util.promisify(fs.access);
   await fsAccess(file, fs.constants.R_OK | fs.constants.W_OK);
-};
+}
 
-const cypressRunner = async function (nodeBin: string, runCfgPath: string, suiteName: string, timeoutSec: number, preExecTimeoutSec: number): Promise<boolean> {
+async function cypressRunner(nodeBin: string, runCfgPath: string, suiteName: string, timeoutSec: number, preExecTimeoutSec: number): Promise<boolean> {
   runCfgPath = getAbsolutePath(runCfgPath);
   const runCfg = await loadRunConfig(runCfgPath) as RunConfig;
   runCfg.path = runCfgPath;
@@ -252,7 +252,7 @@ const cypressRunner = async function (nodeBin: string, runCfgPath: string, suite
   let endTime = new Date().toISOString();
 
   return await report(results as CypressCommandLine.CypressRunResult, statusCode, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
-};
+}
 
 // For dev and test purposes, this allows us to run our Cypress Runner from command line
 if (require.main === module) {
@@ -274,7 +274,4 @@ if (require.main === module) {
       });
 }
 
-exports.cypressRunner = cypressRunner;
-exports.configureReporters = configureReporters;
-exports.getSuite = getSuite;
-exports.setEnvironmentVariables = setEnvironmentVariables;
+export { cypressRunner, configureReporters, getSuite, setEnvironmentVariables };
