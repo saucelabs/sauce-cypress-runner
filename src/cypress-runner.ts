@@ -67,7 +67,7 @@ function configureReporters (runCfg: RunConfig, opts: any) {
     configFile: path.join(__dirname, '..', 'sauce-reporter-config.json'),
   };
 
-  const customReporter = path.join(__dirname, '../src/custom-reporter.js');
+  const customReporter = path.join(__dirname, '../lib/custom-reporter.js');
   const junitReporter = path.join(__dirname, '../node_modules/mocha-junit-reporter/index.js');
 
   let defaultSpecRoot = '';

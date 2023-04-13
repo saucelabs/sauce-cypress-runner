@@ -1,7 +1,7 @@
 jest.mock('mkdirp');
 jest.mock('fs');
 jest.mock('sauce-testrunner-utils');
-import mkdirp from 'mkdirp';
+import { mkdirpSync } from 'mkdirp';
 import fs from 'fs';
 import path from 'path';
 import { MochaJUnitReporter } from '../../../src/custom-reporter';
@@ -49,7 +49,7 @@ describe('Custom Reporter', function () {
         `.trim();
       const filepath = '/path/to/[suite].xml';
       const filename = 'subdir-a/subdir-b/test.spec.js';
-      mkdirp.mockImplementation();
+      mkdirpSync.mockImplementation();
       fs.writeFileSync.mockImplementation();
       writeXmlToDisk(xml, filepath, filename);
       expect(fs.writeFileSync.mock.calls).toEqual([

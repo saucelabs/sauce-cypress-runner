@@ -7,7 +7,7 @@ import Mocha from 'mocha';
 import fs from 'fs';
 import path from 'path';
 import Debug from 'debug';
-import mkdirp from 'mkdirp';
+import { mkdirpSync } from 'mkdirp';
 import md5 from 'md5';
 import stripAnsi from 'strip-ansi';
 import EventEmitter from 'events';
@@ -515,7 +515,7 @@ MochaJUnitReporter.prototype.writeSauceJsonToDisk = function (sauceJson: any, fi
       filePath = filePath.replace('[suite]', fileName);
     }
     debug('writing file to', filePath);
-    mkdirp.sync(path.dirname(filePath));
+    mkdirpSync(path.dirname(filePath));
     try {
       fs.writeFileSync(filePath, JSON.stringify(sauceJson, undefined, 2), 'utf-8');
     } catch (exc) {
@@ -540,7 +540,7 @@ MochaJUnitReporter.prototype.writeXmlToDisk = function (xml: string, filePath: s
     }
 
     debug('writing file to', xmlOutFilePath);
-    mkdirp.sync(path.dirname(xmlOutFilePath));
+    mkdirpSync(path.dirname(xmlOutFilePath));
 
     try {
       fs.writeFileSync(xmlOutFilePath, xml, 'utf-8');
