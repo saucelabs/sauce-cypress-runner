@@ -3,7 +3,6 @@ const fs = require('fs');
 const { shouldRecordVideo, getAbsolutePath, loadRunConfig, prepareNpmEnv, getArgs, getEnv, preExec } = require('sauce-testrunner-utils');
 const cypress = require('cypress');
 const util = require('util');
-const {afterRunTestReport} = require('@saucelabs/cypress-plugin');
 
 const getSuite = function (runCfg, suiteName) {
   const suites = runCfg.suites || [];
@@ -148,15 +147,15 @@ const cypressRunner = async function (nodeBin, runCfgPath, suiteName, timeoutSec
   const failures = results.failures || results.totalFailed;
   const passed = failures === 0 && statusCode === 0;
 
-  try {
-    const reportJSON = await afterRunTestReport(results);
-    if (reportJSON) {
-      const filepath = path.join(runCfg.resultsDir, 'sauce-test-report.json');
-      reportJSON.toFile(filepath);
-    }
-  } catch (e) {
-    console.error('Failed to serialize test results: ', e);
-  }
+  // try {
+  //   const reportJSON = await afterRunTestReport(results);
+  //   if (reportJSON) {
+  //     const filepath = path.join(runCfg.resultsDir, 'sauce-test-report.json');
+  //     reportJSON.toFile(filepath);
+  //   }
+  // } catch (e) {
+  //   console.error('Failed to serialize test results: ', e);
+  // }
 
   return passed;
 };
