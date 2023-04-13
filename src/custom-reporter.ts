@@ -1,19 +1,22 @@
-'use strict';
 /**
  * This is an extension of MochaJunitReporter
  */
 
-let xml = require('xml');
-let Base = require('mocha').reporters.Base;
-let fs = require('fs');
-let path = require('path');
-let debug = require('debug')('mocha-junit-reporter');
-let mkdirp = require('mkdirp');
-let md5 = require('md5');
-let stripAnsi = require('strip-ansi');
+import xml from 'xml';
+import Mocha from 'mocha';
+import fs from 'fs';
+import path from 'path';
+import Debug from 'debug';
+import mkdirp from 'mkdirp';
+import md5 from 'md5';
+import stripAnsi from 'strip-ansi';
+import EventEmitter from 'events';
 
-let createStatsCollector;
-let mocha6plus;
+const Base = Mocha.reporters.Base;
+const debug = Debug('mocha-junit-reporter');
+
+let createStatsCollector: (arg0: any) => void;
+let mocha6plus: boolean = false;
 
 try {
   let json = JSON.parse(
@@ -30,13 +33,13 @@ try {
   // eslint-disable-next-line no-console
   console.warn("Couldn't determine Mocha version");
 }
-module.exports = MochaJUnitReporter;
+export { MochaJUnitReporter };
 
 // A subset of invalid characters as defined in http://www.w3.org/TR/xml/#charsets that can occur in e.g. stacktraces
 // regex lifted from https://github.com/MylesBorins/xml-sanitizer/ (licensed MIT)
 let INVALID_CHARACTERS_REGEX = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007f-\u0084\u0086-\u009f\uD800-\uDFFF\uFDD0-\uFDFF\uFFFF\uC008]/g; //eslint-disable-line no-control-regex
 
-function findReporterOptions (options) {
+function findReporterOptions (options: any): any {
   debug('Checking for options in', options);
   if (!options) {
     debug('No options provided');
@@ -59,7 +62,7 @@ function findReporterOptions (options) {
     }, {});
 }
 
-function configureDefaults (options) {
+function configureDefaults (options: any): any {
   let config = findReporterOptions(options);
   debug('options', config);
   config.mochaFile = getSetting(config.mochaFile, 'MOCHA_FILE', 'test-results.xml');
@@ -84,7 +87,7 @@ function configureDefaults (options) {
   return config;
 }
 
-function updateOptionsForAntMode (options) {
+function updateOptionsForAntMode (options: any) {
   options.antHostname = getSetting(options.antHostname, 'ANT_HOSTNAME', process.env.HOSTNAME);
 
   if (!options.properties) {
@@ -92,7 +95,7 @@ function updateOptionsForAntMode (options) {
   }
 }
 
-function updateOptionsForJenkinsMode (options) {
+function updateOptionsForJenkinsMode (options: any) {
   if (options.useFullSuiteTitle === undefined) {
     options.useFullSuiteTitle = true;
   }
@@ -116,7 +119,7 @@ function updateOptionsForJenkinsMode (options) {
  * @param {Object} defaultVal - the fallback value
  * @param {function} transform - a transformation function to be used when loading values from the environment
  */
-function getSetting (value, key, defaultVal, transform) {
+function getSetting (value: any, key: string, defaultVal: any, transform: any | undefined = undefined) {
   if (process.env[key] !== undefined) {
     let envVal = process.env[key];
     return (typeof transform === 'function') ? transform(envVal) : envVal;
@@ -127,14 +130,14 @@ function getSetting (value, key, defaultVal, transform) {
   return defaultVal;
 }
 
-function defaultSuiteTitle (suite) {
+function defaultSuiteTitle (suite: any) {
   if (suite.root && suite.title === '') {
     return stripAnsi(this._options.rootSuiteTitle);
   }
   return stripAnsi(suite.title);
 }
 
-function fullSuiteTitle (suite) {
+function fullSuiteTitle (suite: any) {
   let parent = suite.parent;
   let title = [suite.title];
 
@@ -150,11 +153,11 @@ function fullSuiteTitle (suite) {
   return stripAnsi(title.join(this._options.suiteTitleSeparatedBy));
 }
 
-function isInvalidSuite (suite) {
+function isInvalidSuite (suite: any) {
   return (!suite.root && suite.title === '') || (suite.tests.length === 0 && suite.suites.length === 0);
 }
 
-function parsePropertiesFromEnv (envValue) {
+function parsePropertiesFromEnv (envValue: string) {
   if (envValue) {
     debug('Parsing from env', envValue);
     return envValue.split(',').reduce(function (properties, prop) {
@@ -167,7 +170,7 @@ function parsePropertiesFromEnv (envValue) {
   return null;
 }
 
-function generateProperties (options) {
+function generateProperties (options: any) {
   let props = options.properties;
   if (!props) {
     return [];
@@ -179,7 +182,7 @@ function generateProperties (options) {
   }, []);
 }
 
-function getJenkinsClassname (test, options) {
+function getJenkinsClassname (test: any, options: any) {
   debug('Building jenkins classname for', test);
   let parent = test.parent;
   let titles = [];
@@ -192,11 +195,8 @@ function getJenkinsClassname (test, options) {
 
 /**
  * JUnit reporter for mocha.js.
- * @module mocha-junit-reporter
- * @param {EventEmitter} runner - the test runner
- * @param {Object} options - mocha options
  */
-function MochaJUnitReporter (runner, options) {
+function MochaJUnitReporter (runner: EventEmitter, options: object) {
   if (mocha6plus) {
     createStatsCollector(runner);
   }
@@ -265,7 +265,7 @@ function MochaJUnitReporter (runner, options) {
 
 }
 
-MochaJUnitReporter.prototype.report = function (testsuites, sauceJson) {
+MochaJUnitReporter.prototype.report = function (testsuites: any[], sauceJson: any) {
   if (this._runner.suite.file) {
     const specFile = this._runner.suite.file;
     const specRoot = this._options.specRoot;
@@ -273,7 +273,7 @@ MochaJUnitReporter.prototype.report = function (testsuites, sauceJson) {
   }
 };
 
-MochaJUnitReporter.prototype.getSauceTestsuiteData = function (suite) {
+MochaJUnitReporter.prototype.getSauceTestsuiteData = function (suite: any) {
   let _attr = {
     name: this._generateSuiteTitle(suite),
     timestamp: new Date().toISOString().slice(0, -5),
@@ -286,7 +286,7 @@ MochaJUnitReporter.prototype.getSauceTestsuiteData = function (suite) {
   };
 };
 
-MochaJUnitReporter.prototype.getSauceTestcaseData = function (testcase) {
+MochaJUnitReporter.prototype.getSauceTestcaseData = function (testcase: any) {
   // console.log(testcase);
   return {
     id: testcase.order,
@@ -314,7 +314,7 @@ MochaJUnitReporter.prototype.getSauceTestcaseData = function (testcase) {
  * @param  {Object} suite - a test suite
  * @return {Object}       - an object representing the xml node
  */
-MochaJUnitReporter.prototype.getTestsuiteData = function (suite) {
+MochaJUnitReporter.prototype.getTestsuiteData = function (suite: any) {
   let antMode = this._options.antMode;
 
   let _attr = {
@@ -349,11 +349,8 @@ MochaJUnitReporter.prototype.getTestsuiteData = function (suite) {
 
 /**
  * Produces an xml config for a given test case.
- * @param {object} test - test case
- * @param {object} err - if test failed, the failure object
- * @returns {object}
  */
-MochaJUnitReporter.prototype.getTestcaseData = function (test, err) {
+MochaJUnitReporter.prototype.getTestcaseData = function (test: any, err: any): object {
   let jenkinsMode = this._options.jenkinsMode;
   let flipClassAndName = this._options.testCaseSwitchClassnameAndName;
   let name = stripAnsi(jenkinsMode ? getJenkinsClassname(test, this._options) : test.fullTitle());
@@ -412,11 +409,7 @@ MochaJUnitReporter.prototype.getTestcaseData = function (test, err) {
   return testcase;
 };
 
-/**
- * @param {string} input
- * @returns {string} without invalid characters
- */
-MochaJUnitReporter.prototype.removeInvalidCharacters = function (input) {
+MochaJUnitReporter.prototype.removeInvalidCharacters = function (input: string): string {
   if (!input) {
     return input;
   }
@@ -425,9 +418,8 @@ MochaJUnitReporter.prototype.removeInvalidCharacters = function (input) {
 
 /**
  * Writes xml to disk and ouputs content if "toConsole" is set to true.
- * @param {Array.<Object>} testsuites - a list of xml configs
  */
-MochaJUnitReporter.prototype.flush = function (testsuites, specFile, sauceJson) {
+MochaJUnitReporter.prototype.flush = function (testsuites: any[], specFile: string, sauceJson: any) {
   this._xml = this.getXml(testsuites);
 
   this.writeXmlToDisk(this._xml, this._options.mochaFile, specFile);
@@ -441,10 +433,8 @@ MochaJUnitReporter.prototype.flush = function (testsuites, specFile, sauceJson) 
 
 /**
  * Produces an XML string from the given test data.
- * @param {Array.<Object>} testsuites - a list of xml configs
- * @returns {string}
  */
-MochaJUnitReporter.prototype.getXml = function (testsuites) {
+MochaJUnitReporter.prototype.getXml = function (testsuites: any[]): string {
   let totalSuitesTime = 0;
   let totalTests = 0;
   let stats = this._runner.stats;
@@ -517,10 +507,8 @@ MochaJUnitReporter.prototype.getXml = function (testsuites) {
 
 /**
  * Writes a Sauce JSON test report json document.
- * @param {string} sauceJson - json object
- * @param {string} filePath - path to output file
  */
-MochaJUnitReporter.prototype.writeSauceJsonToDisk = function (sauceJson, filePath, fileName) {
+MochaJUnitReporter.prototype.writeSauceJsonToDisk = function (sauceJson: any, filePath: string, fileName: string): string {
   if (filePath) {
     filePath = filePath.replace(/\.xml/, '.json');
     if (filePath.includes('[suite]')) {
@@ -529,6 +517,7 @@ MochaJUnitReporter.prototype.writeSauceJsonToDisk = function (sauceJson, filePat
     debug('writing file to', filePath);
     mkdirp.sync(path.dirname(filePath));
     try {
+      // FIXME: Find solution
       fs.writeFileSync(filePath, JSON.stringify(sauceJson, ' ', 2), 'utf-8');
     } catch (exc) {
       console.error(exc);
@@ -541,10 +530,8 @@ MochaJUnitReporter.prototype.writeSauceJsonToDisk = function (sauceJson, filePat
 
 /**
  * Writes a JUnit test report XML document.
- * @param {string} xml - xml string
- * @param {string} filePath - path to output file
  */
-MochaJUnitReporter.prototype.writeXmlToDisk = function (xml, filePath, fileName) {
+MochaJUnitReporter.prototype.writeXmlToDisk = function (xml: string, filePath: string, fileName: string): string {
   let xmlOutFilePath;
   if (filePath) {
     if (filePath.includes('[hash]')) {
