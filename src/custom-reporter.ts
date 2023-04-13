@@ -18,13 +18,13 @@ const Base = Mocha.reporters.Base;
 const debug = Debug('mocha-junit-reporter');
 
 let createStatsCollector: (arg0: any) => void;
-let mocha6plus: boolean = false;
+let mocha6plus = false;
 
 try {
-  let json = JSON.parse(
+  const json = JSON.parse(
     fs.readFileSync(path.dirname(require.resolve('mocha')) + '/package.json', 'utf8')
   );
-  let version = json.version;
+  const version = json.version;
   if (version >= '6') {
     createStatsCollector = require('mocha/lib/stats-collector');
     mocha6plus = true;
@@ -39,7 +39,7 @@ export { MochaJUnitReporter };
 
 // A subset of invalid characters as defined in http://www.w3.org/TR/xml/#charsets that can occur in e.g. stacktraces
 // regex lifted from https://github.com/MylesBorins/xml-sanitizer/ (licensed MIT)
-let INVALID_CHARACTERS_REGEX = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007f-\u0084\u0086-\u009f\uD800-\uDFFF\uFDD0-\uFDFF\uFFFF\uC008]/g; //eslint-disable-line no-control-regex
+const INVALID_CHARACTERS_REGEX = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007f-\u0084\u0086-\u009f\uD800-\uDFFF\uFDD0-\uFDFF\uFFFF\uC008]/g; //eslint-disable-line no-control-regex
 
 function findReporterOptions (options: any): any {
   debug('Checking for options in', options);
@@ -65,7 +65,7 @@ function findReporterOptions (options: any): any {
 }
 
 function configureDefaults (options: any): any {
-  let config = findReporterOptions(options);
+  const config = findReporterOptions(options);
   debug('options', config);
   config.mochaFile = getSetting(config.mochaFile, 'MOCHA_FILE', 'test-results.xml');
   config.attachments = getSetting(config.attachments, 'ATTACHMENTS', false);
@@ -123,7 +123,7 @@ function updateOptionsForJenkinsMode (options: any) {
  */
 function getSetting (value: any, key: string, defaultVal: any, transform: any | undefined = undefined) {
   if (process.env[key] !== undefined) {
-    let envVal = process.env[key];
+    const envVal = process.env[key];
     return (typeof transform === 'function') ? transform(envVal) : envVal;
   }
   if (value !== undefined) {
@@ -141,7 +141,7 @@ function defaultSuiteTitle (suite: any) {
 
 function fullSuiteTitle (suite: any) {
   let parent = suite.parent;
-  let title = [suite.title];
+  const title = [suite.title];
 
   while (parent) {
     if (parent.root && parent.title === '') {
@@ -163,7 +163,7 @@ function parsePropertiesFromEnv (envValue: string) {
   if (envValue) {
     debug('Parsing from env', envValue);
     return envValue.split(',').reduce(function (properties, prop) {
-      let property = prop.split(':');
+      const property = prop.split(':');
       properties[property[0]] = property[1];
       return properties;
     }, []);
@@ -173,12 +173,12 @@ function parsePropertiesFromEnv (envValue: string) {
 }
 
 function generateProperties (options: any) {
-  let props = options.properties;
+  const props = options.properties;
   if (!props) {
     return [];
   }
   return Object.keys(props).reduce(function (properties, name) {
-    let value = props[name];
+    const value = props[name];
     properties.push({ property: { _attr: { name, value } } });
     return properties;
   }, []);
@@ -187,7 +187,7 @@ function generateProperties (options: any) {
 function getJenkinsClassname (test: any, options: any) {
   debug('Building jenkins classname for', test);
   let parent = test.parent;
-  let titles = [];
+  const titles = [];
   while (parent) {
     parent.title && titles.unshift(parent.title);
     parent = parent.parent;
@@ -206,9 +206,9 @@ function MochaJUnitReporter (runner: EventEmitter, options: object) {
   this._runner = runner;
   this._generateSuiteTitle = this._options.useFullSuiteTitle ? fullSuiteTitle : defaultSuiteTitle;
   this._antId = 0;
-  let testsuites = [];
+  const testsuites = [];
   this._testsuites = testsuites;
-  let sauceJson = [];
+  const sauceJson = [];
   this._sauceJson = sauceJson;
 
   function lastSuite () {
@@ -253,17 +253,16 @@ function MochaJUnitReporter (runner: EventEmitter, options: object) {
 
   if (this._options.includePending) {
     this._runner.on('pending', function (test) {
-      let testcase = this.getTestcaseData(test);
+      const testcase = this.getTestcaseData(test);
 
       testcase.testcase.push({ skipped: null });
       lastSuite().push(testcase);
     }.bind(this));
   }
 
-  let self = this;
   this._runner.on('end', function () {
-    self.report(testsuites, sauceJson);
-  });
+    this.report(testsuites, sauceJson);
+  }).bind(this);
 
 }
 
@@ -276,7 +275,7 @@ MochaJUnitReporter.prototype.report = function (testsuites: any[], sauceJson: an
 };
 
 MochaJUnitReporter.prototype.getSauceTestsuiteData = function (suite: any) {
-  let _attr = {
+  const _attr = {
     name: this._generateSuiteTitle(suite),
     timestamp: new Date().toISOString().slice(0, -5),
     tests: suite.tests.length
@@ -317,21 +316,21 @@ MochaJUnitReporter.prototype.getSauceTestcaseData = function (testcase: any) {
  * @return {Object}       - an object representing the xml node
  */
 MochaJUnitReporter.prototype.getTestsuiteData = function (suite: any) {
-  let antMode = this._options.antMode;
+  const antMode = this._options.antMode;
 
-  let _attr = {
+  const _attr = {
     name: this._generateSuiteTitle(suite),
     timestamp: new Date().toISOString().slice(0, -5),
     tests: suite.tests.length
   } as XmlSuiteAttributes;
-  let testSuite = { testsuite: [{ _attr }] } as XmlSuite;
+  const testSuite = { testsuite: [{ _attr }] } as XmlSuite;
 
 
   if (suite.file) {
     (testSuite.testsuite[0] as XmlSuiteAttrContainer)._attr.file = suite.file;
   }
 
-  let properties = generateProperties(this._options);
+  const properties = generateProperties(this._options);
   if (properties.length || antMode) {
     testSuite.testsuite.push({
       properties
@@ -353,11 +352,11 @@ MochaJUnitReporter.prototype.getTestsuiteData = function (suite: any) {
  * Produces an xml config for a given test case.
  */
 MochaJUnitReporter.prototype.getTestcaseData = function (test: any, err: any): object {
-  let jenkinsMode = this._options.jenkinsMode;
-  let flipClassAndName = this._options.testCaseSwitchClassnameAndName;
-  let name = stripAnsi(jenkinsMode ? getJenkinsClassname(test, this._options) : test.fullTitle());
-  let classname = stripAnsi(test.title);
-  let testcase = {
+  const jenkinsMode = this._options.jenkinsMode;
+  const flipClassAndName = this._options.testCaseSwitchClassnameAndName;
+  const name = stripAnsi(jenkinsMode ? getJenkinsClassname(test, this._options) : test.fullTitle());
+  const classname = stripAnsi(test.title);
+  const testcase = {
     testcase: [{
       _attr: {
         name: flipClassAndName ? classname : name,
@@ -397,8 +396,8 @@ MochaJUnitReporter.prototype.getTestcaseData = function (test: any, err: any): o
     } else {
       message = '';
     }
-    let failureMessage = err.stack || message;
-    let failureElement = {
+    const failureMessage = err.stack || message;
+    const failureElement = {
       _attr: {
         message: this.removeInvalidCharacters(message) || '',
         type: err.name || ''
@@ -439,16 +438,16 @@ MochaJUnitReporter.prototype.flush = function (testsuites: any[], specFile: stri
 MochaJUnitReporter.prototype.getXml = function (testsuites: XmlSuite[]): string {
   let totalSuitesTime = 0;
   let totalTests = 0;
-  let stats = this._runner.stats;
-  let antMode = this._options.antMode;
-  let hasProperties = (!!this._options.properties) || antMode;
+  const stats = this._runner.stats;
+  const antMode = this._options.antMode;
+  const hasProperties = (!!this._options.properties) || antMode;
 
   testsuites.forEach(function (suite) {
-    let _suiteAttr = (suite.testsuite[0] as XmlSuiteAttrContainer)._attr;
+    const _suiteAttr = (suite.testsuite[0] as XmlSuiteAttrContainer)._attr;
     // testsuite is an array: [attrs, properties?, testcase, testcase, …]
     // we want to make sure that we are grabbing test cases at the correct index
-    let _casesIndex = hasProperties ? 2 : 1;
-    let _cases = suite.testsuite.slice(_casesIndex);
+    const _casesIndex = hasProperties ? 2 : 1;
+    const _cases = suite.testsuite.slice(_casesIndex);
     let missingProps;
 
     _suiteAttr.time = 0;
@@ -457,7 +456,7 @@ MochaJUnitReporter.prototype.getXml = function (testsuites: XmlSuite[]): string 
 
     let suiteTime = 0;
     _cases.forEach(function (testcase: XmlTestCaseContainer) {
-      let lastNode = testcase.testcase[testcase.testcase.length - 1];
+      const lastNode = testcase.testcase[testcase.testcase.length - 1];
 
       _suiteAttr.skipped += Number('skipped' in lastNode);
       _suiteAttr.failures += Number('failure' in lastNode);
@@ -474,7 +473,7 @@ MochaJUnitReporter.prototype.getXml = function (testsuites: XmlSuite[]): string 
         });
       });
       missingProps.forEach(function (prop) {
-        let obj = {} as XmlProperties;
+        const obj = {} as XmlProperties;
         obj[prop] = [];
         suite.testsuite.push(obj);
       });
@@ -490,7 +489,7 @@ MochaJUnitReporter.prototype.getXml = function (testsuites: XmlSuite[]): string 
 
 
   if (!antMode) {
-    let rootSuite = {
+    const rootSuite = {
       _attr: {
         name: this._options.testsuitesTitle,
         time: totalSuitesTime.toFixed(4),

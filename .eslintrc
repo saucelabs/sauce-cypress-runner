@@ -1,20 +1,34 @@
 {
     "extends": [
         "eslint-config-appium",
-        "plugin:cypress/recommended"
+        "plugin:cypress/recommended",
+        "plugin:@typescript-eslint/recommended"
     ],
-    "plugins": ["jest"],
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+        "jest",
+        "@typescript-eslint"
+    ],
     "rules": {
         "no-console": "off",
         "promise/no-native": "off",
         "promise/prefer-await-to-callbacks": "off",
         "promise/prefer-await-to-then": "off",
-        "promise/catch-or-return": "off"
+        "promise/catch-or-return": "off",
+        "@typescript-eslint/no-explicit-any": "off"
     },
     "env": {
         "jest/globals": true
     },
     "ignorePatterns": [
         "lib/"
-    ]
+    ],
+    "root": true,
+    "settings": {
+        "import/resolver": {
+            "node": {
+                "extensions": [".js", ".ts"]
+            }
+        }
+    },
 }
