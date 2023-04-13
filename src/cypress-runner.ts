@@ -1,13 +1,13 @@
 import { sauceReporter, prepareAssets } from './sauce-reporter';
 import path from 'path';
 import fs from 'fs';
-const { shouldRecordVideo, getAbsolutePath, loadRunConfig, prepareNpmEnv, getArgs, getEnv, preExec } = require('sauce-testrunner-utils');
+import { shouldRecordVideo, getAbsolutePath, loadRunConfig, prepareNpmEnv, getArgs, getEnv, preExec } from 'sauce-testrunner-utils';
 import cypress from 'cypress';
 import util from 'util';
 import _ from 'lodash';
 import { afterRunTestReport } from '@saucelabs/cypress-plugin';
 
-import { RunConfig, Results, CypressConfig, Suite } from './types';
+import { RunConfig, CypressConfig, Suite, ResultPathContainer } from './types';
 
 const report = async (results: CypressCommandLine.CypressRunResult, statusCode: number, browserName: string, runCfg: RunConfig, suiteName: string, startTime: string, endTime: string, metrics: any[]) => {
   // Prepare the assets
@@ -204,7 +204,7 @@ const canAccessFolder = async function (file: string) {
 
 const cypressRunner = async function (nodeBin: string, runCfgPath: string, suiteName: string, timeoutSec: number, preExecTimeoutSec: number): Promise<boolean> {
   runCfgPath = getAbsolutePath(runCfgPath);
-  const runCfg = await loadRunConfig(runCfgPath);
+  const runCfg = await loadRunConfig(runCfgPath) as RunConfig;
   runCfg.path = runCfgPath;
   runCfg.resultsDir = path.join(path.dirname(runCfgPath), '__assets__');
   try {

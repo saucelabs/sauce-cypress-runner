@@ -1,5 +1,6 @@
 
 import { Region } from '@saucelabs/testcomposer';
+import { NpmConfigContainer, PathContainer } from 'sauce-testrunner-utils/lib/types';
 
 export type MetaData = {
   tags: string[];
@@ -44,10 +45,14 @@ export type RunConfig = {
   resultsDir: string;
   path: string;
   cypress: CypressConfig;
-};
+} & NpmConfigContainer & PathContainer & ResultPathContainer;
 
 export type Results = {
   runs: any[];
   failures: number;
   totalFailed: number;
+};
+
+export type ResultPathContainer = {
+  resultsDir: string;
 };
