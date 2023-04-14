@@ -25,11 +25,13 @@ COPY package.json .
 COPY package-lock.json .
 COPY tsconfig.json .
 RUN npm ci --omit=dev
-RUN npm run build
 
 RUN mkdir -p ~/__project__
 
 COPY --chown=seluser:seluser . .
+
+RUN npm run build
+
 # Cypress caches its binary by default in ~/.cache/Cypress
 # However, running the container in CI may result in a different active user and therefore home folder.
 # That's why we let Cypress know where the location actually is.
