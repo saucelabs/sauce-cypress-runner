@@ -259,9 +259,11 @@ function MochaJUnitReporter (runner: EventEmitter, options: object) {
     }.bind(this));
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const self = this;
   this._runner.on('end', function () {
-    this.report(testsuites, sauceJson);
-  }).bind(this);
+    self.report(testsuites, sauceJson);
+  });
 
 }
 
@@ -553,4 +555,4 @@ MochaJUnitReporter.prototype.writeXmlToDisk = function (xml: string, filePath: s
   return filePath;
 };
 
-export { MochaJUnitReporter };
+module.exports = MochaJUnitReporter;
