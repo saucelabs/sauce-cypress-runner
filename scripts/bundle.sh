@@ -7,6 +7,7 @@ cp -r ./src/ ./bundle/src/
 cp -r bin/ bundle/bin/
 cp package.json bundle/package.json
 cp package-lock.json bundle/package-lock.json
+cp tsconfig.json bundle/tsconfig.json
 cp "$(which node)" bundle/
 
 pushd bundle/

@@ -23,6 +23,7 @@ ENV PATH="/home/seluser/bin:/home/seluser/.nvm/versions/node/v${NODE_VERSION}/bi
 
 COPY package.json .
 COPY package-lock.json .
+COPY tsconfig.json .
 RUN npm ci --omit=dev
 RUN npm run build
 
