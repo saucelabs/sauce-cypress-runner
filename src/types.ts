@@ -16,7 +16,6 @@ export type Suite = {
   browser: string;
 };
 
-// FIXME: Check if type exists
 export type CypressConfig = {
   project: string;
   browser: string;
