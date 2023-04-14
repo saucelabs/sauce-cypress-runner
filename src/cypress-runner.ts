@@ -7,7 +7,7 @@ import util from 'util';
 import _ from 'lodash';
 import { afterRunTestReport } from '@saucelabs/cypress-plugin';
 
-import { RunConfig, CypressConfig, Suite, Metrics } from './types';
+import { RunConfig, Suite, Metrics } from './types';
 
 async function report (results: CypressCommandLine.CypressRunResult, statusCode: number, browserName: string, runCfg: RunConfig, suiteName: string, startTime: string, endTime: string, metrics: Metrics[]) {
   // Prepare the assets
@@ -145,7 +145,7 @@ function getCypressOpts (runCfg: RunConfig, suiteName: string): CypressCommandLi
 
   const testingType = suite.config.testingType || 'e2e';
 
-  let opts: CypressConfig = {
+  let opts = {
     project: path.dirname(cypressCfgFile),
     browser: process.env.SAUCE_BROWSER || suite.browser || 'chrome',
     configFile: path.basename(cypressCfgFile),
@@ -164,7 +164,7 @@ function getCypressOpts (runCfg: RunConfig, suiteName: string): CypressCommandLi
       videoUploadOnPasses: false,
       env: getEnv(suite),
     }
-  };
+  } as CypressCommandLine.CypressRunOptions;
 
   if (runCfg.cypress.record && runCfg.cypress.key !== undefined) {
     opts.record = runCfg.cypress.record;
@@ -183,7 +183,7 @@ function getCypressOpts (runCfg: RunConfig, suiteName: string): CypressCommandLi
  * @param {object} opts - Cypress options
  * @param {object} suite - The suite to run, parsed from the runner config
  */
-function configureWebkitOptions (env: NodeJS.ProcessEnv, opts: CypressConfig, suite: Suite) {
+function configureWebkitOptions (env: NodeJS.ProcessEnv, opts: CypressCommandLine.CypressRunOptions, suite: Suite) {
   // NOTE: For experimental webkit support
   // cypress uses playwright-webkit and setting PLAYWRIGHT_BROWSERS_PATH=0
   // tells playwright to look in node_modules/playwright-core/.local-browsers
