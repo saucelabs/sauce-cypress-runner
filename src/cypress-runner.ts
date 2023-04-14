@@ -33,7 +33,7 @@ async function report (results: CypressCommandLine.CypressRunResult, statusCode:
   );
 
   try {
-    const reportJSON = await afterRunTestReport(results as unknown as CypressCommandLine.CypressRunResult);
+    const reportJSON = await afterRunTestReport(results);
     if (reportJSON) {
       const filepath = path.join(runCfg.resultsDir, 'sauce-test-report.json');
       reportJSON.toFile(filepath);
@@ -127,7 +127,7 @@ function setEnvironmentVariables (runCfg: RunConfig, suiteName: string) {
   }
 }
 
-function getCypressOpts (runCfg: RunConfig, suiteName: string) {
+function getCypressOpts (runCfg: RunConfig, suiteName: string): CypressCommandLine.CypressRunOptions {
   // Get user settings from suites.
   const suite = getSuite(runCfg, suiteName);
   const projectDir = path.dirname(getAbsolutePath(runCfg.path));
@@ -175,7 +175,7 @@ function getCypressOpts (runCfg: RunConfig, suiteName: string) {
   opts = configureReporters(runCfg, opts);
   configureWebkitOptions(process.env, opts, suite);
 
-  return opts;
+  return opts as CypressCommandLine.CypressRunOptions;
 }
 
 /**
@@ -246,7 +246,7 @@ async function cypressRunner (nodeBin: string, runCfgPath: string, suiteName: st
     }, timeoutSec * 1000);
   });
 
-  const results = await Promise.race([timeoutPromise, cypress.run(cypressOpts as CypressCommandLine.CypressRunOptions)]);
+  const results = await Promise.race([timeoutPromise, cypress.run(cypressOpts)]);
   clearTimeout(timeout);
   const statusCode = results ? 0 : 1;
   const endTime = new Date().toISOString();
