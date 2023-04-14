@@ -4,7 +4,7 @@ jest.mock('sauce-testrunner-utils');
 import { mkdirpSync } from 'mkdirp';
 import fs from 'fs';
 import path from 'path';
-import { MochaJUnitReporter } from '../../../src/custom-reporter';
+import MochaJUnitReporter from '../../../src/custom-reporter';
 
 type Context = {
   _runner: any;

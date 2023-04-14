@@ -556,3 +556,4 @@ MochaJUnitReporter.prototype.writeXmlToDisk = function (xml: string, filePath: s
 };
 
 module.exports = MochaJUnitReporter;
+export default MochaJUnitReporter;
