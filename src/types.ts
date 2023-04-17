@@ -102,7 +102,7 @@ export type XmlSuite = {
   testsuite?: (XmlSuiteAttrContainer | XmlProperties | XmlTestCaseContainer)[];
 } & XmlSuiteAttrContainer;
 
-export type HasXmlSuite = {
+export type XmlSuiteContainer = {
   testsuites: XmlSuite;
 };
 

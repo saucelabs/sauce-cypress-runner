@@ -7,7 +7,7 @@ import { promisify } from 'util';
 import { saucectl, shouldRecordVideo, escapeXML } from 'sauce-testrunner-utils';
 import convert from 'xml-js';
 import { TestComposer } from '@saucelabs/testcomposer';
-import { HasXmlSuite, Metrics } from './types';
+import { XmlSuiteContainer, Metrics } from './types';
 
 const ffprobe = promisify(ffmpeg.ffprobe);
 const { updateExportedValue} = saucectl;
@@ -250,7 +250,7 @@ function mergeJunitFile (specFiles: any[], resultsFolder: string, testName: stri
   const testsuites = [];
   for (let i = 0; i < specFiles.length; i++) {
     const xmlData = fs.readFileSync(path.join(resultsFolder, `${specFiles[i]}.xml`), 'utf8');
-    const jsObj = convert.xml2js(xmlData, opts) as HasXmlSuite;
+    const jsObj = convert.xml2js(xmlData, opts) as XmlSuiteContainer;
     if (jsObj.testsuites && jsObj.testsuites.testsuite) {
       testsuites.push(...jsObj.testsuites.testsuite);
     }
