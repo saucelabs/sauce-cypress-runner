@@ -5,14 +5,7 @@
   ],
   "exclude": ["node_modules"],
   "compilerOptions": {
-    "target": "ES2021",
-    "module": "CommonJS",
-    "moduleResolution": "Node",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
     "outDir": "./lib",
-    "strict": false,
-    "forceConsistentCasingInFileNames": true,
-    "downlevelIteration": true,
+    "strict": false
   }
 }

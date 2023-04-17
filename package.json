@@ -38,6 +38,7 @@
     "@saucelabs/testcomposer": "^1.0.0",
     "@shelex/cypress-allure-plugin": "2.35.2",
     "@testing-library/cypress": "9.0.0",
+    "@tsconfig/node18": "^1.0.1",
     "babel-loader": "9.1.2",
     "cypress": "12.6.0",
     "cypress-file-upload": "5.0.8",
@@ -58,7 +59,6 @@
   },
   "devDependencies": {
     "@release-it/keep-a-changelog": "^3.1.0",
-    "@tsconfig/node18": "^1.0.1",
     "@types/chai": "^4.2.12",
     "@types/debug": "^4.1.7",
     "@types/fluent-ffmpeg": "^2.1.21",
