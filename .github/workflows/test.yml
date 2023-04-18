@@ -345,7 +345,7 @@ jobs:
         run: npm i -g saucectl
 
       - name: Test on Sauce
-        working-directory: ./tests/${{ matrix.type }}-project/
+        working-directory: ./tests/integration/${{ matrix.type }}-project/
         run: |
           BUNDLE_URL=https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/cypress-windows-amd64-${{ github.run_id }}.zip
           if [[ ${{ matrix.os }} = MacOS ]];then
