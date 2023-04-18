@@ -1,33 +1,35 @@
-const { sauceReporter, prepareAssets } = require('./sauce-reporter');
-const path = require('path');
-const fs = require('fs');
-const { shouldRecordVideo, getAbsolutePath, loadRunConfig, prepareNpmEnv, getArgs, getEnv, preExec } = require('sauce-testrunner-utils');
-const cypress = require('cypress');
-const util = require('util');
-const _ = require('lodash');
-const {afterRunTestReport} = require('@saucelabs/cypress-plugin');
+import { sauceReporter, prepareAssets } from './sauce-reporter';
+import path from 'path';
+import fs from 'fs';
+import { shouldRecordVideo, getAbsolutePath, loadRunConfig, prepareNpmEnv, getArgs, getEnv, preExec } from 'sauce-testrunner-utils';
+import cypress from 'cypress';
+import util from 'util';
+import _ from 'lodash';
+import { afterRunTestReport } from '@saucelabs/cypress-plugin';
 
-const report = async (results = {}, statusCode, browserName, runCfg, suiteName, startTime, endTime, metrics) => {
+import { RunConfig, CypressConfig, Suite, Metrics } from './types';
+
+async function report (results: CypressCommandLine.CypressRunResult, statusCode: number, browserName: string, runCfg: RunConfig, suiteName: string, startTime: string, endTime: string, metrics: Metrics[]) {
   // Prepare the assets
   const runs = results.runs || [];
-  let specFiles = runs.map((run) => path.basename(run.spec.name));
+  const specFiles = runs.map((run) => path.basename(run.spec.name));
 
-  let failures = results.failures || results.totalFailed;
+  const failures = results.totalFailed;
   let platformName = '';
-  for (let c of runCfg.suites) {
+  for (const c of runCfg.suites) {
     if (c.name === suiteName) {
       platformName = c.platformName;
       break;
     }
   }
 
-  let assets = await prepareAssets(
-      specFiles,
-      runCfg.resultsDir,
-      metrics,
-      suiteName,
-      browserName,
-      platformName,
+  const assets = await prepareAssets(
+    specFiles,
+    runCfg.resultsDir,
+    metrics,
+    suiteName,
+    browserName,
+    platformName
   );
 
   try {
@@ -55,17 +57,17 @@ const report = async (results = {}, statusCode, browserName, runCfg, suiteName, 
     await sauceReporter(runCfg, suiteName, browserName, assets, failures, startTime, endTime);
   }
   return passed;
-};
+}
 
 // Configure reporters
-const configureReporters = function (runCfg, opts) {
+function configureReporters (runCfg: RunConfig, opts: any) {
   // Enable cypress-multi-reporters plugin
   opts.config.reporter = path.join(__dirname, '../node_modules/cypress-multi-reporters/lib/MultiReporters.js');
   opts.config.reporterOptions = {
     configFile: path.join(__dirname, '..', 'sauce-reporter-config.json'),
   };
 
-  const customReporter = path.join(__dirname, '../src/custom-reporter.js');
+  const customReporter = path.join(__dirname, '../lib/custom-reporter.js');
   const junitReporter = path.join(__dirname, '../node_modules/mocha-junit-reporter/index.js');
 
   let defaultSpecRoot = '';
@@ -77,7 +79,7 @@ const configureReporters = function (runCfg, opts) {
 
   // Referencing "mocha-junit-reporter" using relative path will allow to have multiple instance of mocha-junit-reporter.
   // That permits to have a configuration specific to us, and in addition to keep customer's one.
-  let reporterConfig = {
+  const reporterConfig = {
     reporterEnabled: `spec, ${customReporter}, ${junitReporter}`,
     [[_.camelCase(customReporter), 'ReporterOptions'].join('')]: {
       mochaFile: `${runCfg.resultsDir}/[suite].xml`,
@@ -101,9 +103,9 @@ const configureReporters = function (runCfg, opts) {
   // Save reporters config
   fs.writeFileSync(path.join(__dirname, '..', 'sauce-reporter-config.json'), JSON.stringify(reporterConfig));
   return opts;
-};
+}
 
-const getSuite = function (runCfg, suiteName) {
+function getSuite (runCfg: RunConfig, suiteName: string) {
   const suites = runCfg.suites || [];
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
   if (!suite) {
@@ -111,9 +113,9 @@ const getSuite = function (runCfg, suiteName) {
     throw new Error(`Could not find suite named '${suiteName}'; available suites=${JSON.stringify(suiteNames)}`);
   }
   return suite;
-};
+}
 
-const setEnvironmentVariables = function (runCfg, suiteName) {
+function setEnvironmentVariables (runCfg: RunConfig, suiteName: string) {
   const suite = getSuite(runCfg, suiteName);
   const envVars = getEnv(suite);
 
@@ -121,16 +123,16 @@ const setEnvironmentVariables = function (runCfg, suiteName) {
   process.env.CYPRESS_SAUCE_ARTIFACTS_DIRECTORY = runCfg.resultsDir;
 
   for (const [key, value] of Object.entries(envVars)) {
-    process.env[key] = value;
+    process.env[key] = value as string;
   }
-};
+}
 
-const getCypressOpts = function (runCfg, suiteName) {
+function getCypressOpts (runCfg: RunConfig, suiteName: string): CypressCommandLine.CypressRunOptions {
   // Get user settings from suites.
   const suite = getSuite(runCfg, suiteName);
   const projectDir = path.dirname(getAbsolutePath(runCfg.path));
 
-  let cypressCfgFile = path.join(projectDir, runCfg.cypress.configFile);
+  const cypressCfgFile = path.join(projectDir, runCfg.cypress.configFile);
   if (!fs.existsSync(getAbsolutePath(cypressCfgFile))) {
     throw new Error(`Unable to locate the cypress config file. Looked for '${getAbsolutePath(cypressCfgFile)}'.`);
   }
@@ -143,7 +145,7 @@ const getCypressOpts = function (runCfg, suiteName) {
 
   const testingType = suite.config.testingType || 'e2e';
 
-  let opts = {
+  let opts: CypressConfig = {
     project: path.dirname(cypressCfgFile),
     browser: process.env.SAUCE_BROWSER || suite.browser || 'chrome',
     configFile: path.basename(cypressCfgFile),
@@ -173,15 +175,15 @@ const getCypressOpts = function (runCfg, suiteName) {
   opts = configureReporters(runCfg, opts);
   configureWebkitOptions(process.env, opts, suite);
 
-  return opts;
-};
+  return opts as CypressCommandLine.CypressRunOptions;
+}
 
 /**
  * Configure the runner for experimental webkit support
  * @param {object} opts - Cypress options
  * @param {object} suite - The suite to run, parsed from the runner config
  */
-function configureWebkitOptions (env, opts, suite) {
+function configureWebkitOptions (env: NodeJS.ProcessEnv, opts: CypressConfig, suite: Suite) {
   // NOTE: For experimental webkit support
   // cypress uses playwright-webkit and setting PLAYWRIGHT_BROWSERS_PATH=0
   // tells playwright to look in node_modules/playwright-core/.local-browsers
@@ -195,14 +197,14 @@ function configureWebkitOptions (env, opts, suite) {
   }
 }
 
-const canAccessFolder = async function (file) {
+async function canAccessFolder (file: string) {
   const fsAccess = util.promisify(fs.access);
   await fsAccess(file, fs.constants.R_OK | fs.constants.W_OK);
-};
+}
 
-const cypressRunner = async function (nodeBin, runCfgPath, suiteName, timeoutSec, preExecTimeoutSec) {
+async function cypressRunner (nodeBin: string, runCfgPath: string, suiteName: string, timeoutSec: number, preExecTimeoutSec: number): Promise<boolean> {
   runCfgPath = getAbsolutePath(runCfgPath);
-  const runCfg = await loadRunConfig(runCfgPath);
+  const runCfg = await loadRunConfig(runCfgPath) as RunConfig;
   runCfg.path = runCfgPath;
   runCfg.resultsDir = path.join(path.dirname(runCfgPath), '__assets__');
   try {
@@ -219,41 +221,42 @@ const cypressRunner = async function (nodeBin, runCfgPath, suiteName, timeoutSec
   const npmBin = process.env.NPM_CLI_PATH || path.join(path.dirname(nodeBin), 'node_modules', 'npm', 'bin', 'npm-cli.js');
   const nodeCtx = { nodePath: nodeBin, npmPath: npmBin };
 
-  let metrics = [];
-  let npmMetrics = await prepareNpmEnv(runCfg, nodeCtx);
+  const metrics = [] as Metrics[];
+  const npmMetrics = await prepareNpmEnv(runCfg, nodeCtx);
   metrics.push(npmMetrics);
-  let cypressOpts = getCypressOpts(runCfg, suiteName);
-  let startTime = new Date().toISOString();
+  const cypressOpts = getCypressOpts(runCfg, suiteName);
+  const startTime = new Date().toISOString();
   const suites = runCfg.suites || [];
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
 
   // Execute pre-exec steps
   if (!await preExec.run(suite, preExecTimeoutSec)) {
-    let endTime = new Date().toISOString();
-    await report([], 0, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
+    const endTime = new Date().toISOString();
+    await report({} as CypressCommandLine.CypressRunResult, 0, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
     return;
   }
 
   // saucectl suite.timeout is in nanoseconds
   timeoutSec = suite.timeout / 1000000000 || timeoutSec;
-  let timeout;
+  let timeout: NodeJS.Timeout;
   const timeoutPromise = new Promise((resolve) => {
     timeout = setTimeout(() => {
       console.error(`Test timed out after ${timeoutSec} seconds`);
-      resolve();
+      resolve(false);
     }, timeoutSec * 1000);
   });
 
-  let results = await Promise.race([timeoutPromise, cypress.run(cypressOpts)]);
+  const results = await Promise.race([timeoutPromise, cypress.run(cypressOpts)]);
   clearTimeout(timeout);
   const statusCode = results ? 0 : 1;
-  let endTime = new Date().toISOString();
+  const endTime = new Date().toISOString();
 
-  return await report(results, statusCode, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
-};
+  return await report(results as CypressCommandLine.CypressRunResult, statusCode, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
+}
 
 // For dev and test purposes, this allows us to run our Cypress Runner from command line
 if (require.main === module) {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const packageInfo = require(path.join(__dirname, '..', 'package.json'));
   console.log(`Sauce Cypress Runner ${packageInfo.version}`);
   console.log(`Running Cypress ${packageInfo.dependencies?.cypress || ''}`);
@@ -272,7 +275,4 @@ if (require.main === module) {
       });
 }
 
-exports.cypressRunner = cypressRunner;
-exports.configureReporters = configureReporters;
-exports.getSuite = getSuite;
-exports.setEnvironmentVariables = setEnvironmentVariables;
+export { cypressRunner, configureReporters, getSuite, setEnvironmentVariables };

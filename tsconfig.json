@@ -1,5 +1,11 @@
 {
+  "extends": "@tsconfig/node18/tsconfig.json",
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": ["node_modules"],
   "compilerOptions": {
-    "module": "CommonJS"
+    "outDir": "./lib",
+    "strict": false
   }
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-const { cypressRecorder } = require('../src/cypress-recorder');
+const { cypressRecorder } = require('../lib/cypress-recorder');
 
 (async () => await cypressRecorder())();

@@ -1,20 +1,26 @@
-const path = require('path');
-const fs = require('fs');
-const os = require('os');
-const _ = require('lodash');
-const ffmpeg = require('fluent-ffmpeg');
-const {promisify} = require('util');
+import path from 'path';
+import fs from 'fs';
+import os from 'os';
+import _ from 'lodash';
+import ffmpeg from 'fluent-ffmpeg';
+import { promisify } from 'util';
+import { saucectl, shouldRecordVideo, escapeXML } from 'sauce-testrunner-utils';
+import convert from 'xml-js';
+import { TestComposer } from '@saucelabs/testcomposer';
+import { XmlSuiteContainer, Metrics } from './types';
+
 const ffprobe = promisify(ffmpeg.ffprobe);
-const {updateExportedValue} = require('sauce-testrunner-utils').saucectl;
-const {shouldRecordVideo, escapeXML} = require('sauce-testrunner-utils');
-const convert = require('xml-js');
-const {TestComposer} = require('@saucelabs/testcomposer');
-const SauceReporter = {};
+const { updateExportedValue} = saucectl;
 
-// Path has to match the value of the Dockerfile label com.saucelabs.job-info !
-SauceReporter.SAUCECTL_OUTPUT_FILE = '/tmp/output.json';
+const SauceReporter: {
+  // Path has to match the value of the Dockerfile label com.saucelabs.job-info !
+  cypressDetails?: any;
+  SAUCECTL_OUTPUT_FILE: '/tmp/output.json';
+} = {
+  SAUCECTL_OUTPUT_FILE: '/tmp/output.json',
+};
 
-SauceReporter.createJob = async (testComposer, suiteName, metadata, browserName, passed, startTime, endTime) => {
+async function createJob (testComposer: any, suiteName: string, metadata: any, browserName: string, passed: any, startTime: any, endTime: any): Promise<any> {
   let browserVersion = '*';
   switch (browserName.toLowerCase()) {
     case 'firefox':
@@ -27,13 +33,13 @@ SauceReporter.createJob = async (testComposer, suiteName, metadata, browserName,
       browserVersion = '*';
   }
 
-  let job;
+  let job: any;
   await testComposer.createReport({
     name: suiteName,
     startTime,
     endTime,
     framework: 'cypress',
-    frameworkVersion: this.cypressDetails?.cypressVersion || '0.0.0',
+    frameworkVersion: SauceReporter.cypressDetails?.cypressVersion || '0.0.0',
     passed,
     tags: metadata.tags,
     build: metadata.build,
@@ -41,40 +47,41 @@ SauceReporter.createJob = async (testComposer, suiteName, metadata, browserName,
     browserVersion,
     platformName: process.env.IMAGE_NAME + ':' + process.env.IMAGE_TAG,
   }).then(
-    (resp) => {
+    (resp: any) => {
       job = resp;
     },
-    (e) => console.error('Create job failed: ', e.stack)
+    (e: Error) => console.error('Create job failed: ', e.stack)
   );
 
   return job;
-};
+}
 
-SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics, testName, browserName, platformName) => {
+
+async function prepareAssets (specFiles: any[], resultsFolder: string, metrics: Metrics[], testName: string, browserName: string, platformName: string): Promise<any> {
   const assets = [];
   const videos = [];
 
   // Add the main console log
-  let clog = 'console.log';
+  const clog = 'console.log';
   if (fs.existsSync(clog)) {
     assets.push(clog);
   }
-  for (let [, mt] of Object.entries(metrics)) {
+  for (const [, mt] of Object.entries(metrics)) {
     if (_.isEmpty(mt.data)) {
       continue;
     }
-    let mtFile = path.join(resultsFolder, mt.name);
-    fs.writeFileSync(mtFile, JSON.stringify(mt.data, ' ', 2));
+    const mtFile = path.join(resultsFolder, mt.name);
+    fs.writeFileSync(mtFile, JSON.stringify(mt.data, undefined, 2));
     assets.push(mtFile);
   }
 
   try {
-    SauceReporter.mergeJunitFile(specFiles, resultsFolder, testName, browserName, platformName);
+    mergeJunitFile(specFiles, resultsFolder, testName, browserName, platformName);
   } catch (e) {
     console.error(`Failed to generate junit file: ${e}: `);
   }
 
-  for (let specFile of specFiles) {
+  for (const specFile of specFiles) {
     const sauceAssets = [
       {name: `${path.basename(specFile)}.mp4`},
       {name: `${path.basename(specFile)}.json`},
@@ -86,13 +93,13 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics, testName
     if (fs.existsSync(screenshotsFolder)) {
       const screenshotPaths = fs.readdirSync(screenshotsFolder);
       screenshotPaths.forEach((file) => {
-        let screenshot = path.join(screenshotsFolder, file);
+        const screenshot = path.join(screenshotsFolder, file);
         assets.push(screenshot);
       });
     }
 
-    for (let asset of sauceAssets) {
-      let assetFile = path.join(resultsFolder, asset.name);
+    for (const asset of sauceAssets) {
+      const assetFile = path.join(resultsFolder, asset.name);
       if (!fs.existsSync(assetFile)) {
         if (assetFile.endsWith('.mp4') && shouldRecordVideo()) {
           console.warn(`Failed to prepare asset. Could not find: '${assetFile}'`);
@@ -108,24 +115,24 @@ SauceReporter.prepareAssets = async (specFiles, resultsFolder, metrics, testName
   }
 
   if (videos.length !== 0) {
-    let comboVideo = path.join(resultsFolder, 'video.mp4');
+    const comboVideo = path.join(resultsFolder, 'video.mp4');
     try {
-      await SauceReporter.mergeVideos(videos, comboVideo);
+      await mergeVideos(videos, comboVideo);
       assets.push(comboVideo);
     } catch (e) {
       console.error('Failed to merge videos: ', e);
     }
   }
 
-  let junitPath = path.join(resultsFolder, 'junit.xml');
+  const junitPath = path.join(resultsFolder, 'junit.xml');
   if (fs.existsSync(junitPath)) {
     assets.push(junitPath);
   }
 
   return assets;
-};
+}
 
-SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, failures, startTime, endTime) => {
+async function sauceReporter (runCfg: any, suiteName: string, browserName: string, assets: any[], failures: any, startTime: any, endTime: any) {
   const {sauce = {}} = runCfg;
   const {metadata = {}} = sauce;
   const region = sauce.region || 'us-west-1';
@@ -145,7 +152,7 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
     headers: {'User-Agent': `cypress-runner/${pkgVersion}`}
   });
 
-  let job = await SauceReporter.createJob(testComposer, suiteName, metadata, browserName, failures === 0, startTime, endTime);
+  const job = await createJob(testComposer, suiteName, metadata, browserName, failures === 0, startTime, endTime);
 
   if (!job) {
     console.error('Failed to report tests. Assets won\'t be uploaded.');
@@ -175,19 +182,19 @@ SauceReporter.sauceReporter = async (runCfg, suiteName, browserName, assets, fai
 
   console.log(`\nOpen job details page: ${job.url}\n`);
   updateExportedValue(SauceReporter.SAUCECTL_OUTPUT_FILE, {jobDetailsUrl: job.url, reportingSucceeded: !!job});
-};
+}
 
-SauceReporter.mergeVideos = async (videos, target) => {
-  if (videos.length === 1 || !await SauceReporter.areVideosSameSize(videos)) {
+async function mergeVideos (videos: string[], target: string): Promise<void> {
+  if (videos.length === 1 || !await areVideosSameSize(videos)) {
     console.log(`Using ${videos[0]} as the main video.`);
     fs.copyFileSync(videos[0], target);
     return;
   }
 
   return new Promise((resolve, reject) => {
-    let cmd = ffmpeg();
+    const cmd = ffmpeg();
     console.log(`Merging videos: ${videos}, to ${target}`);
-    for (let video of videos) {
+    for (const video of videos) {
       cmd.input(video);
     }
     cmd
@@ -200,19 +207,22 @@ SauceReporter.mergeVideos = async (videos, target) => {
       })
       .mergeToFile(target, os.tmpdir());
   });
-};
+}
 
-SauceReporter.areVideosSameSize = async (videos) => {
-  let lastSize;
-  for (let video of videos) {
-    let metadata;
+async function areVideosSameSize (videos: string[]): Promise<boolean> {
+  let lastSize: {
+    width: number;
+    height: number;
+  };
+  for (const video of videos) {
+    let metadata: any;
     try {
       metadata = await ffprobe(video);
     } catch (e) {
       console.error(`Failed to inspect video ${video}, it may be corrupt: `, e);
       throw e;
     }
-    let vs = metadata.streams.find((s) => s.codec_type === 'video');
+    const vs = metadata.streams.find((s) => s.codec_type === 'video');
 
     if (!lastSize) {
       lastSize = {width: vs.width, height: vs.height};
@@ -224,18 +234,23 @@ SauceReporter.areVideosSameSize = async (videos) => {
   }
 
   return true;
-};
+}
 
-SauceReporter.mergeJunitFile = (specFiles, resultsFolder, testName, browserName, platformName) => {
+
+function mergeJunitFile (specFiles: any[], resultsFolder: string, testName: string, browserName: string, platformName: string): Promise<void> {
   if (specFiles.length === 0) {
     return;
   }
 
-  let opts = {compact: true, spaces: 4};
-  let testsuites = [];
+  const opts: {
+    compact: boolean;
+    spaces: number;
+    textFn?: (v: string) => string;
+  } = {compact: true, spaces: 4};
+  const testsuites = [];
   for (let i = 0; i < specFiles.length; i++) {
     const xmlData = fs.readFileSync(path.join(resultsFolder, `${specFiles[i]}.xml`), 'utf8');
-    const jsObj = convert.xml2js(xmlData, opts);
+    const jsObj = convert.xml2js(xmlData, opts) as XmlSuiteContainer;
     if (jsObj.testsuites && jsObj.testsuites.testsuite) {
       testsuites.push(...jsObj.testsuites.testsuite);
     }
@@ -249,7 +264,7 @@ SauceReporter.mergeJunitFile = (specFiles, resultsFolder, testName, browserName,
   let totalFailure = 0;
   let totalDisabled = 0;
   let totalTime = 0.0000;
-  for (let ts of testsuites) {
+  for (const ts of testsuites) {
     if (ts._attributes) {
       totalTests += +ts._attributes.tests || 0;
       totalFailure += +ts._attributes.failures || 0;
@@ -259,7 +274,7 @@ SauceReporter.mergeJunitFile = (specFiles, resultsFolder, testName, browserName,
     }
   }
 
-  let result = {
+  const result = {
     testsuites: {
       testsuite: testsuites.filter((item) => item._attributes?.name !== 'Root Suite'),
       _attributes: {
@@ -309,25 +324,28 @@ SauceReporter.mergeJunitFile = (specFiles, resultsFolder, testName, browserName,
   }
 
   opts.textFn = escapeXML;
-  let xmlResult = convert.js2xml(result, opts);
+  const xmlResult = convert.js2xml(result, opts);
   fs.writeFileSync(path.join(resultsFolder, 'junit.xml'), xmlResult);
-};
+}
 
-const getPlatformName = (platformName) => {
+function getPlatformName (platformName: string) {
   if (process.platform.toLowerCase() === 'linux') {
     platformName = 'Linux';
   }
 
   return platformName;
-};
+}
 
-const getBrowsername = (browserName) => {
+function getBrowsername (browserName: string) {
   const browsers = browserName.split(':');
   if (browsers.length > 0) {
     browserName = browsers[browsers.length - 1];
   }
 
   return browserName;
-};
+}
 
-module.exports = SauceReporter;
+export {
+  sauceReporter,
+  prepareAssets,
+};
