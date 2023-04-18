@@ -320,3 +320,39 @@ jobs:
             --config ./.sauce/config-sc.yml \
             --select-suite "${{ matrix.os }} - ${{ matrix.browser }}" \
             --tunnel-name github-cypress-sc-check-tunnel-${{ matrix.os }}-${{ matrix.browser }}
+
+  bundle-test-modules:
+    needs: [build-windows-bundle, build-mac-bundle]
+    strategy:
+      max-parallel: 2
+      fail-fast: false
+      matrix:
+        os: [Win10, MacOS]
+        type: [cjs, esm]
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Setup saucectl
+        run: npm i -g saucectl
+
+      - name: Test on Sauce
+        working-directory: ./tests/${{ matrix.type }}/
+        run: |
+          BUNDLE_URL=https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/cypress-windows-amd64-${{ github.run_id }}.zip
+          if [[ ${{ matrix.os }} = MacOS ]];then
+            BUNDLE_URL=https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/cypress-macos-amd64-${{ github.run_id }}.zip
+          fi
+
+          saucectl run \
+            --runner-version "url: ${BUNDLE_URL}" \
+            --config ./.sauce/config.yml \
+            --select-suite "${{ matrix.os }} - Chrome"
