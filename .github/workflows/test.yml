@@ -68,7 +68,7 @@ jobs:
       - name: Integration Tests
         env:
           SAUCE_CYPRESS_VIDEO_RECORDING: false
-        run: bash tests/integration/integration-tests.sh
+        run: npm run test-integration
 
   build-windows-bundle:
     runs-on: windows-latest
