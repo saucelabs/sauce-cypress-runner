@@ -1,4 +1,4 @@
-import { sauceReporter, prepareAssets } from './sauce-reporter';
+import { prepareAssets } from './sauce-reporter';
 import path from 'path';
 import fs from 'fs';
 import { shouldRecordVideo, getAbsolutePath, loadRunConfig, prepareNpmEnv, getArgs, getEnv, preExec } from 'sauce-testrunner-utils';
@@ -44,18 +44,6 @@ async function report (results: CypressCommandLine.CypressRunResult, statusCode:
   }
 
   const passed = failures === 0 && statusCode === 0;
-  // Run in cloud mode
-  if (process.env.SAUCE_VM) {
-    return passed;
-  }
-  if (!(process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY)) {
-    console.log('Skipping asset uploads! Remember to setup your SAUCE_USERNAME/SAUCE_ACCESS_KEY');
-    return passed;
-  }
-  // Run in docker mode
-  if (process.env.SAUCE_USERNAME !== '' && process.env.SAUCE_ACCESS_KEY !== '') {
-    await sauceReporter(runCfg, suiteName, browserName, assets, failures, startTime, endTime);
-  }
   return passed;
 }
 

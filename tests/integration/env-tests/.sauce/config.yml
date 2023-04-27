@@ -22,5 +22,3 @@ suites:
       VALUE: 'Some test value'
       FOO: bar
       host: https://saucelabs.com/
-docker:
-  fileTransfer: mount

@@ -1,9 +1,0 @@
-node_modules
-**node_modules**
-tests
-Dockerfile
-.dockerignore
-.git
-.gitignore
-.sauce
-cypress
