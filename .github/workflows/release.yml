@@ -12,11 +12,20 @@ on:
         required: false
         default: ''
 
-env:
-  NODE_VERSION: 18
-
 jobs:
+  vars:
+    runs-on: ubuntu-latest
+    outputs:
+      nodeVersion: ${{ steps.nodeVersion.outputs.nodeVersion }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - id: nodeVersion
+        run: echo "nodeVersion=`cat .nvmrc | tr -d 'v'`" >> "$GITHUB_OUTPUT"
+
   create-release-draft:
+    needs: [vars]
     runs-on: ubuntu-latest
     steps:
       - name: Check tag
@@ -47,7 +56,7 @@ jobs:
         if: ${{ steps.prep.outputs.tag_name == '' }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: ${{ needs.vars.outputs.nodeVersion }}
           cache: npm
 
       - name: Setup Git
@@ -78,7 +87,7 @@ jobs:
 
   release-windows-bundle:
     runs-on: windows-latest
-    needs: [create-release-draft]
+    needs: [vars, create-release-draft]
     steps:
       - name: Find Matching Draft Tag
         id: prep
@@ -130,7 +139,7 @@ jobs:
         if: ${{ steps.prep.outputs.asset_id == '' }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: ${{ needs.vars.outputs.nodeVersion }}
           cache: npm
 
       - name: Update Release Version
@@ -167,7 +176,7 @@ jobs:
 
   release-macos-bundle:
     runs-on: macos-latest
-    needs: [create-release-draft]
+    needs: [vars, create-release-draft]
     steps:
       - name: Find Matching Draft Tag
         id: prep
@@ -205,7 +214,7 @@ jobs:
         if: ${{ steps.prep.outputs.asset_id == '' }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: ${{ needs.vars.outputs.nodeVersion }}
           cache: npm
 
       - name: Update Release Version
@@ -271,8 +280,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup saucectl
-        run: npm i saucectl
+      - uses: saucelabs/saucectl-run-action@v3
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          skip-run: true
 
       - name: Parse Release Version
         id: parse_version
@@ -286,7 +298,7 @@ jobs:
       - name: Cloud Tests
         working-directory: ./tests/post-release
         run: |
-          npx saucectl run --runner-version "url: https://github.com/saucelabs/sauce-cypress-runner/releases/download/${{ steps.parse_version.outputs.version }}/cypress-windows-amd64.zip" --config ./.sauce/config_win.yml
+          saucectl run --runner-version "url: https://github.com/saucelabs/sauce-cypress-runner/releases/download/${{ steps.parse_version.outputs.version }}/cypress-windows-amd64.zip" --config ./.sauce/config_win.yml
 
   post-release-macos-tests:
     runs-on: ubuntu-latest
@@ -298,8 +310,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup saucectl
-        run: npm i saucectl
+      - uses: saucelabs/saucectl-run-action@v3
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          skip-run: true
 
       - name: Parse Release Version
         id: parse_version
@@ -313,4 +328,4 @@ jobs:
       - name: Cloud Tests
         working-directory: ./tests/post-release
         run: |
-          npx saucectl run --runner-version "url: https://github.com/saucelabs/sauce-cypress-runner/releases/download/${{ steps.parse_version.outputs.version }}/cypress-macos-amd64.zip" --config ./.sauce/config_mac.yml
+          saucectl run --runner-version "url: https://github.com/saucelabs/sauce-cypress-runner/releases/download/${{ steps.parse_version.outputs.version }}/cypress-macos-amd64.zip" --config ./.sauce/config_mac.yml
