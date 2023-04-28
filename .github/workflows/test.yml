@@ -14,19 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  vars:
-    runs-on: ubuntu-latest
-    outputs:
-      nodeVersion: ${{ steps.nodeVersion.outputs.nodeVersion }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - id: nodeVersion
-        run: echo "nodeVersion=`cat .nvmrc | tr -d 'v'`" >> "$GITHUB_OUTPUT"
-
   test:
-    needs: [vars]
     runs-on: ubuntu-latest
 
     steps:
@@ -36,7 +24,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ needs.vars.outputs.nodeVersion }}
+          node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Install Dependencies
@@ -52,7 +40,6 @@ jobs:
         run: npm run unit-test
 
   integration:
-    needs: [vars]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -61,7 +48,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ needs.vars.outputs.nodeVersion }}
+          node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Install Dependencies
@@ -85,7 +72,7 @@ jobs:
 
   build-windows-bundle:
     runs-on: windows-latest
-    needs: [vars, test]
+    needs: [test]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -93,8 +80,8 @@ jobs:
       - name: Use Node
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ needs.vars.outputs.nodeVersion }}
-          cache: npm
+          node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -141,7 +128,7 @@ jobs:
 
   build-mac-bundle:
     runs-on: macos-latest
-    needs: [vars, test]
+    needs: [test]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -149,8 +136,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ needs.vars.outputs.nodeVersion }}
-          cache: npm
+          node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: Setup Python
         uses: actions/setup-python@v4

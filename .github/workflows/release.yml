@@ -13,19 +13,7 @@ on:
         default: ''
 
 jobs:
-  vars:
-    runs-on: ubuntu-latest
-    outputs:
-      nodeVersion: ${{ steps.nodeVersion.outputs.nodeVersion }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - id: nodeVersion
-        run: echo "nodeVersion=`cat .nvmrc | tr -d 'v'`" >> "$GITHUB_OUTPUT"
-
   create-release-draft:
-    needs: [vars]
     runs-on: ubuntu-latest
     steps:
       - name: Check tag
@@ -56,8 +44,8 @@ jobs:
         if: ${{ steps.prep.outputs.tag_name == '' }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ needs.vars.outputs.nodeVersion }}
-          cache: npm
+          node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: Setup Git
         if: ${{ steps.prep.outputs.tag_name == '' }}
@@ -87,7 +75,7 @@ jobs:
 
   release-windows-bundle:
     runs-on: windows-latest
-    needs: [vars, create-release-draft]
+    needs: [create-release-draft]
     steps:
       - name: Find Matching Draft Tag
         id: prep
@@ -139,8 +127,8 @@ jobs:
         if: ${{ steps.prep.outputs.asset_id == '' }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ needs.vars.outputs.nodeVersion }}
-          cache: npm
+          node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: Update Release Version
         if: ${{ steps.prep.outputs.asset_id == '' }}
@@ -176,7 +164,7 @@ jobs:
 
   release-macos-bundle:
     runs-on: macos-latest
-    needs: [vars, create-release-draft]
+    needs: [create-release-draft]
     steps:
       - name: Find Matching Draft Tag
         id: prep
@@ -214,8 +202,8 @@ jobs:
         if: ${{ steps.prep.outputs.asset_id == '' }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ needs.vars.outputs.nodeVersion }}
-          cache: npm
+          node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: Update Release Version
         if: ${{ steps.prep.outputs.asset_id == '' }}
