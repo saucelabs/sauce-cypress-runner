@@ -22,8 +22,7 @@
     "release:patch": "npm run release -- patch",
     "release:minor": "npm run release -- minor",
     "release:major": "npm run release -- major",
-    "unit-test": "jest --env node",
-    "prepare": "husky install"
+    "unit-test": "jest --env node"
   },
   "keywords": [],
   "dependencies": {
