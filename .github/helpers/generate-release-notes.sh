@@ -4,7 +4,7 @@
 CHANGELOG=$(git --no-pager log --no-notes --no-decorate --oneline  v${1}...HEAD)
 
 ## Gather Framework version
-CYPRESS_VER=$(< package-lock.json jq -r '.dependencies["cypress"].version')
+CYPRESS_VER=$(< package-lock.json jq -r '.packages[""].dependencies["cypress"]')
 NODEJS_VER=$(cat .nvmrc | tr -d "v")
 
 ## Generate everything
