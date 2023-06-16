@@ -13,13 +13,13 @@ cypress:
   version: 12.6.0
 rootDir: ./
 suites:
-  - name: "Win10 - Chrome"
+  - name: "Cypress - Win10 - Chrome"
     browser: "chrome"
     platformName: "Windows 10"
     config:
       testingType: "e2e"
       specPattern: [ "cypress/e2e/**/*.cy.js" ]
-  - name: "MacOS - Chrome"
+  - name: "Cypress - MacOS - Chrome"
     browser: "chrome"
     platformName: "macOS 12"
     config:
