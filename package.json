@@ -50,7 +50,7 @@
     "lodash": "4.17.21",
     "mkdirp": "^3.0.0",
     "mocha-junit-reporter": "^2.2.0",
-    "playwright-webkit": "1.35.0",
+    "playwright-webkit": "1.34.0",
     "sauce-testrunner-utils": "1.1.0",
     "typescript": "5.1.3",
     "webpack": "5.81.0",
