@@ -210,7 +210,7 @@ jobs:
           saucectl run \
             --runner-version "url: ${BUNDLE_URL}" \
             --config ./.sauce/config.yml \
-            --select-suite "${{ matrix.os }} - ${{ matrix.browser }}"
+            --select-suite "Cypress - ${{ matrix.os }} - ${{ matrix.browser }}"
 
   bundle-tests-with-sc:
     needs: [build-windows-bundle, build-mac-bundle]
@@ -268,7 +268,7 @@ jobs:
           saucectl run \
             --runner-version "url: ${BUNDLE_URL}" \
             --config ./.sauce/config-sc.yml \
-            --select-suite "${{ matrix.os }} - ${{ matrix.browser }}" \
+            --select-suite "Cypress - ${{ matrix.os }} - ${{ matrix.browser }}" \
             --tunnel-name github-cypress-sc-check-tunnel-${{ matrix.os }}-${{ matrix.browser }}
 
   bundle-test-modules:
@@ -303,4 +303,4 @@ jobs:
           saucectl run \
             --runner-version "url: ${BUNDLE_URL}" \
             --config ./.sauce/config.yml \
-            --select-suite "${{ matrix.os }} - Chrome"
+            --select-suite "Cypress - ${{ matrix.os }} - Chrome"
