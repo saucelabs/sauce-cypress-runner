@@ -16,19 +16,19 @@ env:
   foo: bar
 suites:
   # Windows 10 Tests
-  - name: "Win10 - Chrome"
+  - name: "Cypress - Win10 - Chrome"
     browser: "chrome"
     platformName: "Windows 10"
     config:
       testingType: "e2e"
       specPattern: [ "cypress/e2e/**/*.cy.js" ]
-  - name: "Win10 - Firefox"
+  - name: "Cypress - Win10 - Firefox"
     browser: "firefox"
     platformName: "Windows 10"
     config:
       testingType: "e2e"
       specPattern: [ "cypress/e2e/**/*.cy.js" ]
-  - name: "Win10 - Webkit"
+  - name: "Cypress - Win10 - Webkit"
     browser: "webkit"
     platformName: "Windows 10"
     config:
@@ -36,19 +36,19 @@ suites:
       specPattern: [ "cypress/e2e/**/*.cy.js" ]
 
   # Windows 11 Tests
-  - name: "Win11 - Chrome"
+  - name: "Cypress - Win11 - Chrome"
     browser: "chrome"
     platformName: "Windows 11"
     config:
       testingType: "e2e"
       specPattern: [ "cypress/e2e/**/*.cy.js" ]
-  - name: "Win11 - Firefox"
+  - name: "Cypress - Win11 - Firefox"
     browser: "firefox"
     platformName: "Windows 11"
     config:
       testingType: "e2e"
       specPattern: [ "cypress/e2e/**/*.cy.js" ]
-  - name: "Win11 - Webkit"
+  - name: "Cypress - Win11 - Webkit"
     browser: "webkit"
     platformName: "Windows 11"
     config:
@@ -56,19 +56,19 @@ suites:
       specPattern: [ "cypress/e2e/**/*.cy.js" ]
 
   # macOS 11.00 Tests
-  - name: "macOS11 - Chrome"
+  - name: "Cypress - macOS11 - Chrome"
     browser: "chrome"
     platformName: "macOS 11.00"
     config:
       testingType: "e2e"
       specPattern: [ "cypress/e2e/**/*.cy.js" ]
-  - name: "macOS11 - Firefox"
+  - name: "Cypress - macOS11 - Firefox"
     browser: "firefox"
     platformName: "macOS 11.00"
     config:
       testingType: "e2e"
       specPattern: [ "cypress/e2e/**/*.cy.js" ]
-  - name: "macOS11 - Webkit"
+  - name: "Cypress - macOS11 - Webkit"
     browser: "webkit"
     platformName: "macOS 11.00"
     config:
@@ -76,19 +76,19 @@ suites:
       specPattern: [ "cypress/e2e/**/*.cy.js" ]
 
   # macOS 12 Tests
-  - name: "macOS12 - Chrome"
+  - name: "Cypress - macOS12 - Chrome"
     browser: "chrome"
     platformName: "macOS 12"
     config:
       testingType: "e2e"
       specPattern: [ "cypress/e2e/**/*.cy.js" ]
-  - name: "macOS12 - Firefox"
+  - name: "Cypress - macOS12 - Firefox"
     browser: "firefox"
     platformName: "macOS 12"
     config:
       testingType: "e2e"
       specPattern: [ "cypress/e2e/**/*.cy.js" ]
-  - name: "macOS12 - Webkit"
+  - name: "Cypress - macOS12 - Webkit"
     browser: "webkit"
     platformName: "macOS 12"
     config:
@@ -96,19 +96,19 @@ suites:
       specPattern: [ "cypress/e2e/**/*.cy.js" ]
 
   # macOS 13 Tests
-  - name: "macOS13 - Chrome"
+  - name: "Cypress - macOS13 - Chrome"
     browser: "chrome"
     platformName: "macOS 13"
     config:
       testingType: "e2e"
       specPattern: [ "cypress/e2e/**/*.cy.js" ]
-  - name: "macOS13 - Firefox"
+  - name: "Cypress - macOS13 - Firefox"
     browser: "firefox"
     platformName: "macOS 13"
     config:
       testingType: "e2e"
       specPattern: [ "cypress/e2e/**/*.cy.js" ]
-  - name: "macOS13 - Webkit"
+  - name: "Cypress - macOS13 - Webkit"
     browser: "webkit"
     platformName: "macOS 13"
     config:
