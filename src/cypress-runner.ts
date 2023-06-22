@@ -134,7 +134,7 @@ function getCypressOpts (runCfg: RunConfig, suiteName: string): CypressCommandLi
   const testingType = suite.config.testingType || 'e2e';
 
   const env = getEnv(suite);
-  env.CYPRESS_HTTP_PROXY = process.env.HTTP_PROXY;
+  env.HTTP_PROXY = process.env.HTTP_PROXY;
 
   let opts: CypressConfig = {
     project: path.dirname(cypressCfgFile),
