@@ -135,6 +135,7 @@ function getCypressOpts (runCfg: RunConfig, suiteName: string): CypressCommandLi
 
   const env = getEnv(suite);
   env.HTTP_PROXY = process.env.HTTP_PROXY;
+  env.http_proxy = process.env.http_proxy;
 
   let opts: CypressConfig = {
     project: path.dirname(cypressCfgFile),
