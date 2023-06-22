@@ -233,6 +233,7 @@ async function cypressRunner (nodeBin: string, runCfgPath: string, suiteName: st
       resolve(false);
     }, timeoutSec * 1000);
   });
+  console.log('http_proxy: ', process.env.http_proxy);
 
   const results = await Promise.race([timeoutPromise, cypress.run(cypressOpts)]);
   clearTimeout(timeout);
