@@ -133,6 +133,9 @@ function getCypressOpts (runCfg: RunConfig, suiteName: string): CypressCommandLi
 
   const testingType = suite.config.testingType || 'e2e';
 
+  const env = getEnv(suite);
+  env.CYPRESS_HTTP_PROXY = process.env.HTTP_PROXY;
+
   let opts: CypressConfig = {
     project: path.dirname(cypressCfgFile),
     browser: process.env.SAUCE_BROWSER || suite.browser || 'chrome',
@@ -150,7 +153,7 @@ function getCypressOpts (runCfg: RunConfig, suiteName: string): CypressCommandLi
       video: shouldRecordVideo(),
       videoCompression: false,
       videoUploadOnPasses: false,
-      env: getEnv(suite),
+      env,
     }
   };
 
