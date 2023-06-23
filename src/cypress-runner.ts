@@ -1,6 +1,7 @@
 import { prepareAssets } from './sauce-reporter';
 import path from 'path';
 import fs from 'fs';
+import { execSync } from 'child_process';
 import { shouldRecordVideo, getAbsolutePath, loadRunConfig, prepareNpmEnv, getArgs, getEnv, preExec } from 'sauce-testrunner-utils';
 import cypress from 'cypress';
 import util from 'util';
@@ -207,9 +208,13 @@ async function cypressRunner (nodeBin: string, runCfgPath: string, suiteName: st
 
   setEnvironmentVariables(runCfg, suiteName);
 
+  console.log('current dir: ', execSync('ls').toString());
+  console.log('node_modules: ', execSync('ls node_modules').toString());
+
   // Define node/npm path for execution
   const npmBin = process.env.NPM_CLI_PATH || path.join(path.dirname(nodeBin), 'node_modules', 'npm', 'bin', 'npm-cli.js');
   const nodeCtx = { nodePath: nodeBin, npmPath: npmBin };
+
 
   const metrics = [] as Metrics[];
   const npmMetrics = await prepareNpmEnv(runCfg, nodeCtx);
