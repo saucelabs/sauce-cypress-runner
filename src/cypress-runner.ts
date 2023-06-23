@@ -210,6 +210,7 @@ async function cypressRunner (nodeBin: string, runCfgPath: string, suiteName: st
 
   console.log('current dir: ', execSync('ls').toString());
   console.log('node_modules: ', execSync('ls node_modules').toString());
+  process.env.npm_config_cafile = process.env.NPM_CONFIG_CAFILE;
 
   // Define node/npm path for execution
   const npmBin = process.env.NPM_CLI_PATH || path.join(path.dirname(nodeBin), 'node_modules', 'npm', 'bin', 'npm-cli.js');
