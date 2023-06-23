@@ -224,6 +224,7 @@ async function cypressRunner (nodeBin: string, runCfgPath: string, suiteName: st
   const suites = runCfg.suites || [];
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
 
+  console.log('node_modules after rebuilding: ', execSync('ls node_modules').toString());
   // Execute pre-exec steps
   if (!await preExec.run(suite, preExecTimeoutSec)) {
     const endTime = new Date().toISOString();
