@@ -134,8 +134,6 @@ function getCypressOpts (runCfg: RunConfig, suiteName: string): CypressCommandLi
   const testingType = suite.config.testingType || 'e2e';
 
   const env = getEnv(suite);
-  env.HTTP_PROXY = process.env.HTTP_PROXY;
-  env.http_proxy = process.env.http_proxy;
 
   let opts: CypressConfig = {
     project: path.dirname(cypressCfgFile),
@@ -238,6 +236,7 @@ async function cypressRunner (nodeBin: string, runCfgPath: string, suiteName: st
     }, timeoutSec * 1000);
   });
   console.log('http_proxy: ', process.env);
+  console.log('pwd: ', process.cwd);
 
   const results = await Promise.race([timeoutPromise, cypress.run(cypressOpts)]);
   clearTimeout(timeout);
