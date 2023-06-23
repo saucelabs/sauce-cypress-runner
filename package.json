@@ -34,7 +34,7 @@
     "@cypress/grep": "3.1.5",
     "@cypress/webpack-preprocessor": "5.17.1",
     "@cypress/xpath": "2.0.3",
-    "@saucelabs/cypress-plugin": "1.2.2",
+    "@saucelabs/cypress-plugin": "2.0.0",
     "@saucelabs/testcomposer": "1.0.0",
     "@shelex/cypress-allure-plugin": "2.38.4",
     "@testing-library/cypress": "9.0.0",
