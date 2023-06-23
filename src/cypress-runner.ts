@@ -33,11 +33,15 @@ async function report (results: CypressCommandLine.CypressRunResult, statusCode:
   );
 
   try {
-    const reportJSON = await afterRunTestReport(results);
-    if (reportJSON) {
-      const filepath = path.join(runCfg.resultsDir, 'sauce-test-report.json');
-      reportJSON.toFile(filepath);
-      assets.push(filepath);
+    const testRunReport = await afterRunTestReport(results);
+    if (testRunReport) {
+      const jsonFilePath = path.join(runCfg.resultsDir, 'sauce-test-report.json');
+      testRunReport.toFile(jsonFilePath);
+      assets.push(jsonFilePath);
+
+      const junitFilePath = path.join(runCfg.resultsDir, 'junit.xml');
+      testRunReport.toJUnitFile(junitFilePath);
+      assets.push(junitFilePath);
     }
   } catch (e) {
     console.error('Failed to serialize test results: ', e);
@@ -55,28 +59,31 @@ function configureReporters (runCfg: RunConfig, opts: any) {
     configFile: path.join(__dirname, '..', 'sauce-reporter-config.json'),
   };
 
-  const customReporter = path.join(__dirname, '../lib/custom-reporter.js');
-  const junitReporter = path.join(__dirname, '../node_modules/mocha-junit-reporter/index.js');
-
-  let defaultSpecRoot = '';
-  if (opts.testingType === 'component') {
-    defaultSpecRoot = 'cypress/component';
-  } else {
-    defaultSpecRoot = 'cypress/e2e';
-  }
+  // const customReporter = path.join(__dirname, '../lib/custom-reporter.js');
+  // const junitReporter = path.join(__dirname, '../node_modules/mocha-junit-reporter/index.js');
+  //
+  // let defaultSpecRoot = '';
+  // if (opts.testingType === 'component') {
+  //   defaultSpecRoot = 'cypress/component';
+  // } else {
+  //   defaultSpecRoot = 'cypress/e2e';
+  // }
 
   // Referencing "mocha-junit-reporter" using relative path will allow to have multiple instance of mocha-junit-reporter.
   // That permits to have a configuration specific to us, and in addition to keep customer's one.
+  // const reporterConfig = {
+  //   reporterEnabled: `spec, ${customReporter}, ${junitReporter}`,
+  //   [[_.camelCase(customReporter), 'ReporterOptions'].join('')]: {
+  //     mochaFile: `${runCfg.resultsDir}/[suite].xml`,
+  //     specRoot: defaultSpecRoot
+  //   },
+  //   [[_.camelCase(junitReporter), 'ReporterOptions'].join('')]: {
+  //     mochaFile: `${runCfg.resultsDir}/[suite].xml`,
+  //     specRoot: defaultSpecRoot
+  //   }
+  // };
   const reporterConfig = {
-    reporterEnabled: `spec, ${customReporter}, ${junitReporter}`,
-    [[_.camelCase(customReporter), 'ReporterOptions'].join('')]: {
-      mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: defaultSpecRoot
-    },
-    [[_.camelCase(junitReporter), 'ReporterOptions'].join('')]: {
-      mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: defaultSpecRoot
-    }
+    reporterEnabled: 'spec',
   };
 
   // Adding custom reporters
