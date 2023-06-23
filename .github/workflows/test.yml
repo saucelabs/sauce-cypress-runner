@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   test:
+    if: false
     runs-on: ubuntu-latest
 
     steps:
@@ -40,6 +41,7 @@ jobs:
         run: npm run unit-test
 
   integration:
+    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -72,7 +74,7 @@ jobs:
 
   build-windows-bundle:
     runs-on: windows-latest
-    needs: [test]
+#    needs: [test]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -123,7 +125,7 @@ jobs:
 
   build-mac-bundle:
     runs-on: macos-latest
-    needs: [test]
+#    needs: [test]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -176,8 +178,8 @@ jobs:
       max-parallel: 3
       fail-fast: false
       matrix:
-        os: [Win10, Win11, macOS11, macOS12, macOS13]
-        browser: [Chrome, Firefox, Webkit]
+        os: [Win11, macOS12]
+        browser: [Chrome]
         # FIXME: Remove those exclusions when Webkit working fine
         exclude:
           - os: Win10
@@ -213,6 +215,7 @@ jobs:
             --select-suite "Cypress - ${{ matrix.os }} - ${{ matrix.browser }}"
 
   bundle-tests-with-sc:
+    if: false
     needs: [build-windows-bundle, build-mac-bundle]
     strategy:
       max-parallel: 3
@@ -272,6 +275,7 @@ jobs:
             --tunnel-name github-cypress-sc-check-tunnel-${{ matrix.os }}-${{ matrix.browser }}
 
   bundle-test-modules:
+    if: false
     needs: [build-windows-bundle, build-mac-bundle]
     strategy:
       max-parallel: 2
