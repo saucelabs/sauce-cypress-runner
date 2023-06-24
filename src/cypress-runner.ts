@@ -39,9 +39,11 @@ async function report (results: CypressCommandLine.CypressRunResult, statusCode:
       testRunReport.toFile(jsonFilePath);
       assets.push(jsonFilePath);
 
-      const junitFilePath = path.join(runCfg.resultsDir, 'junit.xml');
-      testRunReport.toJUnitFile(junitFilePath);
-      assets.push(junitFilePath);
+      if (process.env.SAUCE_JUNIT_ENABLED) {
+        const junitFilePath = path.join(runCfg.resultsDir, 'junit.xml');
+        testRunReport.toJUnitFile(junitFilePath);
+        assets.push(junitFilePath);
+      }
     }
   } catch (e) {
     console.error('Failed to serialize test results: ', e);
@@ -59,32 +61,35 @@ function configureReporters (runCfg: RunConfig, opts: any) {
     configFile: path.join(__dirname, '..', 'sauce-reporter-config.json'),
   };
 
-  // const customReporter = path.join(__dirname, '../lib/custom-reporter.js');
-  // const junitReporter = path.join(__dirname, '../node_modules/mocha-junit-reporter/index.js');
-  //
-  // let defaultSpecRoot = '';
-  // if (opts.testingType === 'component') {
-  //   defaultSpecRoot = 'cypress/component';
-  // } else {
-  //   defaultSpecRoot = 'cypress/e2e';
-  // }
+  let reporterConfig = {
+    reporterEnabled: 'spec'
+  };
+
+  const customReporter = path.join(__dirname, '../lib/custom-reporter.js');
+  const junitReporter = path.join(__dirname, '../node_modules/mocha-junit-reporter/index.js');
+
+  let defaultSpecRoot = '';
+  if (opts.testingType === 'component') {
+    defaultSpecRoot = 'cypress/component';
+  } else {
+    defaultSpecRoot = 'cypress/e2e';
+  }
 
   // Referencing "mocha-junit-reporter" using relative path will allow to have multiple instance of mocha-junit-reporter.
   // That permits to have a configuration specific to us, and in addition to keep customer's one.
-  // const reporterConfig = {
-  //   reporterEnabled: `spec, ${customReporter}, ${junitReporter}`,
-  //   [[_.camelCase(customReporter), 'ReporterOptions'].join('')]: {
-  //     mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-  //     specRoot: defaultSpecRoot
-  //   },
-  //   [[_.camelCase(junitReporter), 'ReporterOptions'].join('')]: {
-  //     mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-  //     specRoot: defaultSpecRoot
-  //   }
-  // };
-  const reporterConfig = {
-    reporterEnabled: 'spec',
-  };
+  if (process.env.SAUCE_MOCHA_JUNIT_ENABLED) {
+    reporterConfig = {
+      reporterEnabled: `${reporterConfig.reporterEnabled}, ${customReporter}, ${junitReporter}`,
+      [[_.camelCase(customReporter), 'ReporterOptions'].join('')]: {
+        mochaFile: `${runCfg.resultsDir}/[suite].xml`,
+        specRoot: defaultSpecRoot
+      },
+      [[_.camelCase(junitReporter), 'ReporterOptions'].join('')]: {
+        mochaFile: `${runCfg.resultsDir}/[suite].xml`,
+        specRoot: defaultSpecRoot
+      }
+    };
+  }
 
   // Adding custom reporters
   if (runCfg && runCfg.cypress && runCfg.cypress.reporters) {

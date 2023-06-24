@@ -76,7 +76,9 @@ async function prepareAssets (specFiles: any[], resultsFolder: string, metrics: 
   }
 
   try {
-    mergeJunitFile(specFiles, resultsFolder, testName, browserName, platformName);
+    if (process.env.SAUCE_MOCHA_JUNIT_ENABLED) {
+      await mergeJunitFile(specFiles, resultsFolder, testName, browserName, platformName);
+    }
   } catch (e) {
     console.error(`Failed to generate junit file: ${e}: `);
   }
