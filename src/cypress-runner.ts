@@ -125,6 +125,14 @@ function setEnvironmentVariables (runCfg: RunConfig, suiteName: string) {
   for (const [key, value] of Object.entries(envVars)) {
     process.env[key] = value as string;
   }
+
+  // DEVX-2278: We want to transition users to our own junit created reports, though unable to reliably estimate impact.
+  // SAUCE_MOCHA_JUNIT_ENABLED refers to the original mocha based junit reporter, which we want to default to if
+  // saucectl isn't setting anything. This way, we can transition users after a certain saucectl version, but also
+  // allow them to opt out or revert in saucectl if issues arise.
+  if (!process.env.SAUCE_JUNIT_ENABLED && !process.env.SAUCE_MOCHA_JUNIT_ENABLED) {
+    process.env.SAUCE_MOCHA_JUNIT_ENABLED = 'true';
+  }
 }
 
 function getCypressOpts (runCfg: RunConfig, suiteName: string): CypressCommandLine.CypressRunOptions {
