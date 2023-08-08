@@ -33,11 +33,17 @@ async function report (results: CypressCommandLine.CypressRunResult, statusCode:
   );
 
   try {
-    const reportJSON = await afterRunTestReport(results);
-    if (reportJSON) {
-      const filepath = path.join(runCfg.resultsDir, 'sauce-test-report.json');
-      reportJSON.toFile(filepath);
-      assets.push(filepath);
+    const testRunReport = await afterRunTestReport(results);
+    if (testRunReport) {
+      const jsonFilePath = path.join(runCfg.resultsDir, 'sauce-test-report.json');
+      testRunReport.toFile(jsonFilePath);
+      assets.push(jsonFilePath);
+
+      if (process.env.SAUCE_JUNIT_ENABLED) {
+        const junitFilePath = path.join(runCfg.resultsDir, 'junit.xml');
+        testRunReport.toJUnitFile(junitFilePath);
+        assets.push(junitFilePath);
+      }
     }
   } catch (e) {
     console.error('Failed to serialize test results: ', e);
@@ -55,6 +61,10 @@ function configureReporters (runCfg: RunConfig, opts: any) {
     configFile: path.join(__dirname, '..', 'sauce-reporter-config.json'),
   };
 
+  let reporterConfig = {
+    reporterEnabled: 'spec'
+  };
+
   const customReporter = path.join(__dirname, '../lib/custom-reporter.js');
   const junitReporter = path.join(__dirname, '../node_modules/mocha-junit-reporter/index.js');
 
@@ -67,17 +77,19 @@ function configureReporters (runCfg: RunConfig, opts: any) {
 
   // Referencing "mocha-junit-reporter" using relative path will allow to have multiple instance of mocha-junit-reporter.
   // That permits to have a configuration specific to us, and in addition to keep customer's one.
-  const reporterConfig = {
-    reporterEnabled: `spec, ${customReporter}, ${junitReporter}`,
-    [[_.camelCase(customReporter), 'ReporterOptions'].join('')]: {
-      mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: defaultSpecRoot
-    },
-    [[_.camelCase(junitReporter), 'ReporterOptions'].join('')]: {
-      mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: defaultSpecRoot
-    }
-  };
+  if (process.env.SAUCE_MOCHA_JUNIT_ENABLED) {
+    reporterConfig = {
+      reporterEnabled: `${reporterConfig.reporterEnabled}, ${customReporter}, ${junitReporter}`,
+      [[_.camelCase(customReporter), 'ReporterOptions'].join('')]: {
+        mochaFile: `${runCfg.resultsDir}/[suite].xml`,
+        specRoot: defaultSpecRoot
+      },
+      [[_.camelCase(junitReporter), 'ReporterOptions'].join('')]: {
+        mochaFile: `${runCfg.resultsDir}/[suite].xml`,
+        specRoot: defaultSpecRoot
+      }
+    };
+  }
 
   // Adding custom reporters
   if (runCfg && runCfg.cypress && runCfg.cypress.reporters) {
@@ -112,6 +124,14 @@ function setEnvironmentVariables (runCfg: RunConfig, suiteName: string) {
 
   for (const [key, value] of Object.entries(envVars)) {
     process.env[key] = value as string;
+  }
+
+  // DEVX-2278: We want to transition users to our own junit created reports, though unable to reliably estimate impact.
+  // SAUCE_MOCHA_JUNIT_ENABLED refers to the original mocha based junit reporter, which we want to default to if
+  // saucectl isn't setting anything. This way, we can transition users after a certain saucectl version, but also
+  // allow them to opt out or revert in saucectl if issues arise.
+  if (!process.env.SAUCE_JUNIT_ENABLED && !process.env.SAUCE_MOCHA_JUNIT_ENABLED) {
+    process.env.SAUCE_MOCHA_JUNIT_ENABLED = 'true';
   }
 }
 
