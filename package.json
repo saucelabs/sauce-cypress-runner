@@ -30,7 +30,6 @@
     "@babel/plugin-proposal-class-properties": "^7.13.0",
     "@babel/preset-env": "7.21.5",
     "@babel/preset-typescript": "^7.21.4",
-    "@badeball/cypress-cucumber-preprocessor": "18.0.4",
     "@cypress/grep": "3.1.5",
     "@cypress/webpack-preprocessor": "5.17.1",
     "@cypress/xpath": "2.0.3",
