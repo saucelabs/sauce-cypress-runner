@@ -163,7 +163,7 @@ function getCypressOpts (runCfg: RunConfig, suiteName: string): CypressCommandLi
   opts = configureReporters(runCfg, opts);
   configureWebkitOptions(process.env, opts, suite);
 
-  return opts as CypressCommandLine.CypressRunOptions;
+  return opts as unknown as CypressCommandLine.CypressRunOptions;
 }
 
 /**
