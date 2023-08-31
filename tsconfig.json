@@ -7,6 +7,7 @@
   "compilerOptions": {
     "outDir": "./lib",
     "strict": false,
-    "module": "Node16"
+    "module": "es2022",
+    "moduleResolution": "bundler"
   }
 }
