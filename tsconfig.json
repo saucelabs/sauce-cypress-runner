@@ -6,6 +6,8 @@
   "exclude": ["node_modules"],
   "compilerOptions": {
     "outDir": "./lib",
-    "strict": false
+    "strict": false,
+    "module": "es2022",
+    "moduleResolution": "bundler"
   }
 }

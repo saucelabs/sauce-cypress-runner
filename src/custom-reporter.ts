@@ -197,7 +197,7 @@ function getJenkinsClassname (test: any, options: any) {
 /**
  * JUnit reporter for mocha.js.
  */
-function MochaJUnitReporter (runner: EventEmitter, options: object) {
+export function MochaJUnitReporter (runner: EventEmitter, options: object) {
   if (mocha6plus) {
     createStatsCollector(runner);
   }
@@ -555,5 +555,4 @@ MochaJUnitReporter.prototype.writeXmlToDisk = function (xml: string, filePath: s
   return filePath;
 };
 
-module.exports = MochaJUnitReporter;
 export default MochaJUnitReporter;

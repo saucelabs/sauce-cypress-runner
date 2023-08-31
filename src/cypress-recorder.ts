@@ -4,7 +4,7 @@ import path from 'path';
 import stream from 'stream';
 import childProcess from 'child_process';
 
-function cypressRecorder () {
+export function cypressRecorder () {
   // console.log is saved out of reportsDir since it is cleared on startup.
   const fd = fs.openSync(path.join(process.cwd(), 'console.log'), 'w+', 0o644);
   const ws = new stream.Writable({
@@ -24,5 +24,3 @@ function cypressRecorder () {
     process.exit(exitCode);
   });
 }
-
-exports.cypressRecorder = cypressRecorder;
