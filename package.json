@@ -7,6 +7,7 @@
   "private": true,
   "bin": "./bin/cypress",
   "main": "./lib/cypress-runner.js",
+  "type": "module",
   "homepage": "https://github.com/saucelabs/sauce-cypress-runner",
   "repository": {
     "type": "git",
