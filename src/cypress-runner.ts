@@ -1,4 +1,4 @@
-import { prepareAssets } from './sauce-reporter';
+import { mergeJunitFile } from './sauce-reporter';
 import path from 'path';
 import fs from 'fs';
 import { shouldRecordVideo, getAbsolutePath, loadRunConfig, prepareNpmEnv, getArgs, getEnv, preExec } from 'sauce-testrunner-utils';
@@ -9,7 +9,7 @@ import { afterRunTestReport } from '@saucelabs/cypress-plugin';
 
 import { RunConfig, Suite, Metrics } from './types';
 
-async function report (results: CypressCommandLine.CypressRunResult, statusCode: number, browserName: string, runCfg: RunConfig, suiteName: string, startTime: string, endTime: string, metrics: Metrics[]) {
+async function report (results: CypressCommandLine.CypressRunResult, statusCode: number, browserName: string, runCfg: RunConfig, suiteName: string) {
   // Prepare the assets
   const runs = results.runs || [];
   const specFiles = runs.map((run) => path.basename(run.spec.name));
@@ -23,21 +23,17 @@ async function report (results: CypressCommandLine.CypressRunResult, statusCode:
     }
   }
 
-  const assets = await prepareAssets(
-    specFiles,
-    runCfg.resultsDir,
-    metrics,
-    suiteName,
-    browserName,
-    platformName
-  );
+  try {
+    mergeJunitFile(specFiles, runCfg.resultsDir, suiteName, browserName, platformName);
+  } catch (e) {
+    console.error(`Failed to generate junit file: ${e}: `);
+  }
 
   try {
     const reportJSON = await afterRunTestReport(results);
     if (reportJSON) {
       const filepath = path.join(runCfg.resultsDir, 'sauce-test-report.json');
       reportJSON.toFile(filepath);
-      assets.push(filepath);
     }
   } catch (e) {
     console.error('Failed to serialize test results: ', e);
@@ -211,14 +207,12 @@ async function cypressRunner (nodeBin: string, runCfgPath: string, suiteName: st
   const npmMetrics = await prepareNpmEnv(runCfg, nodeCtx);
   metrics.push(npmMetrics);
   const cypressOpts = getCypressOpts(runCfg, suiteName);
-  const startTime = new Date().toISOString();
   const suites = runCfg.suites || [];
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
 
   // Execute pre-exec steps
   if (!await preExec.run(suite, preExecTimeoutSec)) {
-    const endTime = new Date().toISOString();
-    await report({} as CypressCommandLine.CypressRunResult, 0, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
+    await report({} as CypressCommandLine.CypressRunResult, 0, cypressOpts.browser, runCfg, suiteName);
     return;
   }
 
@@ -235,9 +229,8 @@ async function cypressRunner (nodeBin: string, runCfgPath: string, suiteName: st
   const results = await Promise.race([timeoutPromise, cypress.run(cypressOpts)]);
   clearTimeout(timeout);
   const statusCode = results ? 0 : 1;
-  const endTime = new Date().toISOString();
 
-  return await report(results as CypressCommandLine.CypressRunResult, statusCode, cypressOpts.browser, runCfg, suiteName, startTime, endTime, metrics);
+  return await report(results as CypressCommandLine.CypressRunResult, statusCode, cypressOpts.browser, runCfg, suiteName);
 }
 
 // For dev and test purposes, this allows us to run our Cypress Runner from command line
