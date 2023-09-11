@@ -203,9 +203,7 @@ async function cypressRunner (nodeBin: string, runCfgPath: string, suiteName: st
   const npmBin = process.env.NPM_CLI_PATH || path.join(path.dirname(nodeBin), 'node_modules', 'npm', 'bin', 'npm-cli.js');
   const nodeCtx = { nodePath: nodeBin, npmPath: npmBin };
 
-  const metrics = [] as Metrics[];
-  const npmMetrics = await prepareNpmEnv(runCfg, nodeCtx);
-  metrics.push(npmMetrics);
+  await prepareNpmEnv(runCfg, nodeCtx);
   const cypressOpts = getCypressOpts(runCfg, suiteName);
   const suites = runCfg.suites || [];
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
