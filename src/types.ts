@@ -1,5 +1,4 @@
 
-import { Region } from '@saucelabs/testcomposer';
 import { NpmConfigContainer, PathContainer } from 'sauce-testrunner-utils/lib/types';
 
 export type MetaData = {
@@ -8,7 +7,7 @@ export type MetaData = {
 }
 
 export type SauceConfig = {
-  region: Region;
+  region: 'us-west-1' | 'us-east-4' | 'eu-central-1' | 'staging';
   metadata: object;
 };
 
