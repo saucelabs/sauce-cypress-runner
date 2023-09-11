@@ -31,7 +31,6 @@ export type CypressConfig = {
     screenshotsFolder: string;
     video: boolean;
     videoCompression: boolean;
-    videoUploadOnPasses: boolean;
     env: {
       [key: string]: string
     }
