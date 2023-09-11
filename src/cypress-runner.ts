@@ -7,7 +7,7 @@ import util from 'util';
 import _ from 'lodash';
 import { afterRunTestReport } from '@saucelabs/cypress-plugin';
 
-import { RunConfig, CypressConfig, Suite, Metrics } from './types';
+import { RunConfig, Suite, Metrics } from './types';
 
 async function report (results: CypressCommandLine.CypressRunResult, statusCode: number, browserName: string, runCfg: RunConfig, suiteName: string, startTime: string, endTime: string, metrics: Metrics[]) {
   // Prepare the assets
@@ -43,8 +43,7 @@ async function report (results: CypressCommandLine.CypressRunResult, statusCode:
     console.error('Failed to serialize test results: ', e);
   }
 
-  const passed = failures === 0 && statusCode === 0;
-  return passed;
+  return failures === 0 && statusCode === 0;
 }
 
 // Configure reporters
