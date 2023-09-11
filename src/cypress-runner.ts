@@ -26,7 +26,7 @@ async function report (results: CypressCommandLine.CypressRunResult, statusCode:
   try {
     mergeJunitFile(specFiles, runCfg.resultsDir, suiteName, browserName, platformName);
   } catch (e) {
-    console.error(`Failed to generate junit file: ${e}: `);
+    console.error(`Failed to generate junit file: ${e}`);
   }
 
   try {
