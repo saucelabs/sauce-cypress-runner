@@ -7,7 +7,7 @@ import util from 'util';
 import _ from 'lodash';
 import { afterRunTestReport } from '@saucelabs/cypress-plugin';
 
-import { RunConfig, CypressConfig, Suite, Metrics } from './types';
+import { RunConfig, Suite, Metrics } from './types';
 
 async function report (results: CypressCommandLine.CypressRunResult, statusCode: number, browserName: string, runCfg: RunConfig, suiteName: string, startTime: string, endTime: string, metrics: Metrics[]) {
   // Prepare the assets
