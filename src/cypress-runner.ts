@@ -43,8 +43,7 @@ async function report (results: CypressCommandLine.CypressRunResult, statusCode:
     console.error('Failed to serialize test results: ', e);
   }
 
-  const passed = failures === 0 && statusCode === 0;
-  return passed;
+  return failures === 0 && statusCode === 0;
 }
 
 // Configure reporters
