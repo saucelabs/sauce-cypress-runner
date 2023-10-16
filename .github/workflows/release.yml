@@ -16,7 +16,7 @@ jobs:
   create-release-draft:
     runs-on: ubuntu-latest
     steps:
-      - name: Check tag
+      - name: Check Tag
         id: prep
         run: |
           TAG_NAME=$(curl -s -H "Authorization: token ${{ github.token }}" \
