@@ -41,7 +41,6 @@ try {
     mocha6plus = false;
   }
 } catch (e) {
-  // eslint-disable-next-line no-console
   console.warn("Couldn't determine Mocha version");
 }
 
@@ -316,10 +315,8 @@ function MochaJUnitReporter(runner: EventEmitter, options: object) {
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
-  const self = this;
-  this._runner.on('end', function () {
-    self.report(testsuites, sauceJson);
+  this._runner.on('end', () => {
+    this.report(testsuites, sauceJson);
   });
 }
 

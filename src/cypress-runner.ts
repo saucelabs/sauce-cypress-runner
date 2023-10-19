@@ -308,7 +308,6 @@ async function cypressRunner(
 
 // For dev and test purposes, this allows us to run our Cypress Runner from command line
 if (require.main === module) {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const packageInfo = require(path.join(__dirname, '..', 'package.json'));
   console.log(`Sauce Cypress Runner ${packageInfo.version}`);
   console.log(`Running Cypress ${packageInfo.dependencies?.cypress || ''}`);
