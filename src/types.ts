@@ -1,10 +1,12 @@
-
-import { NpmConfigContainer, PathContainer } from 'sauce-testrunner-utils/lib/types';
+import {
+  NpmConfigContainer,
+  PathContainer,
+} from 'sauce-testrunner-utils/lib/types';
 
 export type MetaData = {
   tags: string[];
   build: string;
-}
+};
 
 export type SauceConfig = {
   region: 'us-west-1' | 'us-east-4' | 'eu-central-1' | 'staging';
@@ -31,8 +33,8 @@ export type CypressConfig = {
     video: boolean;
     videoCompression: boolean;
     env: {
-      [key: string]: string
-    }
+      [key: string]: string;
+    };
   };
 };
 
@@ -42,7 +44,9 @@ export type RunConfig = {
   resultsDir: string;
   path: string;
   cypress: CypressConfig;
-} & NpmConfigContainer & PathContainer & ResultPathContainer;
+} & NpmConfigContainer &
+  PathContainer &
+  ResultPathContainer;
 
 export type Results = {
   runs: any[];
