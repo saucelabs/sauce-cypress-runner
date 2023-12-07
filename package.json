@@ -35,7 +35,7 @@
     "@cypress/grep": "4.0.1",
     "@cypress/webpack-preprocessor": "6.0.0",
     "@cypress/xpath": "2.0.3",
-    "@saucelabs/cypress-plugin": "3.1.0",
+    "@saucelabs/cypress-plugin": "3.1.1",
     "@shelex/cypress-allure-plugin": "2.40.0",
     "@tsconfig/node20": "20.1.2",
     "babel-loader": "9.1.3",
