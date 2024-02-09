@@ -8,7 +8,6 @@
             "name": "default",
             "browser": "chrome",
             "browserVersion": "",
-            "headless": true,
             "config": {
                 "testingType": "e2e",
                 "specPattern": [
@@ -20,7 +19,6 @@
             "name": "webkit",
             "browser": "webkit",
             "browserVersion": "",
-            "headless": true,
             "config": {
                 "testingType": "e2e",
                 "specPattern": [

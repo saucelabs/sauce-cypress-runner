@@ -17,7 +17,7 @@
         ],
         "env": {
           "FOO": "bar",
-          "host": "https://saucelabs.com/",
+          "host": "https://saucelabs.com",
           "HELLO": "WORLD",
           "VALUE": "$TEST_VALUE"
         }
