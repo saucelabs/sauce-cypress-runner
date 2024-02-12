@@ -24,7 +24,9 @@ export function mergeJUnitFile(
   for (let i = 0; i < specFiles.length; i++) {
     const specJUnitFile = path.join(resultsFolder, `${specFiles[i]}.xml`);
     if (!fs.existsSync(specJUnitFile)) {
-      console.warn(`JUnit file not found for spec: ${specFiles[i]}`);
+      console.warn(
+        `JUnit file not found for spec: ${specFiles[i]}. Proceeding without it...`,
+      );
       continue;
     }
     const xmlData = fs.readFileSync(specJUnitFile, 'utf8');
