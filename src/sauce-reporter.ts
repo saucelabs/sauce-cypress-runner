@@ -36,6 +36,7 @@ export function mergeJUnitFile(
     }
   }
   if (testsuites.length === 0) {
+    console.warn('JUnit file generation skipped: No test suites detected.');
     return;
   }
 
