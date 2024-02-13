@@ -100,6 +100,8 @@ jobs:
               exit 1
           }
 
+          # Check if the asset has already been uploaded by verifying if asset_id is not empty.
+          # This prevents the re-upload of the bundled asset during step retries.
           $selectedAsset = $null
           Foreach ($asset in $selectedRelease.assets) {
             if ($asset.name -eq "cypress-windows-amd64.zip") {
@@ -181,6 +183,8 @@ jobs:
               exit 1
           fi
 
+          # Check if the asset has already been uploaded by verifying if `ASSET_ID` is not empty.
+          # This prevents the re-upload of the bundled asset during step retries.
           ASSET_ID=$(curl -s -H "Authorization: token ${{ github.token }}" \
                       https://api.github.com/repos/${{ github.repository }}/releases | \
                       jq -r "[.[] | select(.body | contains(\"- jobId: ${{ github.run_id }}\\n\"))] | first | .assets | .[] | select(.name == \"cypress-macos-amd64.zip\") | .id | select(. != null)")
