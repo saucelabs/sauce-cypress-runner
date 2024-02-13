@@ -1,5 +1,5 @@
 /**
- * This is an extension of MochaJunitReporter
+ * This is an extension of mocha-junit-reporter
  */
 
 import xml from 'xml';
@@ -345,7 +345,6 @@ MochaJUnitReporter.prototype.getSauceTestsuiteData = function (suite: any) {
 };
 
 MochaJUnitReporter.prototype.getSauceTestcaseData = function (testcase: any) {
-  // console.log(testcase);
   return {
     id: testcase.order,
     screenshot: 0,

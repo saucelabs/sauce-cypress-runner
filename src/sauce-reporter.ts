@@ -4,7 +4,7 @@ import { escapeXML } from 'sauce-testrunner-utils';
 import convert from 'xml-js';
 import { XmlSuiteContainer } from './types';
 
-export function mergeJunitFile(
+export function mergeJUnitFile(
   specFiles: any[],
   resultsFolder: string,
   testName: string,
@@ -22,16 +22,21 @@ export function mergeJunitFile(
   } = { compact: true, spaces: 4 };
   const testsuites = [];
   for (let i = 0; i < specFiles.length; i++) {
-    const xmlData = fs.readFileSync(
-      path.join(resultsFolder, `${specFiles[i]}.xml`),
-      'utf8',
-    );
+    const specJUnitFile = path.join(resultsFolder, `${specFiles[i]}.xml`);
+    if (!fs.existsSync(specJUnitFile)) {
+      console.warn(
+        `JUnit file not found for spec: ${specFiles[i]}. Proceeding without it...`,
+      );
+      continue;
+    }
+    const xmlData = fs.readFileSync(specJUnitFile, 'utf8');
     const jsObj = convert.xml2js(xmlData, opts) as XmlSuiteContainer;
     if (jsObj.testsuites && jsObj.testsuites.testsuite) {
       testsuites.push(...jsObj.testsuites.testsuite);
     }
   }
   if (testsuites.length === 0) {
+    console.warn('JUnit file generation skipped: no test suites detected.');
     return;
   }
 

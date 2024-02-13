@@ -1,4 +1,4 @@
-import { mergeJunitFile } from './sauce-reporter';
+import { mergeJUnitFile } from './sauce-reporter';
 import path from 'path';
 import fs from 'fs';
 import {
@@ -38,7 +38,7 @@ async function report(
   }
 
   try {
-    mergeJunitFile(
+    mergeJUnitFile(
       specFiles,
       runCfg.resultsDir,
       suiteName,
@@ -46,7 +46,7 @@ async function report(
       platformName,
     );
   } catch (e) {
-    console.error('Failed to generate junit file:', e);
+    console.warn('Skipping JUnit file generation:', e);
   }
 
   try {
