@@ -233,8 +233,7 @@ async function cypressRunner(
 
   // Execute pre-exec steps
   if (!(await preExec.run(suite, preExecTimeoutSec))) {
-    await report({} as CypressCommandLine.CypressRunResult, 0, runCfg);
-    return;
+    return false;
   }
 
   // saucectl suite.timeout is in nanoseconds
