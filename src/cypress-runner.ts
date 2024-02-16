@@ -1,4 +1,3 @@
-import { mergeJUnitFile } from './sauce-reporter';
 import path from 'path';
 import fs from 'fs';
 import {
@@ -14,37 +13,19 @@ import cypress from 'cypress';
 import util from 'util';
 import _ from 'lodash';
 import { afterRunTestReport } from '@saucelabs/cypress-plugin';
+import { createJUnitReport } from '@saucelabs/cypress-junit-plugin';
 
 import { RunConfig, Suite } from './types';
 
 async function report(
   results: CypressCommandLine.CypressRunResult,
   statusCode: number,
-  browserName: string,
   runCfg: RunConfig,
-  suiteName: string,
 ) {
-  // Prepare the assets
-  const runs = results.runs || [];
-  const specFiles = runs.map((run) => path.basename(run.spec.name));
-
-  const failures = results.totalFailed;
-  let platformName = '';
-  for (const c of runCfg.suites) {
-    if (c.name === suiteName) {
-      platformName = c.platformName;
-      break;
-    }
-  }
-
   try {
-    mergeJUnitFile(
-      specFiles,
-      runCfg.resultsDir,
-      suiteName,
-      browserName,
-      platformName,
-    );
+    createJUnitReport(results, {
+      filename: path.join(runCfg.resultsDir, 'junit.xml'),
+    });
   } catch (e) {
     console.warn('Skipping JUnit file generation:', e);
   }
@@ -59,45 +40,13 @@ async function report(
     console.error('Failed to serialize test results:', e);
   }
 
-  return failures === 0 && statusCode === 0;
+  return results.totalFailed === 0 && statusCode === 0;
 }
 
 // Configure reporters
 function configureReporters(runCfg: RunConfig, opts: any) {
-  // Enable cypress-multi-reporters plugin
-  opts.config.reporter = path.join(
-    __dirname,
-    '../node_modules/cypress-multi-reporters/lib/MultiReporters.js',
-  );
-  opts.config.reporterOptions = {
-    configFile: path.join(__dirname, '..', 'sauce-reporter-config.json'),
-  };
-
-  const customReporter = path.join(__dirname, '../lib/custom-reporter.js');
-  const junitReporter = path.join(
-    __dirname,
-    '../node_modules/mocha-junit-reporter/index.js',
-  );
-
-  let defaultSpecRoot = '';
-  if (opts.testingType === 'component') {
-    defaultSpecRoot = 'cypress/component';
-  } else {
-    defaultSpecRoot = 'cypress/e2e';
-  }
-
-  // Referencing "mocha-junit-reporter" using relative path will allow to have multiple instance of mocha-junit-reporter.
-  // That permits to have a configuration specific to us, and in addition to keep customer's one.
   const reporterConfig = {
-    reporterEnabled: `spec, ${customReporter}, ${junitReporter}`,
-    [[_.camelCase(customReporter), 'ReporterOptions'].join('')]: {
-      mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: defaultSpecRoot,
-    },
-    [[_.camelCase(junitReporter), 'ReporterOptions'].join('')]: {
-      mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: defaultSpecRoot,
-    },
+    reporterEnabled: `spec`,
   };
 
   // Adding custom reporters
@@ -116,6 +65,17 @@ function configureReporters(runCfg: RunConfig, opts: any) {
     path.join(__dirname, '..', 'sauce-reporter-config.json'),
     JSON.stringify(reporterConfig),
   );
+
+  // Cypress only supports a single reporter out of the box, so we need to use
+  // a plugin to support multiple reporters.
+  opts.config.reporter = path.join(
+    __dirname,
+    '../node_modules/cypress-multi-reporters/lib/MultiReporters.js',
+  );
+  opts.config.reporterOptions = {
+    configFile: path.join(__dirname, '..', 'sauce-reporter-config.json'),
+  };
+
   return opts;
 }
 
@@ -270,13 +230,7 @@ async function cypressRunner(
 
   // Execute pre-exec steps
   if (!(await preExec.run(suite, preExecTimeoutSec))) {
-    await report(
-      {} as CypressCommandLine.CypressRunResult,
-      0,
-      cypressOpts.browser,
-      runCfg,
-      suiteName,
-    );
+    await report({} as CypressCommandLine.CypressRunResult, 0, runCfg);
     return;
   }
 
@@ -300,9 +254,7 @@ async function cypressRunner(
   return await report(
     results as CypressCommandLine.CypressRunResult,
     statusCode,
-    cypressOpts.browser,
     runCfg,
-    suiteName,
   );
 }
 
