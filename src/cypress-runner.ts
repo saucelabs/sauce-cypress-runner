@@ -60,11 +60,14 @@ function configureReporters(runCfg: RunConfig, opts: any) {
     }
   }
 
-  // Save reporters config
-  fs.writeFileSync(
-    path.join(__dirname, '..', 'sauce-reporter-config.json'),
-    JSON.stringify(reporterConfig),
+  const reporterConfigPath = path.join(
+    __dirname,
+    '..',
+    'sauce-reporter-config.json',
   );
+
+  // Save reporters config
+  fs.writeFileSync(reporterConfigPath, JSON.stringify(reporterConfig));
 
   // Cypress only supports a single reporter out of the box, so we need to use
   // a plugin to support multiple reporters.
@@ -73,7 +76,7 @@ function configureReporters(runCfg: RunConfig, opts: any) {
     '../node_modules/cypress-multi-reporters/lib/MultiReporters.js',
   );
   opts.config.reporterOptions = {
-    configFile: path.join(__dirname, '..', 'sauce-reporter-config.json'),
+    configFile: reporterConfigPath,
   };
 
   return opts;
