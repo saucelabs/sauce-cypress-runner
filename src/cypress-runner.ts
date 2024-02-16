@@ -263,12 +263,12 @@ if (require.main === module) {
   const packageInfo = require(path.join(__dirname, '..', 'package.json'));
   console.log(`Sauce Cypress Runner ${packageInfo.version}`);
   console.log(`Running Cypress ${packageInfo.dependencies?.cypress || ''}`);
-  const { nodeBin, runCfgPath, suiteName } = getArgs();
-  // maxTimeout maximum test execution timeout is 1800 seconds (30 mins)
-  const maxTimeout = 1800;
-  const maxPreExecTimeout = 300;
 
-  cypressRunner(nodeBin, runCfgPath, suiteName, maxTimeout, maxPreExecTimeout)
+  const { nodeBin, runCfgPath, suiteName } = getArgs();
+  const timeoutSec = 1800; // 30 min
+  const preExecTimeoutSec = 300; // 5 min
+
+  cypressRunner(nodeBin, runCfgPath, suiteName, timeoutSec, preExecTimeoutSec)
     .then((passed) => process.exit(passed ? 0 : 1))
     .catch((err) => {
       console.log(err);
