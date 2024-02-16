@@ -126,7 +126,7 @@ function getCypressOpts(
   }
 
   let headed = true;
-  // suite.config.headless is kepts to keep backward compatibility.
+  // suite.config.headless is kept to keep backward compatibility.
   if (suite.headless || suite.config.headless) {
     headed = false;
   }
