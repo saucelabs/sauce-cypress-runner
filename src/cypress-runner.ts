@@ -18,8 +18,9 @@ import { createJUnitReport } from '@saucelabs/cypress-junit-plugin';
 import { RunConfig, Suite } from './types';
 
 async function report(
-  results: CypressCommandLine.CypressRunResult,
-  statusCode: number,
+  results:
+    | CypressCommandLine.CypressRunResult
+    | CypressCommandLine.CypressFailedRunResult,
   runCfg: RunConfig,
 ) {
   try {
@@ -28,6 +29,10 @@ async function report(
     });
   } catch (e) {
     console.warn('Skipping JUnit file generation:', e);
+  }
+
+  if (isFailedRunResult(results)) {
+    return false;
   }
 
   try {
@@ -40,7 +45,17 @@ async function report(
     console.error('Failed to serialize test results:', e);
   }
 
-  return results.totalFailed === 0 && statusCode === 0;
+  return results.totalFailed === 0;
+}
+
+function isFailedRunResult(
+  maybe:
+    | CypressCommandLine.CypressRunResult
+    | CypressCommandLine.CypressFailedRunResult,
+): maybe is CypressCommandLine.CypressFailedRunResult {
+  return (
+    (maybe as CypressCommandLine.CypressFailedRunResult).status === 'failed'
+  );
 }
 
 // Configure reporters
@@ -239,25 +254,25 @@ async function cypressRunner(
   // saucectl suite.timeout is in nanoseconds
   timeoutSec = suite.timeout / 1000000000 || timeoutSec;
   let timeout: NodeJS.Timeout;
-  const timeoutPromise = new Promise((resolve) => {
-    timeout = setTimeout(() => {
-      console.error(`Test timed out after ${timeoutSec} seconds`);
-      resolve(false);
-    }, timeoutSec * 1000);
-  });
+  const timeoutPromise: Promise<CypressCommandLine.CypressFailedRunResult> =
+    new Promise((resolve) => {
+      timeout = setTimeout(() => {
+        console.error(`Test timed out after ${timeoutSec} seconds`);
+        resolve({
+          status: 'failed',
+          failures: 1,
+          message: `Test timed out after ${timeoutSec} seconds`,
+        });
+      }, timeoutSec * 1000);
+    });
 
   const results = await Promise.race([
     timeoutPromise,
     cypress.run(cypressOpts),
   ]);
   clearTimeout(timeout);
-  const statusCode = results ? 0 : 1;
 
-  return await report(
-    results as CypressCommandLine.CypressRunResult,
-    statusCode,
-    runCfg,
-  );
+  return await report(results, runCfg);
 }
 
 // For dev and test purposes, this allows us to run our Cypress Runner from command line
