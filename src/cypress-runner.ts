@@ -31,10 +31,6 @@ async function report(
     console.warn('Skipping JUnit file generation:', e);
   }
 
-  if (isFailedRunResult(results)) {
-    return false;
-  }
-
   try {
     const reportJSON = await afterRunTestReport(results);
     if (reportJSON) {
@@ -43,6 +39,10 @@ async function report(
     }
   } catch (e) {
     console.error('Failed to serialize test results:', e);
+  }
+
+  if (isFailedRunResult(results)) {
+    return false;
   }
 
   return results.totalFailed === 0;
