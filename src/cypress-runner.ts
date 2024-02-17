@@ -292,5 +292,3 @@ if (require.main === module) {
       process.exit(1);
     });
 }
-
-export { cypressRunner, configureReporters, getSuite, setEnvironmentVariables };
