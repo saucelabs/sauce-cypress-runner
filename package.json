@@ -23,7 +23,7 @@
     "release:patch": "npm run release -- patch",
     "release:minor": "npm run release -- minor",
     "release:major": "npm run release -- major",
-    "unit-test": "jest --env node"
+    "unit-test": "jest --env node --passWithNoTests"
   },
   "keywords": [],
   "dependencies": {
