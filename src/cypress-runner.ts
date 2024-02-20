@@ -1,4 +1,3 @@
-import { mergeJUnitFile } from './sauce-reporter';
 import path from 'path';
 import fs from 'fs';
 import {
@@ -14,37 +13,20 @@ import cypress from 'cypress';
 import util from 'util';
 import _ from 'lodash';
 import { afterRunTestReport } from '@saucelabs/cypress-plugin';
+import { createJUnitReport } from '@saucelabs/cypress-junit-plugin';
 
 import { RunConfig, Suite } from './types';
 
 async function report(
-  results: CypressCommandLine.CypressRunResult,
-  statusCode: number,
-  browserName: string,
+  results:
+    | CypressCommandLine.CypressRunResult
+    | CypressCommandLine.CypressFailedRunResult,
   runCfg: RunConfig,
-  suiteName: string,
 ) {
-  // Prepare the assets
-  const runs = results.runs || [];
-  const specFiles = runs.map((run) => path.basename(run.spec.name));
-
-  const failures = results.totalFailed;
-  let platformName = '';
-  for (const c of runCfg.suites) {
-    if (c.name === suiteName) {
-      platformName = c.platformName;
-      break;
-    }
-  }
-
   try {
-    mergeJUnitFile(
-      specFiles,
-      runCfg.resultsDir,
-      suiteName,
-      browserName,
-      platformName,
-    );
+    createJUnitReport(results, {
+      filename: path.join(runCfg.resultsDir, 'junit.xml'),
+    });
   } catch (e) {
     console.warn('Skipping JUnit file generation:', e);
   }
@@ -59,45 +41,27 @@ async function report(
     console.error('Failed to serialize test results:', e);
   }
 
-  return failures === 0 && statusCode === 0;
+  if (isFailedRunResult(results)) {
+    return false;
+  }
+
+  return results.totalFailed === 0;
+}
+
+function isFailedRunResult(
+  maybe:
+    | CypressCommandLine.CypressRunResult
+    | CypressCommandLine.CypressFailedRunResult,
+): maybe is CypressCommandLine.CypressFailedRunResult {
+  return (
+    (maybe as CypressCommandLine.CypressFailedRunResult).status === 'failed'
+  );
 }
 
 // Configure reporters
 function configureReporters(runCfg: RunConfig, opts: any) {
-  // Enable cypress-multi-reporters plugin
-  opts.config.reporter = path.join(
-    __dirname,
-    '../node_modules/cypress-multi-reporters/lib/MultiReporters.js',
-  );
-  opts.config.reporterOptions = {
-    configFile: path.join(__dirname, '..', 'sauce-reporter-config.json'),
-  };
-
-  const customReporter = path.join(__dirname, '../lib/custom-reporter.js');
-  const junitReporter = path.join(
-    __dirname,
-    '../node_modules/mocha-junit-reporter/index.js',
-  );
-
-  let defaultSpecRoot = '';
-  if (opts.testingType === 'component') {
-    defaultSpecRoot = 'cypress/component';
-  } else {
-    defaultSpecRoot = 'cypress/e2e';
-  }
-
-  // Referencing "mocha-junit-reporter" using relative path will allow to have multiple instance of mocha-junit-reporter.
-  // That permits to have a configuration specific to us, and in addition to keep customer's one.
   const reporterConfig = {
-    reporterEnabled: `spec, ${customReporter}, ${junitReporter}`,
-    [[_.camelCase(customReporter), 'ReporterOptions'].join('')]: {
-      mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: defaultSpecRoot,
-    },
-    [[_.camelCase(junitReporter), 'ReporterOptions'].join('')]: {
-      mochaFile: `${runCfg.resultsDir}/[suite].xml`,
-      specRoot: defaultSpecRoot,
-    },
+    reporterEnabled: `spec`,
   };
 
   // Adding custom reporters
@@ -111,11 +75,25 @@ function configureReporters(runCfg: RunConfig, opts: any) {
     }
   }
 
-  // Save reporters config
-  fs.writeFileSync(
-    path.join(__dirname, '..', 'sauce-reporter-config.json'),
-    JSON.stringify(reporterConfig),
+  const reporterConfigPath = path.join(
+    __dirname,
+    '..',
+    'sauce-reporter-config.json',
   );
+
+  // Save reporters config
+  fs.writeFileSync(reporterConfigPath, JSON.stringify(reporterConfig));
+
+  // Cypress only supports a single reporter out of the box, so we need to use
+  // a plugin to support multiple reporters.
+  opts.config.reporter = path.join(
+    __dirname,
+    '../node_modules/cypress-multi-reporters/lib/MultiReporters.js',
+  );
+  opts.config.reporterOptions = {
+    configFile: reporterConfigPath,
+  };
+
   return opts;
 }
 
@@ -163,7 +141,7 @@ function getCypressOpts(
   }
 
   let headed = true;
-  // suite.config.headless is kepts to keep backward compatibility.
+  // suite.config.headless is kept to keep backward compatibility.
   if (suite.headless || suite.config.headless) {
     headed = false;
   }
@@ -270,40 +248,31 @@ async function cypressRunner(
 
   // Execute pre-exec steps
   if (!(await preExec.run(suite, preExecTimeoutSec))) {
-    await report(
-      {} as CypressCommandLine.CypressRunResult,
-      0,
-      cypressOpts.browser,
-      runCfg,
-      suiteName,
-    );
-    return;
+    return false;
   }
 
   // saucectl suite.timeout is in nanoseconds
   timeoutSec = suite.timeout / 1000000000 || timeoutSec;
   let timeout: NodeJS.Timeout;
-  const timeoutPromise = new Promise((resolve) => {
-    timeout = setTimeout(() => {
-      console.error(`Test timed out after ${timeoutSec} seconds`);
-      resolve(false);
-    }, timeoutSec * 1000);
-  });
+  const timeoutPromise: Promise<CypressCommandLine.CypressFailedRunResult> =
+    new Promise((resolve) => {
+      timeout = setTimeout(() => {
+        console.error(`Test timed out after ${timeoutSec} seconds`);
+        resolve({
+          status: 'failed',
+          failures: 1,
+          message: `Test timed out after ${timeoutSec} seconds`,
+        });
+      }, timeoutSec * 1000);
+    });
 
   const results = await Promise.race([
     timeoutPromise,
     cypress.run(cypressOpts),
   ]);
   clearTimeout(timeout);
-  const statusCode = results ? 0 : 1;
 
-  return await report(
-    results as CypressCommandLine.CypressRunResult,
-    statusCode,
-    cypressOpts.browser,
-    runCfg,
-    suiteName,
-  );
+  return await report(results, runCfg);
 }
 
 // For dev and test purposes, this allows us to run our Cypress Runner from command line
@@ -311,17 +280,15 @@ if (require.main === module) {
   const packageInfo = require(path.join(__dirname, '..', 'package.json'));
   console.log(`Sauce Cypress Runner ${packageInfo.version}`);
   console.log(`Running Cypress ${packageInfo.dependencies?.cypress || ''}`);
-  const { nodeBin, runCfgPath, suiteName } = getArgs();
-  // maxTimeout maximum test execution timeout is 1800 seconds (30 mins)
-  const maxTimeout = 1800;
-  const maxPreExecTimeout = 300;
 
-  cypressRunner(nodeBin, runCfgPath, suiteName, maxTimeout, maxPreExecTimeout)
+  const { nodeBin, runCfgPath, suiteName } = getArgs();
+  const timeoutSec = 1800; // 30 min
+  const preExecTimeoutSec = 300; // 5 min
+
+  cypressRunner(nodeBin, runCfgPath, suiteName, timeoutSec, preExecTimeoutSec)
     .then((passed) => process.exit(passed ? 0 : 1))
     .catch((err) => {
       console.log(err);
       process.exit(1);
     });
 }
-
-export { cypressRunner, configureReporters, getSuite, setEnvironmentVariables };
