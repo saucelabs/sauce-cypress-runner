@@ -39,7 +39,7 @@
     "@shelex/cypress-allure-plugin": "2.40.1",
     "@tsconfig/node20": "20.1.2",
     "babel-loader": "9.1.3",
-    "cypress": "13.6.5",
+    "cypress": "13.6.6",
     "cypress-mochawesome-reporter": "3.8.1",
     "cypress-multi-reporters": "1.6.4",
     "cypress-wait-until": "3.0.1",
