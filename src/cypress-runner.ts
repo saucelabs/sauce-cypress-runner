@@ -8,6 +8,7 @@ import {
   getArgs,
   getEnv,
   preExec,
+  zip,
 } from 'sauce-testrunner-utils';
 import cypress from 'cypress';
 import util from 'util';
@@ -208,6 +209,13 @@ async function canAccessFolder(file: string) {
   await fsAccess(file, fs.constants.R_OK | fs.constants.W_OK);
 }
 
+function zipArtifacts(runCfg: RunConfig) {
+  Object.keys(runCfg.artifacts.remain).forEach((key) => {
+    const value = runCfg.artifacts.remain[key];
+    zip(runCfg.path, key, path.join(runCfg.resultsDir, value));
+  });
+}
+
 async function cypressRunner(
   nodeBin: string,
   runCfgPath: string,
@@ -271,6 +279,7 @@ async function cypressRunner(
     cypress.run(cypressOpts),
   ]);
   clearTimeout(timeout);
+  zipArtifacts(runCfg);
 
   return await report(results, runCfg);
 }
