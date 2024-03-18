@@ -210,8 +210,8 @@ async function canAccessFolder(file: string) {
 }
 
 function zipArtifacts(runCfg: RunConfig) {
-  Object.keys(runCfg.artifacts.remain).forEach((key) => {
-    const value = runCfg.artifacts.remain[key];
+  Object.keys(runCfg.artifacts.retain).forEach((key) => {
+    const value = runCfg.artifacts.retain[key];
     zip(runCfg.path, key, path.join(runCfg.resultsDir, value));
   });
 }
