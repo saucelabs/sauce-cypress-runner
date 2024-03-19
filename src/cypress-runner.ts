@@ -213,9 +213,8 @@ function zipArtifacts(runCfg: RunConfig) {
   if (!runCfg.artifacts || !runCfg.artifacts.retain) {
     return;
   }
-  Object.keys(runCfg.artifacts.retain).forEach((key) => {
-    const source = key;
-    const dest = path.join(runCfg.resultsDir, runCfg.artifacts.retain[key]);
+  Object.keys(runCfg.artifacts.retain).forEach((source) => {
+    const dest = path.join(runCfg.resultsDir, runCfg.artifacts.retain[source]);
     try {
       zip(path.dirname(runCfg.path), source, dest);
     } catch (err) {
