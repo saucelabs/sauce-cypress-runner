@@ -49,8 +49,8 @@ export type ResultPathContainer = {
 };
 
 export type ArtifactsContainer = {
-  artifacts: {
-    retain: {
+  artifacts?: {
+    retain?: {
       [key: string]: string;
     };
   };
