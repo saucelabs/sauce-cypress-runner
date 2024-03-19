@@ -210,6 +210,9 @@ async function canAccessFolder(file: string) {
 }
 
 function zipArtifacts(runCfg: RunConfig) {
+  if (!runCfg.artifacts || !runCfg.artifacts.retain) {
+    return;
+  }
   Object.keys(runCfg.artifacts.retain).forEach((key) => {
     const value = runCfg.artifacts.retain[key];
     zip(runCfg.path, key, path.join(runCfg.resultsDir, value));
