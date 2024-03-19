@@ -214,8 +214,15 @@ function zipArtifacts(runCfg: RunConfig) {
     return;
   }
   Object.keys(runCfg.artifacts.retain).forEach((key) => {
-    const value = runCfg.artifacts.retain[key];
-    zip(runCfg.path, key, path.join(runCfg.resultsDir, value));
+    const source = key;
+    const dest = path.join(runCfg.resultsDir, runCfg.artifacts.retain[key]);
+    try {
+      zip(path.dirname(runCfg.path), source, dest);
+    } catch (err) {
+      console.error(
+        `Zip file creation failed for destination: "${dest}", source: "${source}". Error: ${err}.`,
+      );
+    }
   });
 }
 
