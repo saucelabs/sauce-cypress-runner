@@ -8,6 +8,7 @@ import {
   getArgs,
   getEnv,
   preExec,
+  zip,
 } from 'sauce-testrunner-utils';
 import cypress from 'cypress';
 import util from 'util';
@@ -208,6 +209,23 @@ async function canAccessFolder(file: string) {
   await fsAccess(file, fs.constants.R_OK | fs.constants.W_OK);
 }
 
+function zipArtifacts(runCfg: RunConfig) {
+  if (!runCfg.artifacts || !runCfg.artifacts.retain) {
+    return;
+  }
+  const archivesMap = runCfg.artifacts.retain;
+  Object.keys(archivesMap).forEach((source) => {
+    const dest = path.join(runCfg.resultsDir, archivesMap[source]);
+    try {
+      zip(path.dirname(runCfg.path), source, dest);
+    } catch (err) {
+      console.error(
+        `Zip file creation failed for destination: "${dest}", source: "${source}". Error: ${err}.`,
+      );
+    }
+  });
+}
+
 async function cypressRunner(
   nodeBin: string,
   runCfgPath: string,
@@ -271,6 +289,7 @@ async function cypressRunner(
     cypress.run(cypressOpts),
   ]);
   clearTimeout(timeout);
+  zipArtifacts(runCfg);
 
   return await report(results, runCfg);
 }

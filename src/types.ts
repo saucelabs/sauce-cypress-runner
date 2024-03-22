@@ -41,8 +41,17 @@ export type RunConfig = {
   cypress: CypressConfig;
 } & NpmConfigContainer &
   PathContainer &
-  ResultPathContainer;
+  ResultPathContainer &
+  ArtifactsContainer;
 
 export type ResultPathContainer = {
   resultsDir: string;
+};
+
+export type ArtifactsContainer = {
+  artifacts?: {
+    retain?: {
+      [key: string]: string;
+    };
+  };
 };
