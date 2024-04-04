@@ -1,3 +1,4 @@
+import { execSync } from 'node:child_process';
 import path from 'path';
 import fs from 'fs';
 import {
@@ -260,6 +261,11 @@ async function cypressRunner(
   const nodeCtx = { nodePath: nodeBin, npmPath: npmBin };
 
   await prepareNpmEnv(runCfg, nodeCtx);
+
+  console.log(
+    'npm config: ',
+    execSync(`${nodeCtx.nodePath} ${nodeCtx.npmPath} get`),
+  );
   const cypressOpts = getCypressOpts(runCfg, suiteName);
   const suites = runCfg.suites || [];
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
