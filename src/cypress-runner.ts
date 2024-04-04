@@ -268,10 +268,8 @@ async function cypressRunner(
   );
 
   console.log(
-    '@cypress/grep tarball',
-    execSync(
-      `${nodeCtx.nodePath} ${nodeCtx.npmPath} view "@cypress/grep" dist.tarball`,
-    ).toString(),
+    'npm ls --json',
+    execSync(`${nodeCtx.nodePath} ${nodeCtx.npmPath} ls --json`).toString(),
   );
   const cypressOpts = getCypressOpts(runCfg, suiteName);
   const suites = runCfg.suites || [];
