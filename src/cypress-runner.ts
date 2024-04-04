@@ -264,7 +264,7 @@ async function cypressRunner(
 
   console.log(
     'npm config: ',
-    execSync(`${nodeCtx.nodePath} ${nodeCtx.npmPath} get`),
+    execSync(`${nodeCtx.nodePath} ${nodeCtx.npmPath} get`).toString(),
   );
   const cypressOpts = getCypressOpts(runCfg, suiteName);
   const suites = runCfg.suites || [];
