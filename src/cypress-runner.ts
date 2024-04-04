@@ -266,6 +266,13 @@ async function cypressRunner(
     'npm config: ',
     execSync(`${nodeCtx.nodePath} ${nodeCtx.npmPath} get`).toString(),
   );
+
+  console.log(
+    '@cypress/grep tarball',
+    execSync(
+      `${nodeCtx.nodePath} ${nodeCtx.npmPath} view "@cypress/grep" dist.tarball`,
+    ).toString(),
+  );
   const cypressOpts = getCypressOpts(runCfg, suiteName);
   const suites = runCfg.suites || [];
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
