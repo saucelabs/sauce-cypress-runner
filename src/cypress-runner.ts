@@ -268,8 +268,10 @@ async function cypressRunner(
   );
 
   console.log(
-    'npm ls --json',
-    execSync(`${nodeCtx.nodePath} ${nodeCtx.npmPath} ls --json`).toString(),
+    'npm ls "@cypress/grep" --json',
+    execSync(
+      `${nodeCtx.nodePath} ${nodeCtx.npmPath} ls "@cypress/grep" --json`,
+    ).toString(),
   );
 
   console.log(
