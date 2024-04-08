@@ -161,8 +161,8 @@ function getCypressOpts(
         specPattern: suite.config.specPattern,
         excludeSpecPattern: suite.config.excludeSpecPattern || [],
       },
-      videosFolder: runCfg.resultsDir,
-      screenshotsFolder: runCfg.resultsDir,
+      videosFolder: runCfg.cypressOutputDir,
+      screenshotsFolder: runCfg.cypressOutputDir,
       video: shouldRecordVideo(),
       videoCompression: false,
       env: getEnv(suite),
@@ -263,6 +263,11 @@ async function cypressRunner(
   const cypressOpts = getCypressOpts(runCfg, suiteName);
   const suites = runCfg.suites || [];
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
+
+  runCfg.cypressOutputDir =
+    suite.env?.SAUCE_SYNC_WEB_ASSETS?.toLowerCase() === 'true'
+      ? undefined
+      : runCfg.resultsDir;
 
   // Execute pre-exec steps
   if (!(await preExec.run(suite, preExecTimeoutSec))) {
