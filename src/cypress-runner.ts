@@ -124,7 +124,7 @@ function setEnvironmentVariables(runCfg: RunConfig, suiteName: string) {
   process.env.CYPRESS_SAUCE_SUITE_NAME = suite.name;
   process.env.CYPRESS_SAUCE_ARTIFACTS_DIRECTORY = runCfg.resultsDir;
   process.env.SAUCE_WEB_ASSETS_DIR =
-    suite.config?.env?.SAUCE_SYNC_WEB_ASSETS === 'true'
+    suite.config?.env?.SAUCE_SYNC_WEB_ASSETS?.toLowerCase() === 'true'
       ? runCfg.resultsDir
       : '';
 
