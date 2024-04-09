@@ -274,7 +274,7 @@ async function cypressRunner(
   const suite = suites.find((testSuite) => testSuite.name === suiteName);
 
   runCfg.cypressOutputDir =
-    suite.env?.SAUCE_SYNC_WEB_ASSETS?.toLowerCase() === 'true'
+    suite.config?.env?.SAUCE_SYNC_WEB_ASSETS?.toLowerCase() === 'true'
       ? undefined
       : runCfg.resultsDir;
 
