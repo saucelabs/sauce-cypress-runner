@@ -37,7 +37,6 @@ export type RunConfig = {
   sauce: SauceConfig;
   suites: any[];
   resultsDir: string;
-  cypressOutputDir?: string;
   path: string;
   cypress: CypressConfig;
 } & NpmConfigContainer &
