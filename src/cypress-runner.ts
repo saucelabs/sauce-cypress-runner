@@ -118,6 +118,10 @@ function setEnvironmentVariables(runCfg: RunConfig, suiteName: string) {
 
   process.env.CYPRESS_SAUCE_SUITE_NAME = suite.name;
   process.env.CYPRESS_SAUCE_ARTIFACTS_DIRECTORY = runCfg.resultsDir;
+  process.env.SAUCE_WEB_ASSETS_DIR =
+    suite.config?.env?.SAUCE_SYNC_WEB_ASSETS?.toLowerCase() === 'true'
+      ? runCfg.resultsDir
+      : '';
 
   for (const [key, value] of Object.entries(envVars)) {
     process.env[key] = value as string;
@@ -148,6 +152,10 @@ function getCypressOpts(
   }
 
   const testingType = suite.config.testingType || 'e2e';
+  const cypressOutputDir =
+    suite.config?.env?.SAUCE_SYNC_WEB_ASSETS?.toLowerCase() === 'true'
+      ? undefined
+      : runCfg.resultsDir;
 
   let opts: Partial<CypressCommandLine.CypressRunOptions> = {
     project: path.dirname(cypressCfgFile),
@@ -161,8 +169,8 @@ function getCypressOpts(
         specPattern: suite.config.specPattern,
         excludeSpecPattern: suite.config.excludeSpecPattern || [],
       },
-      videosFolder: runCfg.resultsDir,
-      screenshotsFolder: runCfg.resultsDir,
+      videosFolder: cypressOutputDir,
+      screenshotsFolder: cypressOutputDir,
       video: shouldRecordVideo(),
       videoCompression: false,
       env: getEnv(suite),
