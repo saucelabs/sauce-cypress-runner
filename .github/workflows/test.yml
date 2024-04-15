@@ -19,10 +19,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
@@ -43,10 +43,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
@@ -75,26 +75,26 @@ jobs:
     needs: [test]
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Use Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       - name: Google Cloud Login
-        uses: google-github-actions/auth@v1
+        uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.GCS_RUNNER_SA_KEY }}'
 
       - name: Install gcloud SDK
-        uses: google-github-actions/setup-gcloud@v1
+        uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ secrets.GCS_RUNNER_PROJECT_ID }}
         env:
@@ -111,7 +111,7 @@ jobs:
           Write-Output "cypress_version=$((Get-Content ./package.json -Raw | ConvertFrom-Json).dependencies.cypress)" >> $env:GITHUB_ENV
 
       - name: Archive Bundle
-        uses: azure/powershell@v1
+        uses: azure/powershell@v2
         with:
           inlineScript: |
             Compress-Archive bundle/ cypress-windows-amd64.zip
@@ -126,26 +126,26 @@ jobs:
     needs: [test]
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       - name: Google Cloud Login
-        uses: google-github-actions/auth@v1
+        uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.GCS_RUNNER_SA_KEY }}'
 
       - name: Install gcloud SDK
-        uses: google-github-actions/setup-gcloud@v1
+        uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ secrets.GCS_RUNNER_PROJECT_ID }}
         env:
@@ -190,10 +190,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup saucectl
-        uses: saucelabs/saucectl-run-action@v3
+        uses: saucelabs/saucectl-run-action@v4
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -232,14 +232,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout runner
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       - name: Setup saucectl
-        uses: saucelabs/saucectl-run-action@v3
+        uses: saucelabs/saucectl-run-action@v4
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
@@ -283,10 +283,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup saucectl
-        uses: saucelabs/saucectl-run-action@v3
+        uses: saucelabs/saucectl-run-action@v4
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
