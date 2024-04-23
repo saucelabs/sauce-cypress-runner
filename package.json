@@ -48,7 +48,7 @@
     "lodash": "4.17.21",
     "mkdirp": "^3.0.1",
     "playwright-webkit": "1.43.1",
-    "sauce-testrunner-utils": "2.1.1",
+    "sauce-testrunner-utils": "2.2.0",
     "typescript": "5.4.5",
     "webpack": "5.90.3",
     "xml-js": "^1.6.11",
