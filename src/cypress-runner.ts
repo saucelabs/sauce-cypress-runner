@@ -182,7 +182,9 @@ function getCypressOpts(
     opts.key = runCfg.cypress.key;
   }
 
-  opts = configureReporters(runCfg, opts);
+  if (process.env.SAUCE_MULTI_REPORTERS) {
+    opts = configureReporters(runCfg, opts);
+  }
   configureWebkitOptions(process.env, opts, suite);
 
   return opts as CypressCommandLine.CypressRunOptions;
