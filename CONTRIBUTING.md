@@ -1,58 +1,64 @@
 # Contributing to `sauce-cypress-runner`
 
-**Thank you for your interest in `sauce-cypress-runner`. Your contributions are highly welcome.**
+**Thank you for your interest in `sauce-cypress-runner`. We highly value your contributions and look forward to your active participation.**
 
-There are multiple ways of getting involved:
+## Ways to Get Involved
 
-- [Report a bug](#report-a-bug)
-- [Suggest a feature](#suggest-a-feature)
-- [Contribute code](#contribute-code)
+- **[Report a Bug](#report-a-bug)**: Assist us by identifying and reporting software bugs.
+- **[Suggest a Feature](#suggest-a-feature)**: Propose ideas for new features or improvements.
+- **[Contribute Code](#contribute-code)**: Help develop and enhance the software by contributing code.
 
-Below are a few guidelines we would like you to follow.
-If you need help, please reach out to us by opening an issue.
+For assistance, please feel free to reach out by opening an [issue](/issues).
 
-## Report a bug
-Reporting bugs is one of the best ways to contribute. Before creating a bug report, please check that an [issue](/issues) reporting the same problem does not already exist. If there is such an issue, you may add your information as a comment.
+## Report a Bug
 
-To report a new bug you should open an issue that summarizes the bug and set the label to "bug".
+Before creating a bug report, ensure there is no existing issue addressing the same concern. If an existing issue is found, please add your comments there.
 
-If you want to provide a fix along with your bug report: That is great! In this case please send us a pull request as described in section [Contribute Code](#contribute-code).
+To report a new bug:
+- Open an issue with a concise summary of the bug.
+- Label it as "bug".
+- If you have a proposed fix, please include it with your bug report by sending us a pull request as outlined in the [Contribute Code](#contribute-code) section.
 
-## Suggest a feature
-To request a new feature you should open an [issue](../../issues/new) and summarize the desired functionality and its use case. Set the issue label to "feature".
+## Suggest a Feature
 
-## Contribute code
-This is an outline of what the workflow for code contributions looks like
+To suggest a new feature:
+- Open a [new issue](../../issues/new) with a detailed description of the functionality and its intended use case.
+- Label the issue as "feature".
 
-- Check the list of open [issues](../../issues). Either assign an existing issue to yourself, or
-create a new one that you would like work on and discuss your ideas and use cases.
+## Contribute Code
 
-It is always best to discuss your plans beforehand, to ensure that your contribution is in line with our goals.
+### Contribution Workflow
 
-- Fork the repository on GitHub
-- Create a topic branch from where you want to base your work. This is usually 'main'.
-- Open a new pull request, label it `work in progress` and outline what you will be contributing
-- Make commits of logical units.
-- Make sure you sign-off on your commits `git commit -s -m "adding X to change Y"`
-- Write good commit messages (see below).
-- Push your changes to a topic branch in your fork of the repository.
-- As you push your changes, update the pull request with new infomation and tasks as you complete them
-- Project maintainers might comment on your work as you progress
-- When you are done, remove the `work in progess` label and ping the maintainers for a review
-- Your pull request must receive a :thumbsup: from two [maintainers](MAINTAINERS)
+1. **Identify or Create an Issue**: Browse the [open issues](../../issues). You can either choose to work on an existing issue or create a new one to discuss your idea.
+   
+2. **Fork and Branch**: Fork the repository and create a branch from the `main` branch to base your work on.
 
-Thanks for your contributions!
+3. **Develop**: Implement your changes in your branch following our coding standards.
+   
+4. **Commit Changes**: Commit your changes, ensuring each commit is logical and well-documented. Include the `Signed-off-by` line in your commits to signify compliance with our Developer Certificate of Origin.
 
-### Commit messages
-Your commit messages ideally can answer two questions: what changed and why. The subject line should feature the “what” and the body of the commit should describe the “why”.
+5. **Open a Pull Request**: Push your branch to your fork and open a pull request. Initially label it as `work in progress` to indicate that it is not yet complete.
 
-When creating a pull request, its description should reference the corresponding issue id.
+6. **Revise**: Update your pull request with any new information and changes as you progress. Engage with feedback from project maintainers.
 
-### Sign your work / Developer certificate of origin
-All contributions (including pull requests) must agree to the Developer Certificate of Origin (DCO) version 1.1. This is exactly the same one created and used by the Linux kernel developers and posted on http://developercertificate.org/. This is a developer's certification that he or she has the right to submit the patch for inclusion into the project. Simply submitting a contribution implies this agreement, however, please include a "Signed-off-by" tag in every patch (this tag is a conventional way to confirm that you agree to the DCO) - you can automate this with a [Git hook](https://stackoverflow.com/questions/15015894/git-add-signed-off-by-line-using-format-signoff-not-working)
+7. **Finalize**: Once complete, remove the `work in progress` label and notify the maintainers for a final review.
+
+8. **Approval**: Your pull request must receive approval from at least two [maintainers](MAINTAINERS) to be merged.
+
+### Commit Messages
+
+Ensure your commit messages effectively communicate what changed and why:
+- **Subject**: Briefly state what has changed.
+- **Body**: Elaborate on why these changes were necessary.
+
+Link the pull request to the relevant issue ID for context.
+
+### Sign Your Work
+
+Contributions must adhere to the Developer Certificate of Origin (DCO) version 1.1, as seen at [developercertificate.org](http://developercertificate.org/). This is a confirmation that you are authorized to submit the patch. To comply, include a "Signed-off-by" tag in each commit. This can be automated with a [Git hook](https://stackoverflow.com/questions/15015894/git-add-signed-off-by-line-using-format-signoff-not-working):
 
 ```
-git commit -s -m "adding X to change Y"
+git commit -s -m "Describe your change"
 ```
 
-**Have fun, and happy hacking!**
+**Thank you for contributing! Have fun and happy coding!**
