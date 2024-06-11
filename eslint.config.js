@@ -7,7 +7,6 @@ module.exports = ts.config(
   js.configs.recommended,
   ...ts.configs.recommended,
   prettier,
-  cypress.configs.recommended,
   {
     ignores: ['lib/**'],
   },
@@ -18,6 +17,10 @@ module.exports = ts.config(
       '@typescript-eslint/no-explicit-any': 'warn',
       'no-undef': 'warn',
     },
+  },
+  {
+    files: ['tests/**/*.*js', 'tests/**/*.*ts'],
+    ...cypress.configs.recommended,
   },
   {
     languageOptions: {
