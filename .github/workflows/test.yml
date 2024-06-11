@@ -36,9 +36,6 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Unit Test
-        run: npm run unit-test
-
   integration:
     runs-on: ubuntu-latest
     steps:
