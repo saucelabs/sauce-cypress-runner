@@ -15,6 +15,7 @@ import util from 'util';
 import _ from 'lodash';
 import { afterRunTestReport } from '@saucelabs/cypress-plugin';
 import { createJUnitReport } from '@saucelabs/cypress-junit-plugin';
+import { clearTimeout, setTimeout } from 'timers';
 
 import { RunConfig, Suite } from './types';
 
