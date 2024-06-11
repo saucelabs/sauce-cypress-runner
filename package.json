@@ -55,6 +55,7 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
+    "@eslint/js": "9.4.0",
     "@types/chai": "^4.3.16",
     "@types/debug": "^4.1.12",
     "@types/fluent-ffmpeg": "^2.1.24",
