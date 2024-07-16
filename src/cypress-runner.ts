@@ -183,7 +183,9 @@ function getCypressOpts(
     opts.key = runCfg.cypress.key;
   }
 
-  opts = configureReporters(runCfg, opts);
+  if (runCfg.cypress.reporters) {
+    opts = configureReporters(runCfg, opts);
+  }
   configureWebkitOptions(process.env, opts, suite);
 
   return opts as CypressCommandLine.CypressRunOptions;
