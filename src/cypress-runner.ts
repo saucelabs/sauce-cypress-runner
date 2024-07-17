@@ -186,7 +186,7 @@ function getCypressOpts(
   if (runCfg.cypress.reporters) {
     opts = configureReporters(runCfg, opts);
     console.log(
-      'Configuring multi reporters with saucectl is deprecated. We recommend migrating your configuration to your cypress config file.',
+      'Configuring multi reporters with saucectl is deprecated and will be removed in a future release. Migrate your configuration to your cypress config file.',
     );
   }
   configureWebkitOptions(process.env, opts, suite);
