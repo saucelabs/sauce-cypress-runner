@@ -183,7 +183,7 @@ function getCypressOpts(
     opts.key = runCfg.cypress.key;
   }
 
-  if (runCfg.cypress.reporters) {
+  if (runCfg.cypress.reporters && runCfg.cypress.reporters.length > 0) {
     opts = configureReporters(runCfg, opts);
     console.log(
       'Configuring multi reporters with saucectl is deprecated and will be removed in a future release. Migrate your configuration to your cypress config file.',
