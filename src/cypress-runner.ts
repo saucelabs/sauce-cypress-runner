@@ -183,7 +183,12 @@ function getCypressOpts(
     opts.key = runCfg.cypress.key;
   }
 
-  opts = configureReporters(runCfg, opts);
+  if (runCfg.cypress.reporters && runCfg.cypress.reporters.length > 0) {
+    opts = configureReporters(runCfg, opts);
+    console.log(
+      'Configuring cypress reporters with saucectl is deprecated and will be removed in a future release. Migrate your configuration to your cypress config file.',
+    );
+  }
   configureWebkitOptions(process.env, opts, suite);
 
   return opts as CypressCommandLine.CypressRunOptions;
