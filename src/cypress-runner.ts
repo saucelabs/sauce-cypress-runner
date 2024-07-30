@@ -318,6 +318,8 @@ if (require.main === module) {
   const timeoutSec = 1800; // 30 min
   const preExecTimeoutSec = 300; // 5 min
 
+  console.log(`Node: ${nodeBin}`);
+
   cypressRunner(nodeBin, runCfgPath, suiteName, timeoutSec, preExecTimeoutSec)
     .then((passed) => process.exit(passed ? 0 : 1))
     .catch((err) => {
