@@ -273,6 +273,14 @@ async function cypressRunner(
     );
   const nodeCtx = { nodePath: nodeBin, npmPath: npmBin };
 
+  if (
+    nodeBin.startsWith('/Volumes/Sauce/node/') ||
+    nodeBin.startsWith('D:\\node\\')
+  ) {
+    nodeCtx.nodePath = 'node';
+    nodeCtx.npmPath = 'npm';
+  }
+
   await prepareNpmEnv(runCfg, nodeCtx);
   const cypressOpts = getCypressOpts(runCfg, suiteName);
   const suites = runCfg.suites || [];
