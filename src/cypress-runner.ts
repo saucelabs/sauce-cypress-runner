@@ -277,8 +277,8 @@ async function cypressRunner(
     nodeBin.startsWith('/Volumes/Sauce/node/') ||
     nodeBin.startsWith('D:\\node\\')
   ) {
-    nodeCtx.nodePath = 'node';
-    nodeCtx.npmPath = 'npm';
+    nodeCtx.nodePath = process.platform === 'win32' ? 'node.exe' : 'node';
+    nodeCtx.npmPath = process.platform === 'win32' ? 'npm.exe' : 'npm';
   }
 
   await prepareNpmEnv(runCfg, nodeCtx);
