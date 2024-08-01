@@ -39,6 +39,7 @@ export type RunConfig = {
   resultsDir: string;
   path: string;
   cypress: CypressConfig;
+  nodeVersion?: string;
 } & NpmConfigContainer &
   PathContainer &
   ResultPathContainer &

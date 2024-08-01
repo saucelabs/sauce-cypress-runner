@@ -18,6 +18,7 @@ import { createJUnitReport } from '@saucelabs/cypress-junit-plugin';
 import { clearTimeout, setTimeout } from 'timers';
 
 import { RunConfig, Suite } from './types';
+import { NodeContext } from 'sauce-testrunner-utils/lib/types';
 
 async function report(
   results:
@@ -271,7 +272,11 @@ async function cypressRunner(
       'bin',
       'npm-cli.js',
     );
-  const nodeCtx = { nodePath: nodeBin, npmPath: npmBin };
+  const nodeCtx: NodeContext = {
+    nodePath: nodeBin,
+    npmPath: npmBin,
+    useGlobals: !!runCfg.nodeVersion,
+  };
 
   await prepareNpmEnv(runCfg, nodeCtx);
   const cypressOpts = getCypressOpts(runCfg, suiteName);
