@@ -1,4 +1,5 @@
 {
+  "nodeVersion": "20",
   "cypress": {
     "configFile": "cypress.config.js"
   },
