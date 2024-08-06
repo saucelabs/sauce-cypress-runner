@@ -6,7 +6,7 @@ const stream = require('stream');
 const childProcess = require('child_process');
 
 const fd = fs.openSync(
-  path.join(process.cwd(), 'console.log'),
+  path.join(process.cwd(), 'console2.log'),
   'w+',
   0o644
 );
