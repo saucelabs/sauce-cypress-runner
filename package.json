@@ -1,7 +1,7 @@
 {
   "name": "sauce-cypress-runner",
   "version": "0.0.0",
-  "description": "Sauce Labs test runner image for saucectl to run Cypress tests.",
+  "description": "Sauce Labs test runner for saucectl to run Cypress tests.",
   "author": "devx <dev@saucelabs.com>",
   "license": "MIT",
   "private": true,
