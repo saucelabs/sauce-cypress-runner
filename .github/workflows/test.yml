@@ -66,7 +66,7 @@ jobs:
 
   build-windows-bundle:
     runs-on: windows-latest
-    needs: [test]
+    needs: [lint, integration]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -118,7 +118,7 @@ jobs:
   build-mac-bundle:
     # macos-latest is arm only
     runs-on: macos-13
-    needs: [test]
+    needs: [lint, integration]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
