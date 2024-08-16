@@ -9,7 +9,7 @@ If you are interested to contribute to this project, please have a look into our
 
 ### Integration tests
 
-`npm run test` triggers the [integration tests script](/tests/integration/integration-tests.sh). Which triggers the [tests](/tests/integration/fixtures/cypress-tests) and runs them through `cypress-runner.js`.
+`npm run test` triggers the [integration tests script](/tests/integration/integration-tests.sh). Which triggers the [tests](/tests/integration/) and runs them through `cypress-runner.js`.
 
 ### Env Variables
 
