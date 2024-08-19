@@ -4,7 +4,6 @@ mkdir ./bundle/
 export CYPRESS_CACHE_FOLDER=$PWD/bundle/Cache/
 echo $CYPRESS_CACHE_FOLDER
 cp -r ./src/ ./bundle/src/
-cp -r bin/ bundle/bin/
 cp package.json bundle/package.json
 cp package-lock.json bundle/package-lock.json
 cp tsconfig.json bundle/tsconfig.json

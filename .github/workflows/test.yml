@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
 
     steps:
@@ -29,9 +29,6 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci
-
-      - name: Build Project
-        run: npm run build
 
       - name: Lint
         run: npm run lint
@@ -62,11 +59,11 @@ jobs:
       - name: Integration Tests
         env:
           SAUCE_CYPRESS_VIDEO_RECORDING: false
-        run: npm run test-integration
+        run: npm run test
 
   build-windows-bundle:
     runs-on: windows-latest
-    needs: [test]
+    needs: [lint, integration]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -118,7 +115,7 @@ jobs:
   build-mac-bundle:
     # macos-latest is arm only
     runs-on: macos-13
-    needs: [test]
+    needs: [lint, integration]
     steps:
       - name: Checkout
         uses: actions/checkout@v4

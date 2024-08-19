@@ -1,11 +1,10 @@
 {
   "name": "sauce-cypress-runner",
   "version": "0.0.0",
-  "description": "Sauce Labs test runner image for saucectl to run Cypress tests.",
+  "description": "Sauce Labs Cypress Runner",
   "author": "devx <dev@saucelabs.com>",
   "license": "MIT",
   "private": true,
-  "bin": "./bin/cypress",
   "main": "./lib/cypress-runner.js",
   "homepage": "https://github.com/saucelabs/sauce-cypress-runner",
   "repository": {
@@ -13,8 +12,7 @@
     "url": "git://github.com/saucelabs/sauce-cypress-runner.git"
   },
   "scripts": {
-    "test": "./bin/cypress",
-    "test-integration": "bash tests/integration/integration-tests.sh",
+    "test": "bash tests/integration/integration-tests.sh",
     "build": "tsc",
     "lint": "prettier --check '**/*.{js,ts,mjs,cjs}' && eslint tests/ src/",
     "fmt": "prettier --write '**/*.{js,ts,mjs,cjs}'",
