@@ -75,9 +75,6 @@ jobs:
             # NOTE: Expected tag format is {VERSION}-{FLAVOR}.{FLAVOR_VERSION}
             LATEST_FLAVOR=$(echo ${LATEST_TAG} | awk -F'-' '{ print $2 }' | awk -F'.' '{ print $1 }')
 
-            echo "Latest tag: ${LATEST_TAG}"
-            echo "Latest flavor: ${LATEST_FLAVOR}"
-
             if [ "${LATEST_FLAVOR}" == "${{ github.event.inputs.preReleaseFlavor}}" ];then
               # NOTE: If the inputted pre-release flavor matches the current pre-release flavor, we only
               # want to increment the pre-release version instead of a full version bump.
