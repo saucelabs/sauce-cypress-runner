@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   lint:
-    if: f
+    if: false
     runs-on: ubuntu-latest
 
     steps:
