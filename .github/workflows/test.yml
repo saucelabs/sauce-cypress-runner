@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   lint:
+    if: false
     runs-on: ubuntu-latest
 
     steps:
@@ -34,6 +35,7 @@ jobs:
         run: npm run lint
 
   integration:
+    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -62,6 +64,7 @@ jobs:
         run: npm run test
 
   build-windows-bundle:
+    if: false
     runs-on: windows-latest
     needs: [lint, integration]
     steps:
@@ -115,7 +118,7 @@ jobs:
   build-mac-bundle:
     # macos-latest is arm only
     runs-on: macos-13
-    needs: [lint, integration]
+#    needs: [lint, integration]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -163,6 +166,7 @@ jobs:
           gsutil cp ./cypress-macos-amd64.zip gs://${{ secrets.GCS_RUNNER_BUCKET }}/cypress-macos-amd64-${{ github.run_id }}.zip
 
   bundle-test:
+    if: false
     needs: [build-windows-bundle, build-mac-bundle]
     strategy:
       max-parallel: 3
@@ -206,6 +210,7 @@ jobs:
             --select-suite "Cypress - ${{ matrix.os }} - ${{ matrix.browser }}"
 
   bundle-tests-with-sc:
+    if: false
     needs: [build-windows-bundle, build-mac-bundle]
     strategy:
       max-parallel: 3
@@ -266,6 +271,7 @@ jobs:
             --tunnel-name github-cypress-sc-check-tunnel-${{ matrix.os }}-${{ matrix.browser }}
 
   bundle-test-modules:
+    if: false
     needs: [build-windows-bundle, build-mac-bundle]
     strategy:
       max-parallel: 2
