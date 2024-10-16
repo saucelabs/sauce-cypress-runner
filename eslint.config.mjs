@@ -1,9 +1,10 @@
-const ts = require('typescript-eslint');
-const js = require('@eslint/js');
-const prettier = require('eslint-config-prettier');
-const cypress = require('eslint-plugin-cypress/flat');
+// @ts-check
+import ts from 'typescript-eslint';
+import js from'@eslint/js';
+import prettier from 'eslint-config-prettier';
+import cypress from 'eslint-plugin-cypress/flat';
 
-module.exports = ts.config(
+export default ts.config(
   js.configs.recommended,
   ...ts.configs.recommended,
   prettier,
