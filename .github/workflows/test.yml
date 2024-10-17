@@ -80,7 +80,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.11'
 
       - name: Google Cloud Login
         uses: google-github-actions/auth@v2
@@ -132,7 +132,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.11'
 
       - name: Google Cloud Login
         uses: google-github-actions/auth@v2
