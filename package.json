@@ -16,7 +16,7 @@
     "build": "tsc",
     "lint": "prettier --check '**/*.{js,ts,mjs,cjs}' && eslint tests/ src/",
     "fmt": "prettier --write '**/*.{js,ts,mjs,cjs}'",
-    "prepare": "husky",
+    "prepare": "node .husky/install.mjs",
     "release": "release-it --github.release",
     "release:ci": "npm run release -- --ci --npm.skipChecks --no-git.requireCleanWorkingDir",
     "release:patch": "npm run release -- patch",
