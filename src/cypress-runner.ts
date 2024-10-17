@@ -254,7 +254,7 @@ async function cypressRunner(
   runCfg.resultsDir = path.join(path.dirname(runCfgPath), '__assets__');
   try {
     await canAccessFolder(runCfg.resultsDir);
-  } catch (err) {
+  } catch {
     const fsMkdir = util.promisify(fs.mkdir);
     await fsMkdir(runCfg.resultsDir);
     await canAccessFolder(runCfg.resultsDir);
