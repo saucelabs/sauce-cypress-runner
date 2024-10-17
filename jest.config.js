@@ -14,8 +14,8 @@ module.exports = {
   // A map from regular expressions to paths to transformers
   transform: { '^.+\\.ts?$': 'ts-jest' },
 
-  testMatch: ["**/tests/unit/**/*.[jt]s?(x)"],
-  modulePathIgnorePatterns: ["cypress/tests/unit/"],
-  collectCoverageFrom: ["src/**/*.js"],
-  collectCoverage: true
+  testMatch: ['**/tests/unit/**/*.[jt]s?(x)'],
+  modulePathIgnorePatterns: ['cypress/tests/unit/'],
+  collectCoverageFrom: ['src/**/*.js'],
+  collectCoverage: true,
 };
