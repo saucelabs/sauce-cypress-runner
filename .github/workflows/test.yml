@@ -29,6 +29,8 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci
+        env:
+          HUSKY: 0
 
       - name: Lint
         run: npm run lint
@@ -49,6 +51,7 @@ jobs:
         run: npm ci --production
         env:
           PLAYWRIGHT_BROWSERS_PATH: 0
+          HUSKY: 0
 
       - name: Build Project
         run: npm run build
@@ -77,7 +80,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.11'
 
       - name: Google Cloud Login
         uses: google-github-actions/auth@v2
@@ -129,7 +132,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.11'
 
       - name: Google Cloud Login
         uses: google-github-actions/auth@v2
@@ -145,7 +148,6 @@ jobs:
 
       - name: Update Release Version
         run: npm version --no-git-tag-version 1.0.0
-
 
       - name: Bundle Directory
         run: bash ./scripts/bundle.sh
