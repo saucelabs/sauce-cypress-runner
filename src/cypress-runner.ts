@@ -278,6 +278,8 @@ async function cypressRunner(
     useGlobals: !!runCfg.nodeVersion,
   };
 
+  process.env.npm_config_timing = 'true';
+  process.env.npm_config_package_lock = 'true';
   await prepareNpmEnv(runCfg, nodeCtx);
   const cypressOpts = getCypressOpts(runCfg, suiteName);
   const suites = runCfg.suites || [];
