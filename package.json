@@ -33,7 +33,7 @@
     "@saucelabs/cypress-plugin": "3.6.0",
     "@shelex/cypress-allure-plugin": "2.40.2",
     "@tsconfig/node20": "^20.1.4",
-    "cypress": "13.15.1",
+    "cypress": "13.15.2",
     "cypress-mochawesome-reporter": "3.8.2",
     "cypress-multi-reporters": "2.0.4",
     "cypress-wait-until": "3.0.2",
@@ -44,12 +44,12 @@
     "playwright-webkit": "1.48.2",
     "sauce-testrunner-utils": "3.3.0",
     "typescript": "5.6.3",
-    "webpack": "5.95.0",
+    "webpack": "5.96.1",
     "xml-js": "^1.6.11",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@eslint/js": "9.13.0",
+    "@eslint/js": "9.14.0",
     "@types/chai": "^5.0.1",
     "@types/debug": "^4.1.12",
     "@types/eslint__js": "8.42.3",
@@ -62,16 +62,16 @@
     "@types/mocha": "^10.0.9",
     "@types/node": "^20.17.3",
     "@types/xml": "^1.0.11",
-    "eslint": "^9.13.0",
+    "eslint": "^9.14.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-cypress": "^4.1.0",
-    "eslint-plugin-jest": "^28.8.3",
+    "eslint-plugin-jest": "^28.9.0",
     "eslint-plugin-prettier": "^5.2.1",
     "husky": "^9.1.6",
     "mocha": "^10.8.2",
     "prettier": "^3.3.3",
     "pretty-quick": "^4.0.0",
     "release-it": "^17.10.0",
-    "typescript-eslint": "^8.12.2"
+    "typescript-eslint": "^8.13.0"
   }
 }
