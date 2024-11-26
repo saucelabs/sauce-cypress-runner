@@ -1,8 +1,6 @@
 {
-  "extends": "@tsconfig/node20/tsconfig.json",
-  "include": [
-    "src/**/*"
-  ],
+  "extends": "@tsconfig/node22/tsconfig.json",
+  "include": ["src/**/*"],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "outDir": "./lib",
