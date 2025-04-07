@@ -12,7 +12,6 @@ import {
 } from 'sauce-testrunner-utils';
 import cypress from 'cypress';
 import util from 'util';
-import _ from 'lodash';
 import { afterRunTestReport } from '@saucelabs/cypress-plugin';
 import { createJUnitReport } from '@saucelabs/cypress-junit-plugin';
 import { clearTimeout, setTimeout } from 'timers';
@@ -59,45 +58,6 @@ function isFailedRunResult(
   return (
     (maybe as CypressCommandLine.CypressFailedRunResult).status === 'failed'
   );
-}
-
-// Configure reporters
-function configureReporters(runCfg: RunConfig, opts: any) {
-  const reporterConfig = {
-    reporterEnabled: `spec`,
-  };
-
-  // Adding custom reporters
-  if (runCfg && runCfg.cypress && runCfg.cypress.reporters) {
-    for (const reporter of runCfg.cypress.reporters) {
-      const cfgFieldName = [_.camelCase(reporter.name), 'ReporterOptions'].join(
-        '',
-      );
-      reporterConfig.reporterEnabled = `${reporterConfig.reporterEnabled}, ${reporter.name}`;
-      reporterConfig[cfgFieldName] = reporter.options || {};
-    }
-  }
-
-  const reporterConfigPath = path.join(
-    __dirname,
-    '..',
-    'sauce-reporter-config.json',
-  );
-
-  // Save reporters config
-  fs.writeFileSync(reporterConfigPath, JSON.stringify(reporterConfig));
-
-  // Cypress only supports a single reporter out of the box, so we need to use
-  // a plugin to support multiple reporters.
-  opts.config.reporter = path.join(
-    __dirname,
-    '../node_modules/cypress-multi-reporters/lib/MultiReporters.js',
-  );
-  opts.config.reporterOptions = {
-    configFile: reporterConfigPath,
-  };
-
-  return opts;
 }
 
 function getSuite(runCfg: RunConfig, suiteName: string) {
@@ -159,7 +119,7 @@ function getCypressOpts(
       ? undefined
       : runCfg.resultsDir;
 
-  let opts: Partial<CypressCommandLine.CypressRunOptions> = {
+  const opts: Partial<CypressCommandLine.CypressRunOptions> = {
     project: path.dirname(cypressCfgFile),
     browser: process.env.SAUCE_BROWSER || suite.browser || 'chrome',
     configFile: path.basename(cypressCfgFile),
@@ -184,12 +144,6 @@ function getCypressOpts(
     opts.key = runCfg.cypress.key;
   }
 
-  if (runCfg.cypress.reporters && runCfg.cypress.reporters.length > 0) {
-    opts = configureReporters(runCfg, opts);
-    console.log(
-      'Configuring cypress reporters with saucectl is deprecated and will be removed in a future release. Migrate your configuration to your cypress config file.',
-    );
-  }
   configureWebkitOptions(process.env, opts, suite);
 
   return opts as CypressCommandLine.CypressRunOptions;
