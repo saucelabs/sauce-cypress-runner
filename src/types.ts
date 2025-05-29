@@ -15,11 +15,13 @@ export type CypressConfig = {
   browser: string;
   headed: boolean;
   headless: boolean;
-  testingType: unknown;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  testingType: any;
   configFile: string;
   record?: boolean;
   key?: string;
-  reporters?: unknown[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  reporters?: any[];
   config: {
     videosFolder: string;
     screenshotsFolder: string;
@@ -31,7 +33,8 @@ export type CypressConfig = {
 
 export type RunConfig = {
   sauce: SauceConfig;
-  suites: unknown[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  suites: any[];
   resultsDir: string;
   path: string;
   cypress: CypressConfig;
