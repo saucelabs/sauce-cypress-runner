@@ -8,34 +8,30 @@ export type SauceConfig = {
   metadata: object;
 };
 
-export type Suite = {
-  browser: string;
-};
+export type Suite = { browser: string };
 
 export type CypressConfig = {
   project: string;
   browser: string;
   headed: boolean;
   headless: boolean;
-  testingType: any;
+  testingType: unknown;
   configFile: string;
   record?: boolean;
   key?: string;
-  reporters?: any[];
+  reporters?: unknown[];
   config: {
     videosFolder: string;
     screenshotsFolder: string;
     video: boolean;
     videoCompression: boolean;
-    env: {
-      [key: string]: string;
-    };
+    env: { [key: string]: string };
   };
 };
 
 export type RunConfig = {
   sauce: SauceConfig;
-  suites: any[];
+  suites: unknown[];
   resultsDir: string;
   path: string;
   cypress: CypressConfig;
@@ -45,14 +41,8 @@ export type RunConfig = {
   ResultPathContainer &
   ArtifactsContainer;
 
-export type ResultPathContainer = {
-  resultsDir: string;
-};
+export type ResultPathContainer = { resultsDir: string };
 
 export type ArtifactsContainer = {
-  artifacts?: {
-    retain?: {
-      [key: string]: string;
-    };
-  };
+  artifacts?: { retain?: { [key: string]: string } };
 };
