@@ -10,7 +10,7 @@ sauce:
     build: Github Run $GITHUB_RUN_ID
 cypress:
   configFile: cypress.config.mjs
-  version: 13.12.0
+  version: 13.10.0
 rootDir: ./
 suites:
   - name: "Cypress - Win10 - Chrome"
