@@ -45,8 +45,8 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore: monthly dependency update"
-          title: "chore: Monthly npm dependency upgrade"
+          commit-message: 'chore: monthly dependency update'
+          title: 'chore: Monthly npm dependency upgrade'
           body: |
             This PR was automatically generated to update dependencies to the latest version.
           branch: chore/monthly-ncu-upgrade
