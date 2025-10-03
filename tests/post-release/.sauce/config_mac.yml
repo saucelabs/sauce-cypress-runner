@@ -10,7 +10,7 @@ sauce:
     build: Github Run $GITHUB_RUN_ID
 cypress:
   configFile: cypress.config.js
-  version: 13.7.3
+  version: 14.5.2
 rootDir: ./
 env:
   foo: bar
