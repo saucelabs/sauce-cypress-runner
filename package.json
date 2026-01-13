@@ -33,7 +33,7 @@
     "@saucelabs/cypress-plugin": "3.6.0",
     "@shelex/cypress-allure-plugin": "2.41.2",
     "@tsconfig/node22": "^22.0.5",
-    "cypress": "15.7.0",
+    "cypress": "15.8.0",
     "cypress-mochawesome-reporter": "4.0.2",
     "cypress-multi-reporters": "2.0.5",
     "cypress-wait-until": "3.0.2",
@@ -70,7 +70,7 @@
     "mocha": "^11.7.5",
     "prettier": "^3.7.3",
     "pretty-quick": "^4.2.2",
-    "release-it": "^19.0.6",
+    "release-it": "^19.2.3",
     "typescript-eslint": "^8.48.0"
   }
 }
