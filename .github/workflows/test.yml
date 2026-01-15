@@ -126,7 +126,7 @@ jobs:
 
   build-mac-bundle:
     # macos-15-intel for amd64 builds
-    runs-on: macos-15
+    runs-on: macos-15-intel
     needs: [lint, integration]
     steps:
       - name: Checkout
