@@ -57,11 +57,11 @@ jobs:
       - name: Build Project
         run: npm run build
 
-      - name: Install Webkit Dependencies
-        run: npx playwright install-deps webkit
-        
-      - name: Install Playwright
-        run: npx playwright install
+      - name: Install Dependencies & Browser
+        run: |
+          npx playwright install-deps webkit
+          export PLAYWRIGHT_BROWSERS_PATH=0 
+          npx playwright install webkit
 
       - name: Integration Tests
         env:
