@@ -117,8 +117,8 @@ jobs:
           gsutil cp ./cypress-windows-amd64.zip gs://${{ secrets.GCS_RUNNER_BUCKET }}/cypress-windows-amd64-${{ github.run_id }}.zip
 
   build-mac-bundle:
-    # macos-latest is arm only
-    runs-on: macos-15
+    # macos-15-intel for amd64 builds
+    runs-on: macos-15-intel
     needs: [lint, integration]
     steps:
       - name: Checkout
