@@ -109,7 +109,7 @@ jobs:
       
       - name: Install Webkit for Bundle
         run: |
-          export PLAYWRIGHT_BROWSERS_PATH=0
+          $env:PLAYWRIGHT_BROWSERS_PATH="0"
           cd bundle
           npx playwright install webkit
 
