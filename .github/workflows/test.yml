@@ -63,7 +63,7 @@ jobs:
       - name: Install Webkit
         env:
           PLAYWRIGHT_BROWSERS_PATH: 0
-        run: npx playwright install webkit
+        run: npx playwright install
 
       - name: Integration Tests
         env:
