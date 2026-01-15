@@ -60,7 +60,6 @@ jobs:
       - name: Install Dependencies & Browser
         run: |
           npx playwright install-deps webkit
-          export PLAYWRIGHT_BROWSERS_PATH=0 
           npx playwright install webkit
 
       - name: Integration Tests
@@ -107,6 +106,12 @@ jobs:
       - name: Get Cypress Version
         run: |
           Write-Output "cypress_version=$((Get-Content ./package.json -Raw | ConvertFrom-Json).dependencies.cypress)" >> $env:GITHUB_ENV
+      
+      - name: Install Webkit for Bundle
+        run: |
+          export PLAYWRIGHT_BROWSERS_PATH=0
+          cd bundle
+          npx playwright install webkit
 
       - name: Archive Bundle
         uses: azure/powershell@v2
@@ -160,6 +165,13 @@ jobs:
         run: |
           CYPRESS_VERSION=$(< package-lock.json jq -r '.dependencies["cypress"].version')
           echo "cypress_version=$CYPRESS_VERSION" >> $GITHUB_ENV
+      
+      - name: Install Webkit for Bundle
+        run: |
+          export PLAYWRIGHT_BROWSERS_PATH=0
+          # Assuming bundle.sh creates a 'bundle' folder with package.json
+          cd bundle  
+          npx playwright install webkit
 
       - name: Archive Bundle
         run: zip --symlinks -r cypress-macos-amd64.zip bundle/
