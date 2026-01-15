@@ -59,9 +59,10 @@ jobs:
 
       - name: Install Webkit Dependencies
         run: npx playwright install-deps webkit
+        
+      - name: Install Webkit
         env:
           PLAYWRIGHT_BROWSERS_PATH: 0
-      - name: Install Webkit
         run: npx playwright install webkit
 
       - name: Integration Tests
