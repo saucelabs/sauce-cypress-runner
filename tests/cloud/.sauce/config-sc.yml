@@ -114,6 +114,27 @@ suites:
     config:
       testingType: "e2e"
       specPattern: [ "cypress/e2e/**/*.cy.js" ]
+  
+  # macOS 15 Tests
+  - name: "Cypress - macOS15 - Chrome"
+    browser: "chrome"
+    platformName: "macOS 15"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/**/*.cy.js" ]
+  - name: "Cypress - macOS15 - Firefox"
+    browser: "firefox"
+    platformName: "macOS 15"
+    config:
+      testingType: "e2e"  
+      specPattern: [ "cypress/e2e/**/*.cy.js" ]
+  - name: "Cypress - macOS15 - Webkit"
+    browser: "webkit"
+    platformName: "macOS 15"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/**/*.cy.js" ]
+
 
 notifications:
   slack:
