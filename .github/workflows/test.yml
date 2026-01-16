@@ -57,8 +57,10 @@ jobs:
       - name: Build Project
         run: npm run build
 
-      - name: Install Webkit Dependencies
-        run: npx playwright install-deps webkit
+      - name: Install Dependencies & Browser
+        run: |
+          npx playwright install-deps webkit
+          npx playwright install webkit
 
       - name: Integration Tests
         env:
