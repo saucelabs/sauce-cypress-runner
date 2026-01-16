@@ -169,9 +169,9 @@ jobs:
       - name: Install Webkit for Bundle
         run: |
           export PLAYWRIGHT_BROWSERS_PATH=0
-          # Assuming bundle.sh creates a 'bundle' folder with package.json
+          export PLAYWRIGHT_SKIP_BROWSER_GC=1
           cd bundle  
-          npx playwright install webkit
+          PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=mac13 npx playwright install webkit
 
       - name: Archive Bundle
         run: zip --symlinks -r cypress-macos-amd64.zip bundle/
