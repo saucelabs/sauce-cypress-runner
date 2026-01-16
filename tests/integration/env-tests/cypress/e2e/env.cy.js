@@ -1,8 +1,7 @@
 /// <reference types="cypress" />
 
-context('Getting Started', function () {
-  const testName = 'cypress test';
-  it(testName, function () {
+context('Actions', function () {
+  it('should use host', function () {
     expect(Cypress.env('FOO')).to.equal('bar');
     expect(Cypress.env('VALUE')).to.equal('Some test value');
     expect(Cypress.env('host')).to.equal(
