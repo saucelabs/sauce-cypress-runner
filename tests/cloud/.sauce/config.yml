@@ -108,14 +108,6 @@ suites:
     config:
       testingType: "e2e"
       specPattern: [ "cypress/e2e/no-sc/**/*.cy.js" ]
-
-  # macOS 14 Tests
-  - name: "Cypress - macOS14 - Webkit"
-    browser: "webkit"
-    platformName: "macOS 14"
-    config:
-      testingType: "e2e"
-      specPattern: [ "cypress/e2e/no-sc/**/*.cy.js" ]
       
 notifications:
   slack:
