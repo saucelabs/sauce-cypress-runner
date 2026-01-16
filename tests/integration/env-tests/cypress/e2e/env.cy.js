@@ -9,7 +9,7 @@ context('Actions', function () {
     );
     expect(Cypress.env('SAUCE_SUITE_NAME')).to.equal('default');
     cy.visit(Cypress.env('host'));
-    // Commenting out if we may need to use later
+    // Commenting out if we may need to revert later
     // cy.title().should(
     //   'eq',
     //   'Sauce Labs: Cross Browser Testing, Selenium Testing & Mobile Testing',
