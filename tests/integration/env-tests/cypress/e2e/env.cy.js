@@ -9,11 +9,6 @@ context('Actions', function () {
     );
     expect(Cypress.env('SAUCE_SUITE_NAME')).to.equal('default');
     cy.visit(Cypress.env('host'));
-    // Commenting out if we may need to revert later
-    // cy.title().should(
-    //   'eq',
-    //   'Sauce Labs: Cross Browser Testing, Selenium Testing & Mobile Testing',
-    // );
     cy.get('#developer-name').type('devx');
     cy.get('#submit-button').click();
     cy.get('#article-header').should('have.text', 'Thank you, devx!');
