@@ -151,25 +151,13 @@ jobs:
         run: |
           npm version --no-git-tag-version ${{  steps.prep.outputs.version }}
 
-      - name: Install Dependencies
-        run: npm ci --production
-        if: ${{ steps.prep.outputs.asset_id == '' }}
-
       - name: Bundle Directory
         if: ${{ steps.prep.outputs.asset_id == '' }}
-        run: bash ./scripts/bundle.sh
+        run: bash ./scripts/bundle.windows.sh
 
       - name: List Bundle Contents
         if: ${{ steps.prep.outputs.asset_id == '' }}
         run: ls -R bundle/
-
-      - name: Archive Bundle
-        if: ${{ steps.prep.outputs.asset_id == '' }}
-        uses: azure/powershell@v2
-        with:
-          inlineScript: |
-            Compress-Archive bundle/ cypress-windows-amd64.zip
-          azPSVersion: '3.1.0'
 
       - name: Upload Release Asset
         if: ${{ steps.prep.outputs.asset_id == '' }}
@@ -228,29 +216,13 @@ jobs:
         run: |
           npm version --no-git-tag-version ${{  steps.prep.outputs.version }}
 
-      - name: Install Dependencies
-        run: npm ci --production
-        if: ${{ steps.prep.outputs.asset_id == '' }}
-
       - name: Bundle Directory
         if: ${{ steps.prep.outputs.asset_id == '' }}
-        run: bash ./scripts/bundle.sh
+        run: bash ./scripts/bundle.macos.sh
 
       - name: List Bundle Contents
         if: ${{ steps.prep.outputs.asset_id == '' }}
         run: ls -R bundle/
-
-      - name: Install Webkit for Bundle
-        if: ${{ steps.prep.outputs.asset_id == '' }}
-        run: |
-          export PLAYWRIGHT_BROWSERS_PATH=0
-          export PLAYWRIGHT_SKIP_BROWSER_GC=1
-          cd bundle
-          PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=mac13 npx playwright install webkit
-
-      - name: Archive Bundle
-        if: ${{ steps.prep.outputs.asset_id == '' }}
-        run: zip --symlinks -r cypress-macos-amd64.zip bundle/
 
       - name: Upload Release Asset
         if: ${{ steps.prep.outputs.asset_id == '' }}

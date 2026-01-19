@@ -115,8 +115,6 @@ suites:
       testingType: "e2e"
       specPattern: [ "cypress/e2e/**/*.cy.js" ]
 
-
-
 notifications:
   slack:
     channels: ["devx-slack-notifications"]
