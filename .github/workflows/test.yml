@@ -95,12 +95,28 @@ jobs:
         env:
           CLOUDSDK_PYTHON: ${{env.pythonLocation}}\python.exe
 
+      - name: Update Release Version
+        run: npm version --no-git-tag-version 1.0.0
+
       - name: Bundle Directory
-        run: bash ./scripts/bundle.windows.sh 1.0.0
+        run: bash ./scripts/bundle.sh
 
       - name: Get Cypress Version
         run: |
           Write-Output "cypress_version=$((Get-Content ./package.json -Raw | ConvertFrom-Json).dependencies.cypress)" >> $env:GITHUB_ENV
+
+      - name: Install Webkit for Bundle
+        run: |
+          $env:PLAYWRIGHT_BROWSERS_PATH="0"
+          cd bundle
+          npx playwright install webkit
+
+      - name: Archive Bundle
+        uses: azure/powershell@v2
+        with:
+          inlineScript: |
+            Compress-Archive bundle/ cypress-windows-amd64.zip
+          azPSVersion: '3.1.0'
 
       - name: Upload to GCS
         run: |
@@ -137,13 +153,26 @@ jobs:
         env:
           CLOUDSDK_PYTHON: ${{env.pythonLocation}}/python
 
+      - name: Update Release Version
+        run: npm version --no-git-tag-version 1.0.0
+
       - name: Bundle Directory
-        run: bash ./scripts/bundle.macos.sh 1.0.0
+        run: bash ./scripts/bundle.sh
 
       - name: Get Cypress Version
         run: |
           CYPRESS_VERSION=$(< package-lock.json jq -r '.dependencies["cypress"].version')
           echo "cypress_version=$CYPRESS_VERSION" >> $GITHUB_ENV
+
+      - name: Install Webkit for Bundle
+        run: |
+          export PLAYWRIGHT_BROWSERS_PATH=0
+          export PLAYWRIGHT_SKIP_BROWSER_GC=1
+          cd bundle
+          PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=mac13 npx playwright install webkit
+
+      - name: Archive Bundle
+        run: zip --symlinks -r cypress-macos-amd64.zip bundle/
 
       - name: Upload to GCS
         run: |
