@@ -99,26 +99,19 @@ jobs:
         run: npm version --no-git-tag-version 1.0.0
 
       - name: Bundle Directory
-        run: bash ./scripts/bundle.sh
+        run: bash ./scripts/bundle.windows.sh
 
       - name: Get Cypress Version
         run: |
           Write-Output "cypress_version=$((Get-Content ./package.json -Raw | ConvertFrom-Json).dependencies.cypress)" >> $env:GITHUB_ENV
-
-      - name: Archive Bundle
-        uses: azure/powershell@v2
-        with:
-          inlineScript: |
-            Compress-Archive bundle/ cypress-windows-amd64.zip
-          azPSVersion: '3.1.0'
 
       - name: Upload to GCS
         run: |
           gsutil cp ./cypress-windows-amd64.zip gs://${{ secrets.GCS_RUNNER_BUCKET }}/cypress-windows-amd64-${{ github.run_id }}.zip
 
   build-mac-bundle:
-    # macos-latest is arm only
-    runs-on: macos-13
+    # macos-15-intel for amd64 builds
+    runs-on: macos-15-intel
     needs: [lint, integration]
     steps:
       - name: Checkout
@@ -151,15 +144,12 @@ jobs:
         run: npm version --no-git-tag-version 1.0.0
 
       - name: Bundle Directory
-        run: bash ./scripts/bundle.sh
+        run: bash ./scripts/bundle.macos.sh
 
       - name: Get Cypress Version
         run: |
           CYPRESS_VERSION=$(< package-lock.json jq -r '.dependencies["cypress"].version')
           echo "cypress_version=$CYPRESS_VERSION" >> $GITHUB_ENV
-
-      - name: Archive Bundle
-        run: zip --symlinks -r cypress-macos-amd64.zip bundle/
 
       - name: Upload to GCS
         run: |

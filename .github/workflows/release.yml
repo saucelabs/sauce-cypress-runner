@@ -151,25 +151,13 @@ jobs:
         run: |
           npm version --no-git-tag-version ${{  steps.prep.outputs.version }}
 
-      - name: Install Dependencies
-        run: npm ci --production
-        if: ${{ steps.prep.outputs.asset_id == '' }}
-
       - name: Bundle Directory
         if: ${{ steps.prep.outputs.asset_id == '' }}
-        run: bash ./scripts/bundle.sh
+        run: bash ./scripts/bundle.windows.sh
 
       - name: List Bundle Contents
         if: ${{ steps.prep.outputs.asset_id == '' }}
         run: ls -R bundle/
-
-      - name: Archive Bundle
-        if: ${{ steps.prep.outputs.asset_id == '' }}
-        uses: azure/powershell@v2
-        with:
-          inlineScript: |
-            Compress-Archive bundle/ cypress-windows-amd64.zip
-          azPSVersion: '3.1.0'
 
       - name: Upload Release Asset
         if: ${{ steps.prep.outputs.asset_id == '' }}
@@ -179,8 +167,8 @@ jobs:
           gh release upload ${{ steps.prep.outputs.version }} cypress-windows-amd64.zip
 
   release-macos-bundle:
-    # macos-latest is arm only
-    runs-on: macos-13
+    # macos-15-intel for amd64 builds
+    runs-on: macos-15-intel
     needs: [create-release-draft]
     steps:
       - name: Find Matching Draft Tag
@@ -228,21 +216,13 @@ jobs:
         run: |
           npm version --no-git-tag-version ${{  steps.prep.outputs.version }}
 
-      - name: Install Dependencies
-        run: npm ci --production
-        if: ${{ steps.prep.outputs.asset_id == '' }}
-
       - name: Bundle Directory
         if: ${{ steps.prep.outputs.asset_id == '' }}
-        run: bash ./scripts/bundle.sh
+        run: bash ./scripts/bundle.macos.sh
 
       - name: List Bundle Contents
         if: ${{ steps.prep.outputs.asset_id == '' }}
         run: ls -R bundle/
-
-      - name: Archive Bundle
-        if: ${{ steps.prep.outputs.asset_id == '' }}
-        run: zip --symlinks -r cypress-macos-amd64.zip bundle/
 
       - name: Upload Release Asset
         if: ${{ steps.prep.outputs.asset_id == '' }}
