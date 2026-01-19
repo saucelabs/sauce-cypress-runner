@@ -240,6 +240,14 @@ jobs:
         if: ${{ steps.prep.outputs.asset_id == '' }}
         run: ls -R bundle/
 
+      - name: Install Webkit for Bundle
+        if: ${{ steps.prep.outputs.asset_id == '' }}
+        run: |
+          export PLAYWRIGHT_BROWSERS_PATH=0
+          export PLAYWRIGHT_SKIP_BROWSER_GC=1
+          cd bundle
+          PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=mac13 npx playwright install webkit
+
       - name: Archive Bundle
         if: ${{ steps.prep.outputs.asset_id == '' }}
         run: zip --symlinks -r cypress-macos-amd64.zip bundle/
