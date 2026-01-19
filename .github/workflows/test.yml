@@ -172,7 +172,6 @@ jobs:
             browser: Webkit
           - os: macOS12
             browser: Webkit
-            
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -216,7 +215,6 @@ jobs:
             browser: Webkit
           - os: macOS12
             browser: Webkit
-
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
