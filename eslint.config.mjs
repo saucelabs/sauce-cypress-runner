@@ -22,6 +22,10 @@ export default ts.config(
   {
     files: ['tests/**/*.*js', 'tests/**/*.*ts'],
     ...cypress.configs.recommended,
+    rules: {
+      ...cypress.configs.recommended.rules,
+      '@typescript-eslint/no-unused-expressions': 'off',
+    },
   },
   {
     languageOptions: {
