@@ -115,6 +115,26 @@ suites:
       testingType: "e2e"
       specPattern: [ "cypress/e2e/no-sc/**/*.cy.js" ]
 
+  # macOS 14 tests on Apple Silicon
+  - name: "Cypress - macOS14 - Chrome"
+    browser: "chrome"
+    platformName: "macOS 14"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/no-sc/**/*.cy.js" ]
+  - name: "Cypress - macOS14 - Firefox"
+    browser: "firefox"
+    platformName: "macOS 14"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/no-sc/**/*.cy.js" ]
+  - name: "Cypress - macOS14 - Webkit"
+    browser: "webkit"
+    platformName: "macOS 14"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/no-sc/**/*.cy.js" ]
+
 notifications:
   slack:
     channels: ["devx-slack-notifications"]

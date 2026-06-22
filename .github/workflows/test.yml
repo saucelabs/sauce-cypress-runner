@@ -155,13 +155,59 @@ jobs:
         run: |
           gsutil cp ./cypress-macos-amd64.zip gs://${{ secrets.GCS_RUNNER_BUCKET }}/cypress-macos-amd64-${{ github.run_id }}.zip
 
+  build-mac-arm-bundle:
+    # macos-latest is Apple Silicon arm64 for macOS 14
+    runs-on: macos-latest
+    needs: [lint, integration]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Google Cloud Login
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCS_RUNNER_SA_KEY }}'
+
+      - name: Install gcloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCS_RUNNER_PROJECT_ID }}
+        env:
+          CLOUDSDK_PYTHON: ${{env.pythonLocation}}/python
+
+      - name: Update Release Version
+        run: npm version --no-git-tag-version 1.0.0
+
+      - name: Bundle Directory
+        run: bash ./scripts/bundle.macos.sh
+
+      - name: Get Cypress Version
+        run: |
+          CYPRESS_VERSION=$(< package-lock.json jq -r '.dependencies["cypress"].version')
+          echo "cypress_version=$CYPRESS_VERSION" >> $GITHUB_ENV
+
+      - name: Upload to GCS
+        run: |
+          gsutil cp ./cypress-macos-arm64.zip gs://${{ secrets.GCS_RUNNER_BUCKET }}/cypress-macos-arm64-${{ github.run_id }}.zip
+
   bundle-test:
-    needs: [build-windows-bundle, build-mac-bundle]
+    needs: [build-windows-bundle, build-mac-bundle, build-mac-arm-bundle]
     strategy:
       max-parallel: 3
       fail-fast: false
       matrix:
-        os: [Win10, Win11, macOS11, macOS12, macOS13]
+        os: [Win10, Win11, macOS11, macOS12, macOS13, macOS14]
         browser: [Chrome, Firefox, Webkit]
         exclude:
           - os: Win10
@@ -191,6 +237,10 @@ jobs:
           BUNDLE_URL=https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/cypress-windows-amd64-${{ github.run_id }}.zip
           if [[ ${{ matrix.os }} =~ ^mac ]];then
             BUNDLE_URL=https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/cypress-macos-amd64-${{ github.run_id }}.zip
+          fi
+          # macOS 14 uses the arm64 bundle
+          if [[ "${{ matrix.os }}" == "macOS14" ]];then
+            BUNDLE_URL=https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/cypress-macos-arm64-${{ github.run_id }}.zip
           fi
 
           saucectl run \
