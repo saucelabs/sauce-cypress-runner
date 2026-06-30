@@ -135,6 +135,20 @@ suites:
       testingType: "e2e"
       specPattern: [ "cypress/e2e/no-sc/**/*.cy.js" ]
 
+  # macOS 15 tests on Apple Silicon (no firefox: unsupported on macOS 15)
+  - name: "Cypress - macOS15 - Chrome"
+    browser: "chrome"
+    platformName: "macOS 15"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/no-sc/**/*.cy.js" ]
+  - name: "Cypress - macOS15 - Webkit"
+    browser: "webkit"
+    platformName: "macOS 15"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/e2e/no-sc/**/*.cy.js" ]
+
 notifications:
   slack:
     channels: ["devx-slack-notifications"]
