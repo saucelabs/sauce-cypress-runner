@@ -156,7 +156,7 @@ jobs:
           gsutil cp ./cypress-macos-amd64.zip gs://${{ secrets.GCS_RUNNER_BUCKET }}/cypress-macos-amd64-${{ github.run_id }}.zip
 
   build-mac-arm-bundle:
-    # macos-latest is Apple Silicon arm64 for macOS 14
+    # macos-latest is Apple Silicon arm64; this bundle serves macOS 14 and macOS 15
     runs-on: macos-latest
     needs: [lint, integration]
     steps:
@@ -207,7 +207,7 @@ jobs:
       max-parallel: 3
       fail-fast: false
       matrix:
-        os: [Win10, Win11, macOS11, macOS12, macOS13, macOS14]
+        os: [Win10, Win11, macOS11, macOS12, macOS13, macOS14, macOS15]
         browser: [Chrome, Firefox, Webkit]
         exclude:
           - os: Win10
@@ -218,6 +218,8 @@ jobs:
             browser: Webkit
           - os: macOS12
             browser: Webkit
+          - os: macOS15
+            browser: Firefox
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -238,8 +240,8 @@ jobs:
           if [[ ${{ matrix.os }} =~ ^mac ]];then
             BUNDLE_URL=https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/cypress-macos-amd64-${{ github.run_id }}.zip
           fi
-          # macOS 14 uses the arm64 bundle
-          if [[ "${{ matrix.os }}" == "macOS14" ]];then
+          # macOS 14 and macOS 15 use the arm64 bundle
+          if [[ "${{ matrix.os }}" == "macOS14" || "${{ matrix.os }}" == "macOS15" ]];then
             BUNDLE_URL=https://storage.googleapis.com/${{ secrets.GCS_RUNNER_BUCKET }}/cypress-macos-arm64-${{ github.run_id }}.zip
           fi
 

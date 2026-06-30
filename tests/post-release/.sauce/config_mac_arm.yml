@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: cypress
+sauce:
+  region: us-west-1
+  concurrency: 2
+  metadata:
+    tags:
+      - e2e
+      - post release
+      - apple silicon
+    build: Github Run $GITHUB_RUN_ID arm
+cypress:
+  configFile: cypress.config.js
+  version: 15.14.2
+rootDir: ./
+env:
+  foo: bar
+suites:
+  - name: "Post Release (macOS 14 ARM) Chrome"
+    browser: "chrome"
+    platformName: "macOS 14"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/**/*.*" ]
+  - name: "Post Release (macOS 15 ARM) Chrome"
+    browser: "chrome"
+    platformName: "macOS 15"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/**/*.*" ]
+  - name: "Post Release (macOS 14 ARM) Webkit"
+    browser: "webkit"
+    platformName: "macOS 14"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/**/*.*" ]
+  - name: "Post Release (macOS 15 ARM) Webkit"
+    browser: "webkit"
+    platformName: "macOS 15"
+    config:
+      testingType: "e2e"
+      specPattern: [ "cypress/**/*.*" ]
+notifications:
+  slack:
+    channels: ["devx"]
+    send: fail
+
+npm:
+  packages:
+    cypress-plugin-steps: '1.1.0'

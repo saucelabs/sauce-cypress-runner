@@ -382,3 +382,37 @@ jobs:
         working-directory: ./tests/post-release
         run: |
           saucectl run --runner-version "url: https://github.com/saucelabs/sauce-cypress-runner/releases/download/${{ steps.parse_version.outputs.version }}/cypress-macos-amd64.zip" --config ./.sauce/config_mac.yml
+
+  post-release-macos-arm-tests:
+    # Smoke tests the published Apple Silicon arm64 bundle on macOS 14 and macOS 15 with Chrome and WebKit.
+    # This covers the path that the amd64 post release smoke never exercises and where the macOS 14 WebKit fix lives.
+    # Requires the post release Sauce account to carry the Mac ARM CCY entitlement for macOS 14 and 15.
+    runs-on: ubuntu-latest
+    needs: publish-release
+    env:
+      SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+      SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup saucectl
+        uses: saucelabs/saucectl-run-action@v4
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          skip-run: true
+
+      - name: Parse Release Version
+        id: parse_version
+        run: |
+          VERSION=$(curl -s -H "Authorization: token ${{ github.token }}" \
+                      https://api.github.com/repos/${{ github.repository }}/releases | \
+                      jq -r "[.[] | select(.body | contains(\"- jobId: ${{ github.run_id }}\\n\"))] | first | .tag_name")
+
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Cloud Tests (Apple Silicon)
+        working-directory: ./tests/post-release
+        run: |
+          saucectl run --runner-version "url: https://github.com/saucelabs/sauce-cypress-runner/releases/download/${{ steps.parse_version.outputs.version }}/cypress-macos-arm64.zip" --config ./.sauce/config_mac_arm.yml
