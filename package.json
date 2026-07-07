@@ -41,7 +41,7 @@
     "fluent-ffmpeg": "^2.1.3",
     "lodash": "4.18.1",
     "mkdirp": "^3.0.1",
-    "playwright-webkit": "1.61.1",
+    "playwright-webkit": "1.57.0",
     "sauce-testrunner-utils": "3.4.1",
     "typescript": "6.0.3",
     "webpack": "5.108.4",
