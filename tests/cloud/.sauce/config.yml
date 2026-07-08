@@ -10,7 +10,9 @@ sauce:
     build: Github Run $GITHUB_RUN_ID
 cypress:
   configFile: cypress.config.js
-  version: 15.7.0
+  # 15.14.2 is the version test-composer enables on macOS 14/15/26; the actual
+  # runner code under test is supplied via `saucectl run --runner-version url:`.
+  version: 15.14.2
 rootDir: ./
 env:
   foo: bar
