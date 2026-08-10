@@ -296,6 +296,7 @@ jobs:
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
           region: us-west-1
           tunnelName: github-cypress-sc-check-tunnel-${{ matrix.os }}-${{ matrix.browser }}
+          proxyLocalhost: allow
 
       - name: Test on Sauce (+ Sauce-Connect)
         working-directory: ./tests/cloud/
