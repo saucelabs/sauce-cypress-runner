@@ -290,11 +290,12 @@ jobs:
         working-directory: ./tests/cloud/www/
 
       - name: Start sauce-connect
-        uses: saucelabs/sauce-connect-action@v2
+        uses: saucelabs/sauce-connect-action@v3
         with:
           username: ${{ secrets.SAUCE_USERNAME }}
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-          tunnelIdentifier: github-cypress-sc-check-tunnel-${{ matrix.os }}-${{ matrix.browser }}
+          region: us-west
+          tunnelName: github-cypress-sc-check-tunnel-${{ matrix.os }}-${{ matrix.browser }}
 
       - name: Test on Sauce (+ Sauce-Connect)
         working-directory: ./tests/cloud/
