@@ -294,7 +294,7 @@ jobs:
         with:
           username: ${{ secrets.SAUCE_USERNAME }}
           accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-          region: us-west
+          region: us-west-1
           tunnelName: github-cypress-sc-check-tunnel-${{ matrix.os }}-${{ matrix.browser }}
 
       - name: Test on Sauce (+ Sauce-Connect)
