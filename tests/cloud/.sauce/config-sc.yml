@@ -12,6 +12,8 @@ cypress:
   configFile: cypress.config.js
   # 15.14.2 is the version test-composer enables on macOS 14/15/26; the actual
   # runner code under test is supplied via `saucectl run --runner-version url:`.
+  # Raise to 16.1.1 once test-composer enables it (INT-897 follow-up); the runner under test still
+  # comes from --runner-version url:, so the pin only has to be a cloud-enabled version.
   version: 15.14.2
 rootDir: ./
 env:
