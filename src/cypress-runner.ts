@@ -119,6 +119,8 @@ function getCypressOpts(
       ? undefined
       : runCfg.resultsDir;
 
+  const env = getEnv(suite);
+
   const opts: Partial<CypressCommandLine.CypressRunOptions> = {
     project: path.dirname(cypressCfgFile),
     browser: process.env.SAUCE_BROWSER || suite.browser || 'chrome',
@@ -135,7 +137,19 @@ function getCypressOpts(
       screenshotsFolder: cypressOutputDir,
       video: shouldRecordVideo(),
       videoCompression: false,
-      env: getEnv(suite),
+      env,
+      // Cypress 16 removed `Cypress.env()`. `env` now only feeds the
+      // asynchronous `cy.env()`, while the synchronous `Cypress.expose()`
+      // reads `expose`, so suite values are forwarded to both. The
+      // CYPRESS_* OS variables set in setEnvironmentVariables() populate
+      // `env` but not `expose`, hence the two runner keys are added here
+      // explicitly. They are spread last so a suite cannot override them on
+      // the `expose` path.
+      expose: {
+        ...env,
+        SAUCE_SUITE_NAME: suite.name,
+        SAUCE_ARTIFACTS_DIRECTORY: runCfg.resultsDir,
+      },
     },
   };
 

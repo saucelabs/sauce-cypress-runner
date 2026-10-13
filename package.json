@@ -25,7 +25,7 @@
   },
   "keywords": [],
   "dependencies": {
-    "@badeball/cypress-cucumber-preprocessor": "24.0.1",
+    "@badeball/cypress-cucumber-preprocessor": "28.0.1",
     "@cypress/grep": "6.0.3",
     "@cypress/webpack-preprocessor": "7.1.1",
     "@cypress/xpath": "2.0.3",
@@ -33,7 +33,7 @@
     "@saucelabs/cypress-plugin": "3.6.0",
     "@shelex/cypress-allure-plugin": "2.41.2",
     "@tsconfig/node22": "^22.0.5",
-    "cypress": "15.21.1",
+    "cypress": "16.1.1",
     "cypress-mochawesome-reporter": "4.0.2",
     "cypress-multi-reporters": "2.0.5",
     "cypress-wait-until": "3.0.2",
