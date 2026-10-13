@@ -25,16 +25,20 @@ saucectl run -e SAUCE_CYPRESS_VIDEO_RECORDING=true
 
 ## Reading `env` values on Cypress 16 (runner v15 and later)
 
-Cypress 16 removed `Cypress.env()`; calling it now throws. The runner makes every value from a saucectl suite `env:` block, plus `SAUCE_SUITE_NAME` and `SAUCE_ARTIFACTS_DIRECTORY`, available in two ways.
+Cypress 16 removed `Cypress.env()`; calling it now throws. Read values with `Cypress.expose()` or the `cy.env()` command instead. The two APIs see different sources.
 
-Synchronously, with `Cypress.expose()`:
+`Cypress.expose()` is synchronous and sees exactly:
+
+- the values from the saucectl suite `env:` block,
+- `SAUCE_SUITE_NAME` and `SAUCE_ARTIFACTS_DIRECTORY`, set by the runner,
+- the `expose` block of your own `cypress.config.*`.
 
 ```js
 const host = Cypress.expose('host');
 cy.visit(host);
 ```
 
-Asynchronously, with the `cy.env()` command:
+`cy.env([...])` is a command and sees every `env` source: the suite `env:` values, `cypress.env.json`, the `env` block of your `cypress.config.*` and `CYPRESS_*` OS variables.
 
 ```js
 cy.env(['host', 'SAUCE_SUITE_NAME']).then(({ host, SAUCE_SUITE_NAME }) => {
@@ -43,6 +47,20 @@ cy.env(['host', 'SAUCE_SUITE_NAME']).then(({ host, SAUCE_SUITE_NAME }) => {
 });
 ```
 
-To migrate, replace `Cypress.env('X')` with `Cypress.expose('X')`, or use `cy.env(['X'])` when you are already inside a command chain.
+Values from `cypress.env.json`, the `env` block of your `cypress.config.*` and `CYPRESS_*` OS variables are readable only with `cy.env([...])`, unless you move them to the `expose` block of your config.
 
-Every `env:` value is available in the browser exactly as it was on Cypress 15, whichever API you use to read it.
+To migrate:
+
+- for values from a saucectl suite `env:` block, replace `Cypress.env('X')` with `Cypress.expose('X')`;
+- for anything else, use `cy.env(['X'])` inside a command chain.
+
+Suite `env:` keys written with a `CYPRESS_` prefix, such as `CYPRESS_PREF`, are readable as `cy.env(['PREF'])` (prefix stripped, as `Cypress.env()` did) or as `Cypress.expose('CYPRESS_PREF')` (prefix kept). `Cypress.expose('PREF')` returns `undefined`.
+
+If a suite `env:` block defines `SAUCE_SUITE_NAME` or `SAUCE_ARTIFACTS_DIRECTORY`, `Cypress.expose()` returns the runner's value and `cy.env()` returns the suite's value.
+
+Every suite `env:` value is visible in the browser, as it was on Cypress 15.
+
+## Known limitations on runner v15 (Cypress 16)
+
+- macOS 11 is no longer supported. Cypress 16 requires macOS 12 or later.
+- The bundled `@shelex/cypress-allure-plugin` 2.41.2 does not work with Cypress 16. Importing it fails every spec, because it calls the removed `Cypress.env()` when it loads. Use [`allure-cypress`](https://www.npmjs.com/package/allure-cypress) instead, installed through saucectl `npm.packages`.

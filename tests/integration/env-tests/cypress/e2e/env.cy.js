@@ -36,6 +36,9 @@ context('Actions', function () {
         expect(VALUE).to.equal('Some test value');
         expect(host).to.equal('http://devexpress.github.io/testcafe/example');
         expect(SAUCE_SUITE_NAME).to.equal('default');
+        expect(SAUCE_ARTIFACTS_DIRECTORY)
+          .to.be.a('string')
+          .and.match(/__assets__$/);
         expect(SAUCE_ARTIFACTS_DIRECTORY).to.equal(
           Cypress.expose('SAUCE_ARTIFACTS_DIRECTORY'),
         );

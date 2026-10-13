@@ -8,8 +8,9 @@ context('Actions', function () {
 
   // https://on.cypress.io/interacting-with-elements
 
-  it('should use cypress.json', function () {
+  it('reads suite env via Cypress.expose', function () {
     cy.step('running assertions');
+    expect(Cypress.version).to.match(/^16\./);
     expect(Cypress.expose('foo')).to.equal('bar');
   });
 });

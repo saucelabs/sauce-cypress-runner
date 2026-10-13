@@ -7,7 +7,12 @@ context('Actions', function () {
 
   // https://on.cypress.io/interacting-with-elements
 
-  it('should use cypress.json', function () {
+  it('reads suite env via Cypress.expose', function () {
+    expect(Cypress.version).to.match(/^16\./);
     expect(Cypress.expose('foo')).to.equal('bar');
+    expect(Cypress.expose('SAUCE_SUITE_NAME')).to.match(/^Cypress - /);
+    expect(Cypress.expose('SAUCE_ARTIFACTS_DIRECTORY'))
+      .to.be.a('string')
+      .and.have.length.above(0);
   });
 });
