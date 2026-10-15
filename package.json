@@ -25,7 +25,7 @@
   },
   "keywords": [],
   "dependencies": {
-    "@badeball/cypress-cucumber-preprocessor": "24.0.1",
+    "@badeball/cypress-cucumber-preprocessor": "28.0.1",
     "@cypress/grep": "6.0.3",
     "@cypress/webpack-preprocessor": "7.1.1",
     "@cypress/xpath": "2.0.3",

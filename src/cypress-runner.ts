@@ -119,6 +119,8 @@ function getCypressOpts(
       ? undefined
       : runCfg.resultsDir;
 
+  const env = getEnv(suite);
+
   const opts: Partial<CypressCommandLine.CypressRunOptions> = {
     project: path.dirname(cypressCfgFile),
     browser: process.env.SAUCE_BROWSER || suite.browser || 'chrome',
@@ -135,7 +137,20 @@ function getCypressOpts(
       screenshotsFolder: cypressOutputDir,
       video: shouldRecordVideo(),
       videoCompression: false,
-      env: getEnv(suite),
+      env,
+      // Suite values are forwarded to both `env` (read with `cy.env()`, and
+      // with `Cypress.env()` before Cypress 16) and `expose` (read with the
+      // synchronous `Cypress.expose()`). On Cypress >= 15.17,
+      // @badeball/cypress-cucumber-preprocessor 28 also reads its options,
+      // such as `tags`, from `expose`. The CYPRESS_* OS variables set in
+      // setEnvironmentVariables() populate `env` but not `expose`, hence the
+      // two runner keys are added here explicitly. They are spread last so a
+      // suite cannot override them on the `expose` path.
+      expose: {
+        ...env,
+        SAUCE_SUITE_NAME: suite.name,
+        SAUCE_ARTIFACTS_DIRECTORY: runCfg.resultsDir,
+      },
     },
   };
 

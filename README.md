@@ -22,3 +22,50 @@ This env variable is for controlling cypress native video recording.
 ```sh
 saucectl run -e SAUCE_CYPRESS_VIDEO_RECORDING=true
 ```
+
+## Reading `env` values with `Cypress.expose()`
+
+Cypress deprecated `Cypress.env()` in Cypress 15.10 and removes it in Cypress 16. On this runner (Cypress 15) `Cypress.env()` still works. The runner now also passes the values from the saucectl suite `env:` block, plus `SAUCE_SUITE_NAME` and `SAUCE_ARTIFACTS_DIRECTORY`, to Cypress as `expose`, so you can already read them with `Cypress.expose()` or the `cy.env()` command. The two APIs see different sources.
+
+`Cypress.expose()` is synchronous and sees exactly:
+
+- the values from the saucectl suite `env:` block,
+- `SAUCE_SUITE_NAME` and `SAUCE_ARTIFACTS_DIRECTORY`, set by the runner,
+- the `expose` block of your own `cypress.config.*`.
+
+```js
+const host = Cypress.expose('host');
+cy.visit(host);
+```
+
+`cy.env([...])` is a command and sees every `env` source: the suite `env:` values, `cypress.env.json`, the `env` block of your `cypress.config.*` and `CYPRESS_*` OS variables.
+
+```js
+cy.env(['host', 'SAUCE_SUITE_NAME']).then(({ host, SAUCE_SUITE_NAME }) => {
+  cy.log(`Running suite ${SAUCE_SUITE_NAME}`);
+  cy.visit(host);
+});
+```
+
+Values from `cypress.env.json`, the `env` block of your `cypress.config.*` and `CYPRESS_*` OS variables are readable only with `cy.env([...])`, unless you move them to the `expose` block of your config.
+
+To move off `Cypress.env()` before Cypress 16:
+
+- for values from a saucectl suite `env:` block, replace `Cypress.env('X')` with `Cypress.expose('X')`;
+- for anything else, use `cy.env(['X'])` inside a command chain.
+
+Suite `env:` keys written with a `CYPRESS_` prefix, such as `CYPRESS_PREF`, are readable as `cy.env(['PREF'])` (prefix stripped, as `Cypress.env()` does) or as `Cypress.expose('CYPRESS_PREF')` (prefix kept). `Cypress.expose('PREF')` returns `undefined`.
+
+If a suite `env:` block defines `SAUCE_SUITE_NAME` or `SAUCE_ARTIFACTS_DIRECTORY`, `Cypress.expose()` returns the runner's value and `cy.env()` returns the suite's value.
+
+Every suite `env:` value is visible in the browser, as it already is through `Cypress.env()`.
+
+## Cucumber preprocessor 28
+
+The bundled `@badeball/cypress-cucumber-preprocessor` moved from 24 to 28. It now reads only the
+lowercase `tags` option, and on Cypress 15.17 and later it reads its options from Cypress `expose`,
+where the runner forwards the suite `env:` values. A suite that still sets `env: TAGS: "@smoke"` is
+not filtered: no error is raised and every scenario runs. Rename the key to `tags` (for example
+`env: tags: "@smoke"` in your saucectl suite). Other upstream changes: use `-x/--expose` instead of
+`-e/--env` for command-line overrides, the soft-expectation flag is removed, and Cypress 12 is no
+longer supported.

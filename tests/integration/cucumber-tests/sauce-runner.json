@@ -1,0 +1,23 @@
+{
+  "nodeVersion": "20",
+  "cypress": {
+    "configFile": "cypress.config.js"
+  },
+  "suites": [
+    {
+      "name": "default",
+      "browser": "chrome",
+      "browserVersion": "",
+      "headless": true,
+      "config": {
+        "testingType": "e2e",
+        "specPattern": [
+          "**/*.feature"
+        ],
+        "env": {
+          "tags": "@smoke"
+        }
+      }
+    }
+  ]
+}
