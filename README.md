@@ -63,4 +63,9 @@ Every suite `env:` value is visible in the browser, as it was on Cypress 15.
 ## Known limitations on runner v15 (Cypress 16)
 
 - macOS 11 is no longer supported. Cypress 16 requires macOS 12 or later.
+- The bundled `@badeball/cypress-cucumber-preprocessor` moved from 24 to 28. It now reads only the
+  lowercase `tags` option. A suite that still sets `env: TAGS: "@smoke"` is not filtered: no error is
+  raised and every scenario runs. Rename the key to `tags` (for example `env: tags: "@smoke"` in your
+  saucectl suite). Other upstream changes: use `-x/--expose` instead of `-e/--env` for command-line
+  overrides, the soft-expectation flag is removed, and Cypress 12 is no longer supported.
 - The bundled `@shelex/cypress-allure-plugin` 2.41.2 does not work with Cypress 16. Importing it fails every spec, because it calls the removed `Cypress.env()` when it loads. Use [`allure-cypress`](https://www.npmjs.com/package/allure-cypress) instead, installed through saucectl `npm.packages`.
