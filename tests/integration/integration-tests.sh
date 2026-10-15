@@ -9,3 +9,5 @@ node . -r tests/integration/config-tests/sauce-runner.json -s "webkit"
 node . -r tests/integration/env-tests/sauce-runner.json -s "default"
 
 node . -r tests/integration/expose-tests/sauce-runner.json -s "default"
+
+node . -r tests/integration/cucumber-tests/sauce-runner.json -s "default"
