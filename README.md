@@ -22,3 +22,14 @@ This env variable is for controlling cypress native video recording.
 ```sh
 saucectl run -e SAUCE_CYPRESS_VIDEO_RECORDING=true
 ```
+
+## Cypress 16 (runner v15 and later)
+
+- `Cypress.env()` is removed and throws. Read values from your saucectl suite `env:` block with
+  `Cypress.expose('X')`. Values from `cypress.env.json`, the `env` block of your Cypress config and
+  `CYPRESS_*` variables are readable with `cy.env(['X'])`.
+- macOS 11 is no longer supported. Cypress 16 requires macOS 12 or later.
+- The bundled `@badeball/cypress-cucumber-preprocessor` is now 28. It reads only the lowercase `tags`
+  option: a suite that still sets `env: TAGS` is not filtered and runs every scenario.
+- The bundled `@shelex/cypress-allure-plugin` 2.41.2 does not work with Cypress 16: importing it fails
+  every spec. Use `allure-cypress` instead, installed through saucectl `npm.packages`.
