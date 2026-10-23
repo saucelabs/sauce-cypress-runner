@@ -207,14 +207,12 @@ jobs:
       max-parallel: 3
       fail-fast: false
       matrix:
-        os: [Win10, Win11, macOS11, macOS12, macOS13, macOS14, macOS15]
+        os: [Win10, Win11, macOS12, macOS13, macOS14, macOS15]
         browser: [Chrome, Firefox, Webkit]
         exclude:
           - os: Win10
             browser: Webkit
           - os: Win11
-            browser: Webkit
-          - os: macOS11
             browser: Webkit
           - os: macOS12
             browser: Webkit
@@ -256,14 +254,12 @@ jobs:
       max-parallel: 3
       fail-fast: false
       matrix:
-        os: [Win10, Win11, macOS11, macOS12, macOS13]
+        os: [Win10, Win11, macOS12, macOS13]
         browser: [Chrome, Firefox, Webkit]
         exclude:
           - os: Win10
             browser: Webkit
           - os: Win11
-            browser: Webkit
-          - os: macOS11
             browser: Webkit
           - os: macOS12
             browser: Webkit

@@ -119,6 +119,23 @@ function getCypressOpts(
       ? undefined
       : runCfg.resultsDir;
 
+  const env = getEnv(suite);
+  // Keys the runner owns. They are spread last on both paths below, so a suite
+  // cannot override them and both read APIs return the same value.
+  const runnerEnv = {
+    SAUCE_SUITE_NAME: suite.name,
+    SAUCE_ARTIFACTS_DIRECTORY: runCfg.resultsDir,
+  };
+  // @badeball/cypress-cucumber-preprocessor 24 read `TAGS` before `tags`; 28
+  // reads only `tags`. Copy it so suites that set `TAGS` keep filtering.
+  const cucumberTags = env.TAGS ?? env.tags;
+  // Suite values plus the runner's own keys, given to Cypress on both paths.
+  const cypressEnv = {
+    ...env,
+    ...(cucumberTags !== undefined ? { tags: cucumberTags } : {}),
+    ...runnerEnv,
+  };
+
   const opts: Partial<CypressCommandLine.CypressRunOptions> = {
     project: path.dirname(cypressCfgFile),
     browser: process.env.SAUCE_BROWSER || suite.browser || 'chrome',
@@ -135,7 +152,14 @@ function getCypressOpts(
       screenshotsFolder: cypressOutputDir,
       video: shouldRecordVideo(),
       videoCompression: false,
-      env: getEnv(suite),
+      // Suite values are forwarded to both `env` (read with `cy.env()`, and
+      // with `Cypress.env()` before Cypress 16) and `expose` (read with the
+      // synchronous `Cypress.expose()`). @badeball/cypress-cucumber-preprocessor
+      // 28 and @cypress/grep read their options, such as `tags` and `grep`,
+      // from `expose`. Values in `expose` are readable in the browser, as
+      // `Cypress.env()` values were before Cypress 16.
+      env: cypressEnv,
+      expose: cypressEnv,
     },
   };
 

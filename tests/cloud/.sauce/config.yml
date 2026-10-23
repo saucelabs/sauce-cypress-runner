@@ -57,26 +57,6 @@ suites:
       testingType: "e2e"
       specPattern: [ "cypress/e2e/no-sc/**/*.cy.js" ]
 
-  # macOS 11.00 Tests
-  - name: "Cypress - macOS11 - Chrome"
-    browser: "chrome"
-    platformName: "macOS 11.00"
-    config:
-      testingType: "e2e"
-      specPattern: [ "cypress/e2e/no-sc/**/*.cy.js" ]
-  - name: "Cypress - macOS11 - Firefox"
-    browser: "firefox"
-    platformName: "macOS 11.00"
-    config:
-      testingType: "e2e"
-      specPattern: [ "cypress/e2e/no-sc/**/*.cy.js" ]
-  - name: "Cypress - macOS11 - Webkit"
-    browser: "webkit"
-    platformName: "macOS 11.00"
-    config:
-      testingType: "e2e"
-      specPattern: [ "cypress/e2e/no-sc/**/*.cy.js" ]
-
   # macOS 12 Tests
   - name: "Cypress - macOS12 - Chrome"
     browser: "chrome"

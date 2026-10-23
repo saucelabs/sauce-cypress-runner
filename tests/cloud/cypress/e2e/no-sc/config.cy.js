@@ -8,6 +8,6 @@ context('Actions', function () {
   // https://on.cypress.io/interacting-with-elements
 
   it('should use cypress.json', function () {
-    expect(Cypress.env('foo')).to.equal('bar');
+    expect(Cypress.expose('foo')).to.equal('bar');
   });
 });

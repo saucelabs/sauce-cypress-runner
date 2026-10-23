@@ -10,6 +10,6 @@ context('Actions', function () {
 
   it('should use cypress.json', function () {
     cy.step('running assertions');
-    expect(Cypress.env('foo')).to.equal('bar');
+    expect(Cypress.expose('foo')).to.equal('bar');
   });
 });
