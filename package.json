@@ -31,7 +31,6 @@
     "@cypress/xpath": "2.0.3",
     "@saucelabs/cypress-junit-plugin": "0.3.0",
     "@saucelabs/cypress-plugin": "3.6.0",
-    "@shelex/cypress-allure-plugin": "2.41.2",
     "@tsconfig/node22": "^22.0.5",
     "cypress": "16.1.1",
     "cypress-mochawesome-reporter": "4.0.2",
