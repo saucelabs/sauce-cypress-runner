@@ -20,7 +20,9 @@
           "FOO": "bar",
           "host": "http://devexpress.github.io/testcafe/example",
           "HELLO": "WORLD",
-          "VALUE": "$TEST_VALUE"
+          "VALUE": "$TEST_VALUE",
+          "TAGS": "@smoke",
+          "tags": "@other"
         }
       }
     }

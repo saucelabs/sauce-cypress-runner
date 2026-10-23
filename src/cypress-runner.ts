@@ -126,6 +126,15 @@ function getCypressOpts(
     SAUCE_SUITE_NAME: suite.name,
     SAUCE_ARTIFACTS_DIRECTORY: runCfg.resultsDir,
   };
+  // @badeball/cypress-cucumber-preprocessor 24 read `TAGS` before `tags`; 28
+  // reads only `tags`. Copy it so suites that set `TAGS` keep filtering.
+  const cucumberTags = env.TAGS ?? env.tags;
+  // Suite values plus the runner's own keys, given to Cypress on both paths.
+  const cypressEnv = {
+    ...env,
+    ...(cucumberTags !== undefined ? { tags: cucumberTags } : {}),
+    ...runnerEnv,
+  };
 
   const opts: Partial<CypressCommandLine.CypressRunOptions> = {
     project: path.dirname(cypressCfgFile),
@@ -149,8 +158,8 @@ function getCypressOpts(
       // 28 and @cypress/grep read their options, such as `tags` and `grep`,
       // from `expose`. Values in `expose` are readable in the browser, as
       // `Cypress.env()` values were before Cypress 16.
-      env: { ...env, ...runnerEnv },
-      expose: { ...env, ...runnerEnv },
+      env: cypressEnv,
+      expose: cypressEnv,
     },
   };
 

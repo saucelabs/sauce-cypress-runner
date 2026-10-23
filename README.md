@@ -29,12 +29,15 @@ saucectl run -e SAUCE_CYPRESS_VIDEO_RECORDING=true
   `Cypress.expose('X')` or `cy.env(['X'])`. `cy.env()` also reads `cypress.env.json`, the `env` block
   of your Cypress config and `CYPRESS_*` variables.
 - Every value in the suite `env:` block is readable in the browser through `Cypress.expose()`, as it
-  was through `Cypress.env()` before Cypress 16. The application under test can read it too. Keep
-  secrets it must not see in `cypress.env.json` and read them with `cy.env()`.
+  was through `Cypress.env()` before Cypress 16. The application under test can read it too. For
+  secrets it must not see, write them to `cypress.env.json` in a CI step before `saucectl run`
+  instead of committing the file, and read them with `cy.env()`. Values in that file are not exposed.
+  Make sure your `.sauceignore` does not exclude it.
 - macOS 11 is no longer supported. Cypress 16 ships Electron 41, which needs macOS 12 or later.
   Cypress documents macOS 13.5 and later as supported.
-- The bundled `@badeball/cypress-cucumber-preprocessor` is now 28. It reads only the lowercase `tags`
-  option: a suite that still sets `env: TAGS` is not filtered and runs every scenario.
+- The bundled `@badeball/cypress-cucumber-preprocessor` is now 28, which reads only the lowercase
+  `tags` option. The runner copies a suite's `TAGS` value to `tags`, so suites that set `env: TAGS`
+  keep filtering. If a suite sets both, `TAGS` wins, as it did before.
 - `@shelex/cypress-allure-plugin` is no longer bundled, because it does not work with Cypress 16. Use
   `allure-cypress` instead, installed through saucectl `npm.packages`.
 - See the [Cypress migration guide](https://docs.cypress.io/app/references/migration-guide) for the
